@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<T3DataStructure>
+	<meta>
+		<langDisable>1</langDisable>
+	</meta>
+	<ROOT>
+		<type>array</type>
+		<el>
+			<appKey>
+				<TCEforms>
+					<label>App key (https://www.dropbox.com/developers)</label>
+					<config>
+						<type>input</type>
+						<eval>trim</eval>
+						<size>30</size>
+					</config>
+				</TCEforms>
+			</appKey>
+			<appSecret>
+				<TCEforms>
+					<label>App secret (https://www.dropbox.com/developers)</label>
+					<config>
+						<type>input</type>
+						<eval>trim</eval>
+						<size>30</size>
+					</config>
+				</TCEforms>
+			</appSecret>
+			<accessType>
+				<TCEforms>
+					<label>Access type</label>
+					<config>
+						<type>select</type>
+						<items type="array">
+							<numIndex index="0" type="array">
+								<numIndex index="0">App folder</numIndex>
+								<numIndex index="1">app_folder</numIndex>
+							</numIndex>
+							<numIndex index="1" type="array">
+								<numIndex index="0">Dropbox</numIndex>
+								<numIndex index="1">dropbox</numIndex>
+							</numIndex>
+						</items>
+						<maxitems>1</maxitems>
+						<size>1</size>
+						<selectedListStyle>width:150px</selectedListStyle>
+					</config>
+				</TCEforms>
+			</accessType>
+			<dropboxLink>
+				<TCEforms>
+					<label>Dropbox Link</label>
+					<config>
+						<type>user</type>
+						<userFunc>EXT:fal_dropbox/class.tx_faldropbox_tca.php:tx_faldropbox_tca->dropboxLink</userFunc>
+						<parameters>
+							<color>blue</color>
+						</parameters>
+					</config>
+				</TCEforms>
+			</dropboxLink>
+		</el>
+	</ROOT>
+</T3DataStructure>
