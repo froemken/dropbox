@@ -24,7 +24,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-require_once('Dropbox/autoload.php');
+require_once t3lib_extMgm::extPath('fal_dropbox', 'Classes/Dropbox/autoload.php');
 
 /**
  *
@@ -115,7 +115,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 		$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 		$settings = $this->registry->get('fal_dropbox', 'config');
 
-		$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_OAuth_PHP', $settings['appKey'], $settings['appSecret']);
+		$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_OAuth_PEAR', $settings['appKey'], $settings['appSecret']);
 		$this->oauth->setToken($settings['accessToken']);
 		$this->dropbox = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_API', $this->oauth, 'sandbox');
 	}
@@ -629,10 +629,14 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean
 	 */
 	public function folderExists($identifier) {
-		$info = $this->dropbox->getMetaData($identifier);
-		if($info['is_dir']) {
-			return true;
-		} else return false;
+		try {
+			$info = $this->dropbox->getMetaData($identifier);
+			if($info['is_dir']) {
+				return true;
+			} else return false;
+		} catch(Exception $e) {
+			return false;
+		}
 	}
 
 	/**

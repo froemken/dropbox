@@ -24,8 +24,6 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-require_once('Dropbox/autoload.php');
-
 /**
  *
  *
@@ -40,60 +38,91 @@ class tx_faldropbox_tca {
 	 */
 	protected $registry;
 
+	/**
+	 * @var Dropbox_OAuth_PEAR
+	 */
+	protected $oauth;
 
+
+
+
+
+	/**
+	 * initializes this object
+	 *
+	 * @param array $config
+	 */
+	public function initialization(array $config) {
+		$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
+		$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_OAuth_PEAR', $config['appKey'], $config['appSecret']);
+	}
+
+	/**
+	 * show informations about dropbox authentication
+	 *
+	 * @param array $PA
+	 * @param array $fObj
+	 * @return string
+	 */
 	public function dropboxLink($PA, $fObj) {
-		//$color = (isset($PA['parameters']['color'])) ? $PA['parameters']['color']:'red';
-		/*$content = '<div><a href="http://www.obi.de">OBI</a></div>';
-
-		return $content;*/
-		if($PA['row']['configuration']) {
-			$xmlArray = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($PA['row']['configuration']);
-			foreach($xmlArray['data']['sDEF']['lDEF'] as $key => $value) {
-				$config[$key] = $value['vDEF'];
-			}
-		}
+		$config = $this->getConfiguration($PA);
 		if(empty($config['appKey'])) return '<div>You have to set App key first and save the record.</div>';
 		if(empty($config['appSecret'])) return '<div>You have to set App key first and save the record.</div>';
 		if(empty($config['accessType'])) return '<div>You have to save this record first.</div>';
+		$this->initialization($config);
 
-		/* now we try to connect */
-		$oauth = new Dropbox_OAuth_PHP($config['appKey'], $config['appSecret']);
-
-		$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 		$settings = $this->registry->get('fal_dropbox', 'config');
 		if(empty($settings)) {
 			// create a new request which the user have to apply
-			$settings['requestToken'] = $oauth->getRequestToken();
+			$settings['requestToken'] = $this->oauth->getRequestToken();
 
 			$settings['appKey'] = $config['appKey'];
 			$settings['appSecret'] = $config['appSecret'];
 			$settings['accessType'] = $config['accessType'];
 			$this->registry->set('fal_dropbox', 'config', $settings);
 
-			return '<div>Link: <a href="' . $oauth->getAuthorizeUrl() . '" target="_blank">Connect App with your Dropbox account</a></div>';
+			return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank">Connect App with your Dropbox account</a></div>';
 		} elseif(empty($settings['requestToken'])) {
 			// create a new request which the user have to apply
-			$settings['requestToken'] = $oauth->getRequestToken();
+			$settings['requestToken'] = $this->oauth->getRequestToken();
 			$this->registry->set('fal_dropbox', 'config', $settings);
 
-			return '<div>Link: <a href="' . $oauth->getAuthorizeUrl() . '" target="_blank">Connect App with your Dropbox account</a></div>';
+			return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank">Connect App with your Dropbox account</a></div>';
 		} elseif(empty($settings['accessToken'])) {
 			// ok now we can try to access the real access token
-			$oauth->setToken($settings['requestToken']);
+			$this->oauth->setToken($settings['requestToken']);
 			try {
-				$settings['accessToken'] = $oauth->getAccessToken();
+				$settings['accessToken'] = $this->oauth->getAccessToken();
 				$this->registry->set('fal_dropbox', 'config', $settings);
 			} catch(Exception $e) {
 				// create a new request which the user have to apply
-				$settings['requestToken'] = $oauth->getRequestToken();
+				$settings['requestToken'] = $this->oauth->getRequestToken();
 				$this->registry->set('fal_dropbox', 'config', $settings);
-				return '<div>Link: <a href="' . $oauth->getAuthorizeUrl() . '" target="_blank">Connect App with your Dropbox account</a></div>';
+				return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank">Connect App with your Dropbox account</a></div>';
 			}
 		} else {
-			$oauth->setToken($settings['accessToken']);
+			$this->oauth->setToken($settings['accessToken']);
 		}
 
 		return '<div style="color: green;">You\'re now authenticated to your dropbox account</div>';
+	}
+
+	/**
+	 * get configuration
+	 *
+	 * @param array $PA
+	 * @return array
+	 */
+	public function getConfiguration($PA) {
+		$config = array();
+		if ($PA['row']['configuration']) {
+			$xmlArray = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($PA['row']['configuration']);
+			foreach ($xmlArray['data']['sDEF']['lDEF'] as $key => $value) {
+				$config[$key] = $value['vDEF'];
+			}
+		}
+
+		return $config;
 	}
 }
 ?>
