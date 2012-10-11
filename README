@@ -3,28 +3,21 @@ It extends FAL to connect to your dropbox account in file list module
 
 INSTALL
 
-1.) Install OAuth as PHP-Extension for your server
-2.) Install Dropbox-API:
+1.) Install and activate fal_dropbox extension
+2.) Create a new file storage record on pid 0 called "Dropbox"
+3.) On Tab "Configuration" choose "Dropbox". FlexForm reloads
+3a.) GoTo: https://www.dropbox.com/developers
+3b.) Create your own Dropbox App "MyApps" (maybe you must login first)
+3c.) Give it a name and a description
+3d.) Please choose "App folder". "Full Dropbox" is just not implemented in this extension
+3e.) Now you should see the data of your app. Copy the data to FlexForm (AppKey/AppSecret)
+3f.) Save
+3g.) After saving a Dropbox Link appears
+3h.) Click it and allow your app to connect to your dropbox account
+3i.) After successful connection click save in FlexForm again.
+3j.) With a little bit of luck you should be connected now (green text)
 
-pear channel-discover pear.dropbox-php.com
-pear install dropbox-php/Dropbox-alpha
-
-3.) Restart your webserver
-4.) Install and activate fal_dropbox extension
-5.) Create a new file storage record on pid 0 called "Dropbox"
-6.) On Tab "Configuration" choose "Dropbox". FlexForm reloads
-6a.) GoTo: https://www.dropbox.com/developers
-6b.) Create your own Dropbox App "MyApps" (maybe you must login first)
-6c.) Give it a name and a description
-6d.) Please choose "App folder". "Full Dropbox" is just not implemented in this extension
-6e.) Now you should see the data of your app. Copy the data to FlexForm.
-6f.) Save
-6g.) After saving a Dropbox Link appears
-6h.) Click it and allow your app to connect to your dropbox account
-6i.) After successful connection click save in FlexForm again.
-6j.) With a little bit of luck you should be connected now (green text)
-
-7.) Have fun with FAL Dropbox
+4.) Have fun with FAL Dropbox
 
 Hint:
 - fal_dropbox does not using caching for now...so it is very slow at the moment
