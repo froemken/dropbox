@@ -9,4 +9,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['fal_dropbox'] = 
 	'flexFormDS' => 'FILE:EXT:fal_dropbox/Configuration/FlexForms/Dropbox.xml',
 	'label' => 'Dropbox'
 );
+
+if (!is_array($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tx_faldropbox_cache'])) {
+    $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tx_faldropbox_cache'] = array();
+}
 ?>

@@ -28,19 +28,12 @@ require_once t3lib_extMgm::extPath('fal_dropbox', 'Classes/Dropbox/autoload.php'
 
 /**
  *
- *
+ * @author Stefan Froemken <firma@sfroemken.de>
  * @package sfstefan
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  *
  */
 class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\AbstractDriver {
-
-	/**
-	 * The mount object this driver instance belongs to
-	 *
-	 * @var \TYPO3\CMS\Core\Resource\ResourceStorage
-	 */
-	protected $storage;
 
 	/**
 	 * @var Dropbox_API
@@ -58,48 +51,13 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	protected $registry;
 
 	/**
-	 * A list of all supported hash algorithms, written all lower case and
-	 * without any dashes etc. (e.g. sha1 instead of SHA-1)
-	 * Be sure to set this in inherited classes!
-	 *
-	 * @var array
+	 * @var \TYPO3\CMS\Core\Cache\Frontend\AbstractFrontend
 	 */
-	protected $supportedHashAlgorithms = array();
+	protected $cache;
 
-	/**
-	 * The storage folder that forms the root of this FS tree
-	 *
-	 * @var \TYPO3\CMS\Core\Resource\Folder
-	 */
-	protected $rootLevelFolder;
 
-	/**
-	 * The default folder new files should be put into.
-	 *
-	 * @var \TYPO3\CMS\Core\Resource\Folder
-	 */
-	protected $defaultLevelFolder;
 
-	/**
-	 * The configuration of this driver
-	 *
-	 * @var array
-	 */
-	protected $configuration = array();
 
-	/**
-	 * The callback method to handle the files when listing folder contents
-	 *
-	 * @var string
-	 */
-	protected $fileListCallbackMethod = 'getFileList_itemCallback';
-
-	/**
-	 * The callback method to handle the folders when listing folder contents
-	 *
-	 * @var string
-	 */
-	protected $folderListCallbackMethod = 'getFolderList_itemCallback';
 
 	/**
 	 * Initializes this object. This is called by the storage after the driver
@@ -111,6 +69,8 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 		// $this->determineBaseUrl();
 		// The capabilities of this driver. See CAPABILITY_* constants for possible values
 		$this->capabilities = \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_BROWSABLE | \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_PUBLIC | \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_WRITABLE;
+
+		$this->cache = $GLOBALS['typo3CacheManager']->getCache('tx_faldropbox_cache');
 
 		$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
 		$settings = $this->registry->get('fal_dropbox', 'config');
@@ -124,7 +84,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * Checks if a configuration is valid for this driver.
 	 * Throws an exception if a configuration will not work.
 	 *
-	 * @abstract
 	 * @param array $configuration
 	 * @return void
 	 */
@@ -154,7 +113,11 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	protected function getDirectoryItemList($path, $start, $numberOfItems, array $filterMethods, $itemHandlerMethod, $itemRows = array()) {
 		$folders = array();
 		$files = array();
-		$info = $this->dropbox->getMetaData($path);
+		$cacheKey = $this->getCacheIdentifierForPath($path);
+		if (!$info = $this->cache->get($cacheKey)) {
+			$info = $this->dropbox->getMetaData($path);
+			$this->cache->set($cacheKey, $info);
+		}
 		foreach($info['contents'] as $entry) {
 			if($entry['is_dir']) {
 				$folder['ctime'] = time();
@@ -184,35 +147,24 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 		return array();
 	}
 
-	/*******************
-	 * CAPABILITIES
-	 *******************/
 	/**
-	 * The capabilities of this driver. See Storage::CAPABILITY_* constants for possible values. This value should be set
-	 * in the constructor of derived classes.
+	 * Returns the cache identifier for a given path.
 	 *
-	 * @var integer
+	 * @param string $path
+	 * @return string
 	 */
-	protected $capabilities = 0;
-
-	/**
-	 * Returns the capabilities of this driver.
-	 *
-	 * @return integer
-	 * @see Storage::CAPABILITY_* constants
-	 */
-	public function getCapabilities() {
-		return $this->capabilities;
+	protected function getCacheIdentifierForPath($path) {
+		return sha1($this->storage->getUid() . ':' . trim($path, '/') . '/');
 	}
 
 	/**
-	 * Returns TRUE if this driver has the given capability.
+	 * Flushes the cache for a given path inside this storage.
 	 *
-	 * @param int $capability A capability, as defined in a CAPABILITY_* constant
-	 * @return boolean
+	 * @param $path
+	 * @return void
 	 */
-	public function hasCapability($capability) {
-		return $this->capabilities & $capability == $capability;
+	protected function removeCacheForPath($path) {
+		$this->cache->remove($this->getCacheIdentifierForPath($path));
 	}
 
 	/*******************
@@ -221,7 +173,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Returns the public URL to a file.
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resource
 	 * @param bool  $relativeToCurrentScript    Determines whether the URL returned should be relative to the current script, in case it is relative at all (only for the LocalDriver)
 	 * @return string
@@ -240,7 +191,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Creates a (cryptographic) hash for a file.
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $hashAlgorithm The hash algorithm to use
 	 * @return string
@@ -252,12 +202,12 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Creates a new file and returns the matching file object for it.
 	 *
-	 * @abstract
 	 * @param string $fileName
 	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
 	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function createFile($fileName, \TYPO3\CMS\Core\Resource\Folder $parentFolder) {
+		$this->removeCacheForPath($parentFolder->getIdentifier());
 		/*$fileIdentifier = $parentFolder->getIdentifier() . $fileName;
 		$fileUrl = $this->baseUrl . ltrim($fileIdentifier, '/');
 
@@ -290,7 +240,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @throws RuntimeException if the operation failed
 	 */
 	public function setFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file, $contents) {
-
+		$this->removeCacheForPath(dirname($file->getIdentifier()));
 	}
 
 	/**
@@ -309,7 +259,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 
 		$this->dropbox->putFile($fileIdentifier, $localFilePath);
 
-		//$this->removeCacheForPath($targetFolder->getIdentifier());
+		$this->removeCacheForPath($targetFolder->getIdentifier());
 
 		return $this->getFile($fileIdentifier);
 	}
@@ -336,7 +286,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Checks if a file exists.
 	 *
-	 * @abstract
 	 * @param string $identifier
 	 * @return boolean
 	 */
@@ -344,6 +293,9 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 		try {
 			$file = $this->dropbox->getMetaData($identifier, false);
 			if($file['is_dir']) {
+				return false;
+			}
+			if($file['is_deleted']) {
 				return false;
 			}
 		} catch(Exception $e) {
@@ -355,7 +307,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Checks if a file inside a storage folder exists.
 	 *
-	 * @abstract
 	 * @param string $fileName
 	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean
@@ -370,7 +321,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * Returns a (local copy of) a file for processing it. When changing the
 	 * file, you have to take care of replacing the current version yourself!
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param bool $writable Set this to FALSE if you only need the file for read operations. This might speed up things, e.g. by using a cached local version. Never modify the file if you have set this flag!
 	 * @return string The path to the file on the local disk
@@ -383,18 +333,16 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Returns the permissions of a file as an array (keys r, w) of boolean flags
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return array
 	 */
 	public function getFilePermissions(\TYPO3\CMS\Core\Resource\FileInterface $file) {
-
+		return array('r' => TRUE, 'w' => TRUE);
 	}
 
 	/**
 	 * Returns the permissions of a folder as an array (keys r, w) of boolean flags
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return array
 	 */
@@ -405,26 +353,27 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Renames a file
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @param string $newName
 	 * @return string The new identifier of the file if the operation succeeds
 	 * @throws RuntimeException if renaming the file failed
 	 */
 	public function renameFile(\TYPO3\CMS\Core\Resource\FileInterface $file, $newName) {
-
+		$sourcePath = $file->getIdentifier();
+		$targetPath = dirname($file->getIdentifier()) . '/' . $newName;
+		$this->dropbox->move($sourcePath, $targetPath);
+		$this->removeCacheForPath(dirname($file->getIdentifier()));
 	}
 
 	/**
 	 * Replaces the contents (and file-specific metadata) of a file object with a local file.
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\AbstractFile $file
 	 * @param string $localFilePath
 	 * @return boolean
 	 */
 	public function replaceFile(\TYPO3\CMS\Core\Resource\AbstractFile $file, $localFilePath) {
-
+		$this->removeCacheForPath(dirname($file->getIdentifier()));
 	}
 
 	/**
@@ -474,7 +423,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Copies a file to a temporary path and returns that path.
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return string The temporary path
 	 */
@@ -493,7 +441,12 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return string The new identifier of the file
 	 */
 	public function moveFileWithinStorage(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName) {
-
+		$sourcePath = $file->getIdentifier();
+		$targetPath = $targetFolder->getIdentifier() . $fileName;
+		$this->dropbox->move($sourcePath, $targetPath);
+		$this->removeCacheForPath(dirname($sourcePath));
+		$this->removeCacheForPath(dirname($targetPath));
+		return $targetFolder->getIdentifier() . $fileName;
 	}
 
 	/**
@@ -507,7 +460,11 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return \TYPO3\CMS\Core\Resource\FileInterface The new (copied) file object.
 	 */
 	public function copyFileWithinStorage(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName) {
-
+		$sourcePath = $file->getIdentifier();
+		$targetPath = $targetFolder->getIdentifier() . $fileName;
+		$this->dropbox->copy($sourcePath, $targetPath);
+		$this->removeCacheForPath(dirname($targetPath));
+		return $this->getFile($targetPath);
 	}
 
 	/**
@@ -539,12 +496,15 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * still used or if it is a bad idea to delete it for some other reason
 	 * this has to be taken care of in the upper layers (e.g. the Storage)!
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
 	 * @return boolean TRUE if deleting the file succeeded
 	 */
 	public function deleteFile(\TYPO3\CMS\Core\Resource\FileInterface $file) {
-
+		$status = $this->dropbox->delete($file->getIdentifier());
+		if($status['is_deleted']) {
+			$this->removeCacheForPath(dirname($file->getIdentifier()));
+			return true;
+		} else return false;
 	}
 
 	/**
@@ -555,13 +515,12 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean
 	 */
 	public function deleteFolder(\TYPO3\CMS\Core\Resource\Folder $folder, $deleteRecursively = FALSE) {
-
+		$this->removeCacheForPath(dirname($folder->getIdentifier()));
 	}
 
 	/**
 	 * Adds a file at the specified location. This should only be used internally.
 	 *
-	 * @abstract
 	 * @param string $localFilePath
 	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
 	 * @param string $targetFileName
@@ -580,7 +539,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * delete files that have no object associated with (or we don't want to
 	 * create an object for) them - e.g. when moving a file to another storage.
 	 *
-	 * @abstract
 	 * @param string $identifier
 	 * @return boolean TRUE if removing the file succeeded
 	 */
@@ -594,7 +552,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Returns the root level folder of the storage.
 	 *
-	 * @abstract
 	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getRootLevelFolder() {
@@ -604,7 +561,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Returns the default folder new files should be put into.
 	 *
-	 * @abstract
 	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getDefaultFolder() {
@@ -620,6 +576,12 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 */
 	public function createFolder($newFolderName, \TYPO3\CMS\Core\Resource\Folder $parentFolder) {
 		$this->dropbox->createFolder($newFolderName);
+		$this->removeCacheForPath($parentFolder->getIdentifier());
+
+		/** @var $factory \TYPO3\CMS\Core\Resource\ResourceFactory */
+		$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Core\Resource\ResourceFactory');
+		$folderPath = $parentFolder->getIdentifier() . $newFolderName . '/';
+		return $factory->createFolderObject($this->storage, $folderPath, $newFolderName);
 	}
 
 	/**
@@ -642,7 +604,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Checks if a file inside a storage folder exists.
 	 *
-	 * @abstract
 	 * @param string $folderName
 	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
 	 * @return boolean
@@ -669,7 +630,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * a file or folder is within another folder.
 	 * This can e.g. be used to check for webmounts.
 	 *
-	 * @abstract
 	 * @param \TYPO3\CMS\Core\Resource\Folder $container
 	 * @param mixed $content An object or an identifier to check
 	 * @return boolean TRUE if $content is within $container
@@ -686,16 +646,6 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 */
 	public function isFolderEmpty(\TYPO3\CMS\Core\Resource\Folder $folder) {
 
-	}
-
-	/**
-	 * Flushes the cache for a given path inside this storage.
-	 *
-	 * @param $path
-	 * @return void
-	 */
-	protected function removeCacheForPath($path) {
-		$this->directoryListingCache->remove($this->getCacheIdentifierForPath($path));
 	}
 }
 ?>
