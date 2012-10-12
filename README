@@ -19,12 +19,20 @@ INSTALL
 
 4.) Have fun with FAL Dropbox
 
-Hint:
-- fal_dropbox does not using caching for now...so it is very slow at the moment
+ToDo:
 - fal_dropbox can not create a new file. You only can upload a new file
+- rename folder
+- delete folder
+
+Done:
 - you can create folders
 - you can navigate through the folders
-- it's good to deactivate "show thunbnails", because we don't have a valid path to the images
-- nothing more tested. I don't believe that you can access the files with content elements because getFileContent was not filled with logic.
+- move files
+- copy files
+- create references to tt_content records
+- show image in popUp
+- rename file
+- creation of thumbs works
+- copy files to upload folder
 
 Stefan
