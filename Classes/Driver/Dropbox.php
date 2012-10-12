@@ -181,9 +181,27 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 		if ($this->storage->isPublic()) {
 			// as the storage is marked as public, we can simply use the public URL here.
 			if (is_object($resource)) {
-				return $this->baseUrl . ltrim($resource->getIdentifier(), '/');
+				if(TYPO3_MODE == 'BE') {
+					if (method_exists($resource, 'isProcessed') && $resource->isProcessed()) {
+						$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+						$file = $factory->retrieveFileOrFolderObject($resource->getStorage()->getUid() . ':' . $resource->getIdentifier());
+						$result = $this->dropbox->media('/_processed_/preview_' . $resource->calculateChecksum() . '.' . $file->getExtension());
+					} else {
+						$result = $this->dropbox->media($resource->getIdentifier());
+					}
+					return $result['url'];
+				} else {
+					$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+					$file = $factory->retrieveFileOrFolderObject($resource->getStorage()->getUid() . ':' . $resource->getIdentifier());
+
+					$id = sha1($file->getStorage()->getUid() . ':' . $file->getIdentifier());
+					$uploadPath = 'uploads/pics/fal-dropbox-' . $id . '.' . $file->getExtension();
+					file_put_contents(PATH_site . $uploadPath, $this->dropbox->getFile($resource->getIdentifier()));
+
+					return $uploadPath;
+				}
 			} else {
-				return $this->baseUrl . ltrim($resource, '/');
+				return '/';
 			}
 		}
 	}
@@ -196,7 +214,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return string
 	 */
 	public function hash(\TYPO3\CMS\Core\Resource\FileInterface $file, $hashAlgorithm) {
-		// hash
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
@@ -207,6 +225,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function createFile($fileName, \TYPO3\CMS\Core\Resource\Folder $parentFolder) {
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 		$this->removeCacheForPath($parentFolder->getIdentifier());
 		/*$fileIdentifier = $parentFolder->getIdentifier() . $fileName;
 		$fileUrl = $this->baseUrl . ltrim($fileIdentifier, '/');
@@ -228,7 +247,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return string The file contents
 	 */
 	public function getFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file) {
-
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
@@ -240,6 +259,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @throws RuntimeException if the operation failed
 	 */
 	public function setFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file, $contents) {
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 		$this->removeCacheForPath(dirname($file->getIdentifier()));
 	}
 
@@ -327,7 +347,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 */
 	// TODO decide if this should return a file handle object
 	public function getFileForLocalProcessing(\TYPO3\CMS\Core\Resource\FileInterface $file, $writable = TRUE) {
-
+		return $this->copyFileToTemporaryPath($file);
 	}
 
 	/**
@@ -373,6 +393,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean
 	 */
 	public function replaceFile(\TYPO3\CMS\Core\Resource\AbstractFile $file, $localFilePath) {
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 		$this->removeCacheForPath(dirname($file->getIdentifier()));
 	}
 
@@ -427,7 +448,12 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return string The temporary path
 	 */
 	public function copyFileToTemporaryPath(\TYPO3\CMS\Core\Resource\FileInterface $file) {
+		$id = sha1($file->getStorage()->getUid() . ':' . $file->getIdentifier());
+		$temporaryPath = PATH_site . 'typo3temp/fal-dropbox-' . $id . '.' . $file->getExtension();
+		$content = $this->dropbox->getFile($file->getIdentifier());
+		file_put_contents($temporaryPath, $content);
 
+		return $temporaryPath;
 	}
 
 	/**
@@ -476,7 +502,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return array A map of old to new file identifiers
 	 */
 	public function moveFolderWithinStorage(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newFolderName) {
-
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
@@ -488,7 +514,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean
 	 */
 	public function copyFolderWithinStorage(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newFileName) {
-
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
@@ -515,6 +541,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean
 	 */
 	public function deleteFolder(\TYPO3\CMS\Core\Resource\Folder $folder, $deleteRecursively = FALSE) {
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 		$this->removeCacheForPath(dirname($folder->getIdentifier()));
 	}
 
@@ -528,7 +555,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 */
 	// TODO check if this is still necessary if we move more logic to the storage
 	public function addFileRaw($localFilePath, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $targetFileName) {
-
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
@@ -543,7 +570,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean TRUE if removing the file succeeded
 	 */
 	public function deleteFileRaw($identifier) {
-
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/*******************
@@ -564,7 +591,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getDefaultFolder() {
-
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
@@ -622,7 +649,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @throws RuntimeException if renaming the folder failed
 	 */
 	public function renameFolder(\TYPO3\CMS\Core\Resource\Folder $folder, $newName) {
-
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
@@ -635,7 +662,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean TRUE if $content is within $container
 	 */
 	public function isWithin(\TYPO3\CMS\Core\Resource\Folder $container, $content) {
-
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
@@ -645,7 +672,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean TRUE if there are no files and folders within $folder
 	 */
 	public function isFolderEmpty(\TYPO3\CMS\Core\Resource\Folder $folder) {
-
+		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 }
 ?>
