@@ -185,7 +185,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 					if (method_exists($resource, 'isProcessed') && $resource->isProcessed()) {
 						$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 						$file = $factory->retrieveFileOrFolderObject($resource->getStorage()->getUid() . ':' . $resource->getIdentifier());
-						$result = $this->dropbox->media('/_processed_/preview_' . $resource->calculateChecksum() . '.' . $file->getExtension());
+						$result = $this->dropbox->media('/_processed_/' . $file->getNameWithoutExtension() . '.' . $file->getExtension());
 					} else {
 						$result = $this->dropbox->media($resource->getIdentifier());
 					}
@@ -214,7 +214,15 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return string
 	 */
 	public function hash(\TYPO3\CMS\Core\Resource\FileInterface $file, $hashAlgorithm) {
-		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
+		$fileCopy = $this->copyFileToTemporaryPath($file);
+
+		switch ($hashAlgorithm) {
+			case 'sha1':
+				return sha1_file($fileCopy);
+				break;
+		}
+
+		unlink($fileCopy);
 	}
 
 	/**
