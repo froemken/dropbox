@@ -104,6 +104,30 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	}
 
 	/**
+	 * get file or folder informations from cache or directly from dropbox
+	 *
+	 * @param string $path Path to receive information from
+	 * @param bool $list When set to true, this method returns information from all files in a directory. When set to false it will only return infromation from the specified directory.
+	 * @param string $hash If a hash is supplied, this method simply returns true if nothing has changed since the last request. Good for caching.
+	 * @param int $fileLimit Maximum number of file-information to receive
+	 * @param string $root Use this to override the default root path (sandbox/dropbox)
+	 * @return array file or folder informations
+	 */
+	public function getMetaData($path, $list = true, $hash = null, $fileLimit = null, $root = null) {
+		$cacheKey = $this->getCacheIdentifierForPath($path);
+		$info = $this->cache->get($cacheKey);
+		if (empty($info)) {
+			try{
+				$info = $this->dropbox->getMetaData($path, $list, $hash, $fileLimit, $root);
+			} catch(Exception $e) {
+				$info = array();
+			}
+			$this->cache->set($cacheKey, $info);
+		}
+		return $info;
+	}
+
+	/**
 	 * Generic handler method for directory listings - gluing together the
 	 * listing items is done
 	 *
@@ -118,11 +142,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	protected function getDirectoryItemList($path, $start, $numberOfItems, array $filterMethods, $itemHandlerMethod, $itemRows = array()) {
 		$folders = array();
 		$files = array();
-		$cacheKey = $this->getCacheIdentifierForPath($path);
-		if (!$info = $this->cache->get($cacheKey)) {
-			$info = $this->dropbox->getMetaData($path);
-			$this->cache->set($cacheKey, $info);
-		}
+		$info = $this->getMetaData($path);
 		foreach($info['contents'] as $entry) {
 			if($entry['is_dir']) {
 				$folder['ctime'] = time();
@@ -220,15 +240,11 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return string
 	 */
 	public function hash(\TYPO3\CMS\Core\Resource\FileInterface $file, $hashAlgorithm) {
-		$fileCopy = $this->copyFileToTemporaryPath($file);
-
 		switch ($hashAlgorithm) {
 			case 'sha1':
-				return sha1_file($fileCopy);
+				return sha1($file->getIdentifier());
 				break;
 		}
-
-		unlink($fileCopy);
 	}
 
 	/**
@@ -239,16 +255,21 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return \TYPO3\CMS\Core\Resource\File
 	 */
 	public function createFile($fileName, \TYPO3\CMS\Core\Resource\Folder $parentFolder) {
-		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
+		// get full target path incl. filename
+		$fileIdentifier = $parentFolder->getIdentifier() . $fileName;
+
+		// dropbox cannot create (touch) files. So we have to do this here.
+		$emptyTempFilePath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('empty');
+		$this->dropbox->putFile($fileIdentifier, $emptyTempFilePath);
+
+		// delete cache entries for current folder
 		$this->removeCacheForPath($parentFolder->getIdentifier());
-		/*$fileIdentifier = $parentFolder->getIdentifier() . $fileName;
-		$fileUrl = $this->baseUrl . ltrim($fileIdentifier, '/');
+		// delete cache entries for new file if exists
+		$this->removeCacheForPath($fileIdentifier);
 
-		$this->dropbox->putFile($parentFolder->getIdentifier(), $file);
+		unlink($emptyTempFilePath);
 
-		$this->removeCacheForPath($parentFolder->getIdentifier());
-
-		return $this->getFile($fileIdentifier);*/
+		return $this->getFile($fileIdentifier);
 	}
 
 	/**
@@ -261,7 +282,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return string The file contents
 	 */
 	public function getFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file) {
-		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
+		return $this->dropbox->getFile($file->getIdentifier());
 	}
 
 	/**
@@ -273,8 +294,15 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @throws RuntimeException if the operation failed
 	 */
 	public function setFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file, $contents) {
-		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
+		$tempPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('dropboxPutFile');
+		file_put_contents($tempPath, $contents);
+		$this->dropbox->putFile($file->getIdentifier(), $tempPath);
+		unlink($tempPath);
+
+		// remove cache for folder
 		$this->removeCacheForPath(dirname($file->getIdentifier()));
+		// the file was overwritten, so we have to remove the cache entry for the modified file too
+		$this->removeCacheForPath($file->getIdentifier());
 	}
 
 	/**
@@ -292,8 +320,12 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 		$fileIdentifier = $targetFolder->getIdentifier() . $fileName;
 
 		$this->dropbox->putFile($fileIdentifier, $localFilePath);
+		unlink($localFilePath);
 
+		// remove cache for folder
 		$this->removeCacheForPath($targetFolder->getIdentifier());
+		// maybe the file was overwritten, so it's better to remove the files cache too
+		$this->removeCacheForPath($fileIdentifier);
 
 		return $this->getFile($fileIdentifier);
 	}
@@ -305,16 +337,13 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean
 	 */
 	public function resourceExists($identifier) {
-		if ($identifier == '') {
+		if (empty($identifier)) {
 			throw new \InvalidArgumentException('Resource path cannot be empty');
 		}
-		try{
-			$info = $this->dropbox->getMetaData($identifier);
-			if($info['is_deleted']) return false;
-		} catch(Exception $e) {
+		$info = $this->getMetaData($identifier);
+		if ($info['is_deleted']) {
 			return false;
-		}
-		return true;
+		} else return true;
 	}
 
 	/**
@@ -324,15 +353,11 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean
 	 */
 	public function fileExists($identifier) {
-		try {
-			$file = $this->dropbox->getMetaData($identifier, false);
-			if($file['is_dir']) {
-				return false;
-			}
-			if($file['is_deleted']) {
-				return false;
-			}
-		} catch(Exception $e) {
+		$info = $this->getMetaData($identifier, false);
+		if($info['is_dir']) {
+			return false;
+		}
+		if($info['is_deleted']) {
 			return false;
 		}
 		return true;
@@ -396,7 +421,10 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 		$sourcePath = $file->getIdentifier();
 		$targetPath = dirname($file->getIdentifier()) . '/' . $newName;
 		$this->dropbox->move($sourcePath, $targetPath);
+		// remove cache for folder
 		$this->removeCacheForPath(dirname($file->getIdentifier()));
+		// remove cache for this file
+		$this->removeCacheForPath($file->getIdentifier());
 	}
 
 	/**
@@ -418,7 +446,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return array
 	 */
 	public function getFileInfoByIdentifier($identifier) {
-		$info = $this->dropbox->getMetaData($identifier, false);
+		$info = $this->getMetaData($identifier, false);
 		$fileInfo = array(
 			'mtime' => time(),
 			'ctime' => time(),
@@ -541,7 +569,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 */
 	public function deleteFile(\TYPO3\CMS\Core\Resource\FileInterface $file) {
 		$status = $this->dropbox->delete($file->getIdentifier());
-		if($status['is_deleted']) {
+		if ($status['is_deleted']) {
 			$this->removeCacheForPath(dirname($file->getIdentifier()));
 			return true;
 		} else return false;
@@ -632,14 +660,10 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return boolean
 	 */
 	public function folderExists($identifier) {
-		try {
-			$info = $this->dropbox->getMetaData($identifier);
-			if($info['is_dir']) {
-				return true;
-			} else return false;
-		} catch(Exception $e) {
-			return false;
-		}
+		$info = $this->getMetaData($identifier);
+		if($info['is_dir']) {
+			return true;
+		} else return false;
 	}
 
 	/**
