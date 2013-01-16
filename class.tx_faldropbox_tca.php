@@ -25,13 +25,21 @@
  ***************************************************************/
 
 /**
- *
- *
- * @package sfstefan
+ * @package fal_dropbox
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  *
  */
 class tx_faldropbox_tca {
+
+	/**
+	 * @var TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
+	 */
+	protected $contentObject;
+
+	/**
+	 * @var TYPO3\CMS\Backend\Form\FormEngine
+	 */
+	protected $formEngine;
 
 	/**
 	 * @var \TYPO3\CMS\Core\Registry
@@ -43,6 +51,23 @@ class tx_faldropbox_tca {
 	 */
 	protected $oauth;
 
+	protected $parentArray = array();
+	protected $configuration = array();
+	protected $error = '';
+	protected $flexformOptions = array(
+		'parentTagMap' => array(
+			'data' => 'sheet',
+			'sheet' => 'language',
+			'language' => 'field',
+			'el' => 'field',
+			'field' => 'value',
+			'field:el' => 'el',
+			'el:_IS_NUM' => 'section',
+			'section' => 'itemType'
+		),
+		'disableTypeAttrib' => 2
+	);
+
 
 
 
@@ -50,79 +75,189 @@ class tx_faldropbox_tca {
 	/**
 	 * initializes this object
 	 *
-	 * @param array $config
+	 * @param array $parentArray
+	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
 	 */
-	public function initialization(array $config) {
+	protected function initialize(array $parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
+		$this->parentArray = $parentArray;
+		$this->formEngine = $formEngine;
+		$this->configuration = $this->getConfiguration();
+		$this->contentObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 		$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
-		$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_OAuth_PEAR', $config['appKey'], $config['appSecret']);
+		//$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_OAuth_PEAR', $config['appKey'], $config['appSecret']);
 	}
 
 	/**
 	 * show informations about dropbox authentication
 	 *
-	 * @param array $PA
-	 * @param array $fObj
+	 * @param array $parentArray
+	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
 	 * @return string
 	 */
-	public function dropboxLink($PA, $fObj) {
-		$config = $this->getConfiguration($PA);
-		if(empty($config['appKey'])) return '<div>You have to set App key first and save the record.</div>';
-		if(empty($config['appSecret'])) return '<div>You have to set App key first and save the record.</div>';
-		if(empty($config['accessType'])) return '<div>You have to save this record first.</div>';
-		$this->initialization($config);
-
-		$settings = $this->registry->get('fal_dropbox', 'config');
-		if(empty($settings)) {
-			// create a new request which the user have to apply
-			$settings['requestToken'] = $this->oauth->getRequestToken();
-
-			$settings['appKey'] = $config['appKey'];
-			$settings['appSecret'] = $config['appSecret'];
-			$settings['accessType'] = $config['accessType'];
-			$this->registry->set('fal_dropbox', 'config', $settings);
-
-			return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank">Connect App with your Dropbox account</a></div>';
-		} elseif(empty($settings['requestToken'])) {
-			// create a new request which the user have to apply
-			$settings['requestToken'] = $this->oauth->getRequestToken();
-			$this->registry->set('fal_dropbox', 'config', $settings);
-
-			return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank">Connect App with your Dropbox account</a></div>';
-		} elseif(empty($settings['accessToken'])) {
-			// ok now we can try to access the real access token
-			$this->oauth->setToken($settings['requestToken']);
-			try {
-				$settings['accessToken'] = $this->oauth->getAccessToken();
-				$this->registry->set('fal_dropbox', 'config', $settings);
-			} catch(Exception $e) {
-				// create a new request which the user have to apply
-				$settings['requestToken'] = $this->oauth->getRequestToken();
-				$this->registry->set('fal_dropbox', 'config', $settings);
-				return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank">Connect App with your Dropbox account</a></div>';
-			}
-		} else {
-			$this->oauth->setToken($settings['accessToken']);
+	public function dropboxLink($parentArray, $formEngine) {
+		$this->initialize($parentArray, $formEngine);
+		if (!$this->checkConfiguration()) {
+			return $this->error;
 		}
 
-		return '<div style="color: green;">You\'re now authenticated to your dropbox account</div>';
+		$settings = $this->registry->get('fal_dropbox', 'settings');
+		if (empty($settings['requestToken'])) {
+			return 'Something went wrong. Please try to save again. Normally a new request token should be generated.';
+		}
+		$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+			'Dropbox_OAuth_PEAR',
+			$settings['appKey'],
+			$settings['appSecret']
+		);
+
+		if (!empty($settings['accessToken'])) {
+			$this->oauth->setToken($settings['accessToken']['token'], $settings['accessToken']['token_secret']);
+			return '<div style="color: green;">You\'re now authenticated to your dropbox account</div>';
+		} else {
+			$this->oauth->setToken($settings['requestToken']['token'], $settings['requestToken']['token_secret']);
+			// as long as the user has not clicked the link, this method will throw an exception
+			try {
+				$settings['accessToken'] = $this->oauth->getAccessToken();
+				$this->registry->set('fal_dropbox', 'settings', $settings);
+				return '<div style="color: green;">You\'re now authenticated to your dropbox account</div>';
+			} catch(\Exception $e) {
+				return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank" style="text-decoration: underline;">Connect App with your Dropbox account</a></div>';
+			}
+			return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank" style="text-decoration: underline;">Connect App with your Dropbox account</a></div>';
+		}
 	}
 
 	/**
 	 * get configuration
 	 *
-	 * @param array $PA
 	 * @return array
 	 */
-	public function getConfiguration($PA) {
+	public function getConfiguration() {
 		$config = array();
-		if ($PA['row']['configuration']) {
-			$xmlArray = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array($PA['row']['configuration']);
+		if ($this->parentArray['row']['configuration']) {
+			$xmlArray = \TYPO3\CMS\Core\Utility\GeneralUtility::xml2array(
+				$this->parentArray['row']['configuration']
+			);
 			foreach ($xmlArray['data']['sDEF']['lDEF'] as $key => $value) {
 				$config[$key] = $value['vDEF'];
 			}
 		}
-
 		return $config;
+	}
+
+	/**
+	 * check given flexform configuration
+	 *
+	 * @return boolean
+	 */
+	public function checkConfiguration() {
+		if(empty($this->configuration['appKey'])) {
+			$this->error = '<div>You have to set App key first and save the record.</div>';
+			return false;
+		}
+		if(empty($this->configuration['appSecret'])) {
+			$this->error = '<div>You have to set App key first and save the record.</div>';
+			return false;
+		}
+		if(empty($this->configuration['accessType'])) {
+			$this->error = '<div>You have to save this record first.</div>';
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * get requestToken
+	 *
+	 * @param array $parentArray
+	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
+	 * @return string
+	 */
+	public function getRequestToken($parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
+		$this->initialize($parentArray, $formEngine);
+		if (!$this->checkConfiguration()) {
+			return $this->error;
+		}
+		$settings = $this->registry->get('fal_dropbox', 'settings');
+
+		// remove cache entry if tokens have changed
+		if ($settings['appKey'] != $this->configuration['appKey'] || $settings['appSecret'] != $this->configuration['appSecret']) {
+			$this->registry->remove('fal_dropbox', 'settings');
+		}
+
+		$settings = $this->registry->get('fal_dropbox', 'settings');
+
+		// generate a token if never have done
+		if (empty($settings['requestToken'])) {
+			$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+				'Dropbox_OAuth_PEAR',
+				$this->configuration['appKey'],
+				$this->configuration['appSecret']
+			);
+			// getRequestToken crashes if token and secret are not valid
+			try {
+				$requestToken = $this->oauth->getRequestToken();
+			} catch(Exception $e) {
+				return '<div style="color: red;">The access key or the access secret is not corrent</div>';
+			}
+			$settings = $this->configuration;
+			$settings['requestToken'] = $requestToken;
+			$this->registry->set('fal_dropbox', 'settings', $settings);
+		}
+		return $this->renderRequestToken($settings['requestToken']);
+	}
+
+	/**
+	 * render array as table
+	 *
+	 * @param array $requestToken
+	 * @return string
+	 */
+	public function renderRequestToken($requestToken) {
+		if (!is_array($requestToken)) return '';
+
+		$content = '';
+		$table = '<table>|</table>';
+		$tableRow = '<tr>|</tr>';
+		$tableCol = '<td>|</td>';
+
+		foreach ($requestToken as $key => $value) {
+			$key = $this->contentObject->wrap($key, $tableCol);
+			$value = $this->contentObject->wrap($value, $tableCol);
+			$content .= $this->contentObject->wrap($key . $value, $tableRow);
+		}
+
+		return $this->contentObject->wrap($content, $table);
+	}
+
+	/**
+	 * clear cache
+	 *
+	 * @param array $parentArray
+	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
+	 * @return string
+	 */
+	public function clearCache($parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
+		$this->initialize($parentArray, $formEngine);
+		if (!$this->checkConfiguration()) {
+			return $this->error;
+		}
+		$url = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'index.php?eID=falDropboxClearRegistry';
+		$this->formEngine->additionalJS_post[] = '
+			TYPO3.jQuery( "#falDropboxClearCache" ).click( function() {
+				TYPO3.jQuery.ajax({
+					type: "POST",
+					url: "' . $url . '",
+					success: function() {
+						TYPO3.jQuery( "#falDropboxClearCache" ).css( "background", "#00FF00" );
+						TYPO3.jQuery( "#falDropboxClearCache" ).text( "Cache was cleared, please save or reload this frame to generate new tokens" );
+					}
+				});
+			});
+		';
+		return '
+			<span id="falDropboxClearCache" style="cursor: pointer; border: 1px solid #000000; padding: 5px 10px; background: #FF7777;">Click to clear Cache</div>
+		';
 	}
 }
 ?>

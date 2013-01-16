@@ -13,4 +13,5 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['fal_dropbox'] = 
 if (!is_array($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tx_faldropbox_cache'])) {
     $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['tx_faldropbox_cache'] = array();
 }
+$TYPO3_CONF_VARS['FE']['eID_include']['falDropboxClearRegistry'] = 'EXT:fal_dropbox/Classes/Ajax/ClearRegistry.php';
 ?>

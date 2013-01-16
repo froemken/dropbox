@@ -29,21 +29,16 @@ require_once t3lib_extMgm::extPath('fal_dropbox', 'Classes/Dropbox/autoload.php'
 /**
  *
  * @author Stefan Froemken <firma@sfroemken.de>
- * @package sfstefan
+ * @package fal_dropbox
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  *
  */
 class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\AbstractDriver {
 
 	/**
-	 * @var Dropbox_API
+	 * @var Tx_Extbase_Object_ObjectManagerInterface
 	 */
-	protected $dropbox;
-
-	/**
-	 * @var Dropbox_OAuth_PHP
-	 */
-	protected $oauth;
+	protected $objectManager;
 
 	/**
 	 * @var \TYPO3\CMS\Core\Registry
@@ -54,6 +49,18 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @var \TYPO3\CMS\Core\Cache\Frontend\AbstractFrontend
 	 */
 	protected $cache;
+
+	/**
+	 * @var Dropbox_OAuth_PHP
+	 */
+	protected $oAuth;
+
+	/**
+	 * @var Dropbox_API
+	 */
+	protected $dropbox;
+
+	protected $settings = array();
 
 
 
@@ -66,18 +73,16 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return void
 	 */
 	public function initialize() {
-		// $this->determineBaseUrl();
-		// The capabilities of this driver. See CAPABILITY_* constants for possible values
-		$this->capabilities = \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_BROWSABLE | \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_PUBLIC | \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_WRITABLE;
-
+		$this->capabilities = \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_BROWSABLE
+			+ \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_PUBLIC
+			+ \TYPO3\CMS\Core\Resource\ResourceStorage::CAPABILITY_WRITABLE;
 		$this->cache = $GLOBALS['typo3CacheManager']->getCache('tx_faldropbox_cache');
-
-		$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
-		$settings = $this->registry->get('fal_dropbox', 'config');
-
-		$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_OAuth_PEAR', $settings['appKey'], $settings['appSecret']);
-		$this->oauth->setToken($settings['accessToken']);
-		$this->dropbox = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_API', $this->oauth, 'sandbox');
+		$this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$this->registry = $this->objectManager->get('TYPO3\\CMS\\Core\\Registry');
+		$this->settings = $this->registry->get('fal_dropbox', 'settings');
+		$this->oAuth = $this->objectManager->get('Dropbox_OAuth_PEAR', $this->settings['appKey'], $this->settings['appSecret']);
+		$this->oAuth->setToken($this->settings['accessToken']);
+		$this->dropbox = $this->objectManager->get('Dropbox_API', $this->oAuth, 'sandbox');
 	}
 
 	/**
@@ -185,7 +190,8 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 					if (method_exists($resource, 'isProcessed') && $resource->isProcessed()) {
 						$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 						$file = $factory->retrieveFileOrFolderObject($resource->getStorage()->getUid() . ':' . $resource->getIdentifier());
-						$result = $this->dropbox->media('/_processed_/' . $file->getNameWithoutExtension() . '.' . $file->getExtension());
+						$processingFolder = $this->storage->getProcessingFolder()->getIdentifier();
+						$result = $this->dropbox->media($processingFolder . $file->getNameWithoutExtension() . '.' . $file->getExtension());
 					} else {
 						$result = $this->dropbox->media($resource->getIdentifier());
 					}
