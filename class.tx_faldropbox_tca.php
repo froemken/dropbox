@@ -259,5 +259,25 @@ class tx_faldropbox_tca {
 			<span id="falDropboxClearCache" style="cursor: pointer; border: 1px solid #000000; padding: 5px 10px; background: #FF7777;">Click to clear Cache</div>
 		';
 	}
+
+	/**
+	 * test dropbox
+	 *
+	 * @param array $parentArray
+	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
+	 * @return string
+	 */
+	public function testDropbox($parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
+		$this->initialize($parentArray, $formEngine);
+		if (!$this->checkConfiguration()) {
+			return $this->error;
+		}
+
+		$oAuth = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_FalDropbox_Auth_OAuth');
+		$oAuth->init();
+		$oAuth->setKeys($this->configuration['appKey'], $this->configuration['appSecret']);
+
+		return $this->renderRequestToken($oAuth->getRequestToken());
+	}
 }
 ?>

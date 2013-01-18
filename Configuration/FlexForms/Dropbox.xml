@@ -56,15 +56,6 @@
 					</config>
 				</TCEforms>
 			</requestToken>
-			<dropboxLink>
-				<TCEforms>
-					<label>Dropbox Link</label>
-					<config>
-						<type>user</type>
-						<userFunc>EXT:fal_dropbox/class.tx_faldropbox_tca.php:tx_faldropbox_tca->dropboxLink</userFunc>
-					</config>
-				</TCEforms>
-			</dropboxLink>
 			<clearCache>
 				<TCEforms>
 					<label>If you have problems with the tokens or the tokens runs out of time you have to generate a new request token. To do so you have to clear the cache (An entry of table "sys_registry" will be deleted). After clearing the cache you have to connect to drobbox again (pushing the link).</label>
@@ -74,6 +65,15 @@
 					</config>
 				</TCEforms>
 			</clearCache>
+			<testDropbox>
+				<TCEforms>
+					<label>This is for me to test dropbox connection</label>
+					<config>
+						<type>user</type>
+						<userFunc>EXT:fal_dropbox/class.tx_faldropbox_tca.php:tx_faldropbox_tca->testDropbox</userFunc>
+					</config>
+				</TCEforms>
+			</testDropbox>
 		</el>
 	</ROOT>
 </T3DataStructure>

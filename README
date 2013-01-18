@@ -3,7 +3,8 @@ It extends FAL to connect to your dropbox account in file list module
 
 INSTALL
 
-1.) Install and activate fal_dropbox extension
+1.) Install and activate fal_dropbox extension in Ext-Manager
+2.) Maybe it's a TYPO3-Core Bug. But after installing this extension you have to compare your datebase in INSTALL_TOOL
 2.) Create a new file storage record on pid 0 called "Dropbox"
 3.) On Tab "Configuration" choose "Dropbox". FlexForm reloads
 3a.) GoTo: https://www.dropbox.com/developers
@@ -20,9 +21,10 @@ INSTALL
 4.) Have fun with FAL Dropbox
 
 ToDo:
-- fal_dropbox can not create a new file. You only can upload a new file
 - rename folder
 - delete folder
+- it would be cool to remove all the big packages like oauth, HTTP_Request2 and so on
+--> I tried to change HTTP_Request with my own little Request-Object (fsockopen)
 
 Done:
 - you can create folders
