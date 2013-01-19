@@ -42,6 +42,11 @@ class tx_faldropbox_tca {
 	protected $formEngine;
 
 	/**
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+	 */
+	protected $objectManager;
+
+	/**
 	 * @var \TYPO3\CMS\Core\Registry
 	 */
 	protected $registry;
@@ -79,12 +84,12 @@ class tx_faldropbox_tca {
 	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
 	 */
 	protected function initialize(array $parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
+		$this->objectManager = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		$this->parentArray = $parentArray;
 		$this->formEngine = $formEngine;
 		$this->configuration = $this->getConfiguration();
-		$this->contentObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
-		$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
-		//$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_OAuth_PEAR', $config['appKey'], $config['appSecret']);
+		$this->contentObject = $this->objectManager->create('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
+		$this->registry = $this->objectManager->get('TYPO3\\CMS\\Core\\Registry');
 	}
 
 	/**
@@ -104,7 +109,7 @@ class tx_faldropbox_tca {
 		if (empty($settings['requestToken'])) {
 			return 'Something went wrong. Please try to save again. Normally a new request token should be generated.';
 		}
-		$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+		$this->oauth = $this->objectManager->create(
 			'Dropbox_OAuth_PEAR',
 			$settings['appKey'],
 			$settings['appSecret']
@@ -152,17 +157,17 @@ class tx_faldropbox_tca {
 	public function checkConfiguration() {
 		if(empty($this->configuration['appKey'])) {
 			$this->error = '<div>You have to set App key first and save the record.</div>';
-			return false;
+			return FALSE;
 		}
 		if(empty($this->configuration['appSecret'])) {
 			$this->error = '<div>You have to set App key first and save the record.</div>';
-			return false;
+			return FALSE;
 		}
 		if(empty($this->configuration['accessType'])) {
 			$this->error = '<div>You have to save this record first.</div>';
-			return false;
+			return FALSE;
 		}
-		return true;
+		return TRUE;
 	}
 
 	/**
@@ -188,7 +193,7 @@ class tx_faldropbox_tca {
 
 		// generate a token if never have done
 		if (empty($settings['requestToken'])) {
-			$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+			$this->oauth = $this->objectManager->create(
 				'Dropbox_OAuth_PEAR',
 				$this->configuration['appKey'],
 				$this->configuration['appSecret']
@@ -272,7 +277,7 @@ class tx_faldropbox_tca {
 			return $this->error;
 		}
 
-		$oAuth = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_FalDropbox_Auth_OAuth');
+		$oAuth = $this->objectManager->create('Tx_FalDropbox_Auth_OAuth');
 		$oAuth->init();
 		$oAuth->setKeys($this->configuration['appKey'], $this->configuration['appSecret']);
 
