@@ -21,8 +21,8 @@
  * @link      http://github.com/jeffhodsdon/HTTP_OAuth
  */
 
-require_once t3lib_extMgm::extPath('fal_dropbox') . 'Classes/OAuth/OAuth/Message.php';
-require_once t3lib_extMgm::extPath('fal_dropbox') . 'Classes/OAuth/OAuth/Exception.php';
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fal_dropbox') . 'Classes/OAuth/OAuth/Message.php';
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fal_dropbox') . 'Classes/OAuth/OAuth/Exception.php';
 require_once 'HTTP/Request2/Response.php';
 
 /**

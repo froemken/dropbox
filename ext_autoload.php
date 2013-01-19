@@ -1,5 +1,5 @@
 <?php
-$extpath = t3lib_extMgm::extPath('fal_dropbox');
+$extpath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fal_dropbox');
 return array(
 	'http_oauth' => $extpath . 'Classes/OAuth/OAuth.php',
 	'http_oauth_consumer' => $extpath . 'Classes/OAuth/OAuth/Consumer.php',

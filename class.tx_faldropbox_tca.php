@@ -123,7 +123,6 @@ class tx_faldropbox_tca {
 			} catch(\Exception $e) {
 				return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank" style="text-decoration: underline;">Connect App with your Dropbox account</a></div>';
 			}
-			return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank" style="text-decoration: underline;">Connect App with your Dropbox account</a></div>';
 		}
 	}
 

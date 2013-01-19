@@ -21,7 +21,7 @@
  * @link      http://github.com/jeffhodsdon/HTTP_OAuth
  */
 
-require_once t3lib_extMgm::extPath('fal_dropbox') . 'Classes/OAuth/OAuth.php';
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fal_dropbox') . 'Classes/OAuth/OAuth.php';
 
 /**
  * HTTP_OAuth_Signature
@@ -54,7 +54,7 @@ abstract class HTTP_OAuth_Signature
         $file   = str_replace('_', '/', $method) . '.php';
 
         //include_once $file;
-				require_once t3lib_extMgm::extPath('fal_dropbox') . 'Classes/OAuth/OAuth/Signature/' . $file;
+				require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fal_dropbox') . 'Classes/OAuth/OAuth/Signature/' . $file;
 
         if (class_exists($class) === false) {
             throw new InvalidArgumentException('No such signature class');

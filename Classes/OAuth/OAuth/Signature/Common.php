@@ -21,7 +21,7 @@
  * @link      http://github.com/jeffhodsdon/HTTP_OAuth
  */
 
-require_once t3lib_extMgm::extPath('fal_dropbox') . 'Classes/OAuth/OAuth.php';
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fal_dropbox') . 'Classes/OAuth/OAuth.php';
 
 /**
  * HTTP_OAuth_Signature_Common
