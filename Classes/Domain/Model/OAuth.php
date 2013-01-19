@@ -48,8 +48,23 @@ class Tx_FalDropbox_Domain_Model_OAuth {
 	protected $oAuthConsumerKeySecret = '';
 
 	/**
+	 * oAuthRequestToken
+	 *
+	 * @var string
+	 */
+	protected $oAuthRequestToken = '';
+
+	/**
+	 * oAuthRequestTokenSecret
+	 *
+	 * @var string
+	 */
+	protected $oAuthRequestTokenSecret = '';
+
+	/**
 	 * oAuthNonce (A unique string)
 	 *
+	 * @link http://oauth.net/core/1.0a/#nonce
 	 * @var string
 	 */
 	protected $oAuthNonce = '';
@@ -64,6 +79,7 @@ class Tx_FalDropbox_Domain_Model_OAuth {
 	/**
 	 * oAuthTimestamp (current)
 	 *
+	 * @link http://oauth.net/core/1.0a/#nonce
 	 * @var string
 	 */
 	protected $oAuthTimestamp = '';
@@ -105,6 +121,42 @@ class Tx_FalDropbox_Domain_Model_OAuth {
 	}
 
 	/**
+	 * setter for oAuthRequestToken
+	 *
+	 * @param string $oAuthRequestToken
+	 */
+	public function setOAuthRequestToken($oAuthRequestToken) {
+		$this->oAuthRequestToken = $oAuthRequestToken;
+	}
+
+	/**
+	 * getter for oAuthRequestToken
+	 *
+	 * @return string
+	 */
+	public function getOAuthRequestToken() {
+		return $this->oAuthRequestToken;
+	}
+
+	/**
+	 * setter for oAuthRequestTokenSecret
+	 *
+	 * @param string $oAuthRequestTokenSecret
+	 */
+	public function setOAuthRequestTokenSecret($oAuthRequestTokenSecret) {
+		$this->oAuthRequestTokenSecret = $oAuthRequestTokenSecret;
+	}
+
+	/**
+	 * getter for oAuthRequestTokenSecret
+	 *
+	 * @return string
+	 */
+	public function getOAuthRequestTokenSecret() {
+		return $this->oAuthRequestTokenSecret;
+	}
+
+	/**
 	 * setter for oAuthConsumerKeySecret
 	 *
 	 * @param string $oAuthConsumerKeySecret
@@ -138,7 +190,7 @@ class Tx_FalDropbox_Domain_Model_OAuth {
 	 */
 	public function getOAuthNonce() {
 		if (empty($this->oAuthNonce)) {
-			$this->setOAuthNonce(md5(microtime(true) . rand(1,999)));
+			$this->setOAuthNonce(md5($this->getOAuthTimestamp() . rand(1,999)));
 		}
 		return $this->oAuthNonce;
 	}

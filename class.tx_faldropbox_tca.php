@@ -32,24 +32,19 @@
 class tx_faldropbox_tca {
 
 	/**
+	 * @var Tx_FalDropbox_Auth_OAuth
+	 */
+	protected $oAuth;
+
+	/**
 	 * @var TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
 	 */
 	protected $contentObject;
 
 	/**
-	 * @var TYPO3\CMS\Backend\Form\FormEngine
-	 */
-	protected $formEngine;
-
-	/**
 	 * @var \TYPO3\CMS\Core\Registry
 	 */
 	protected $registry;
-
-	/**
-	 * @var Dropbox_OAuth_PEAR
-	 */
-	protected $oauth;
 
 	protected $parentArray = array();
 	protected $configuration = array();
@@ -76,15 +71,14 @@ class tx_faldropbox_tca {
 	 * initializes this object
 	 *
 	 * @param array $parentArray
-	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
+	 * @return void
 	 */
-	protected function initialize(array $parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
+	protected function initialize(array $parentArray) {
 		$this->parentArray = $parentArray;
-		$this->formEngine = $formEngine;
 		$this->configuration = $this->getConfiguration();
 		$this->contentObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
 		$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
-		//$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Dropbox_OAuth_PEAR', $config['appKey'], $config['appSecret']);
+		$this->oAuth = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_FalDropbox_Auth_OAuth')->init();
 	}
 
 	/**
@@ -94,8 +88,8 @@ class tx_faldropbox_tca {
 	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
 	 * @return string
 	 */
-	public function dropboxLink($parentArray, $formEngine) {
-		$this->initialize($parentArray, $formEngine);
+	public function dropboxLink($parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
+		$this->initialize($parentArray);
 		if (!$this->checkConfiguration()) {
 			return $this->error;
 		}
@@ -104,26 +98,23 @@ class tx_faldropbox_tca {
 		if (empty($settings['requestToken'])) {
 			return 'Something went wrong. Please try to save again. Normally a new request token should be generated.';
 		}
-		$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-			'Dropbox_OAuth_PEAR',
-			$settings['appKey'],
-			$settings['appSecret']
-		);
+		$this->oAuth->setKeys($settings['appKey'], $settings['appSecret']);
 
 		if (!empty($settings['accessToken'])) {
-			$this->oauth->setToken($settings['accessToken']['token'], $settings['accessToken']['token_secret']);
+			$this->oAuth->setRequestToken($settings['accessToken']['token'], $settings['accessToken']['token_secret']);
 			return '<div style="color: green;">You\'re now authenticated to your dropbox account</div>';
 		} else {
-			$this->oauth->setToken($settings['requestToken']['token'], $settings['requestToken']['token_secret']);
-			// as long as the user has not clicked the link, this method will throw an exception
-			try {
-				$settings['accessToken'] = $this->oauth->getAccessToken();
+			$this->oAuth->setRequestToken($settings['requestToken']['token'], $settings['requestToken']['token_secret']);
+			$accessToken = $this->oAuth->getAccessToken();
+			if ($accessToken) {
+				// to be compatible with original oAuth-PEAR package we rename the keys here
+				$settings['accessToken']['token'] = $accessToken['oauth_token'];
+				$settings['accessToken']['token_secret'] = $accessToken['oauth_token_secret'];
 				$this->registry->set('fal_dropbox', 'settings', $settings);
 				return '<div style="color: green;">You\'re now authenticated to your dropbox account</div>';
-			} catch(\Exception $e) {
-				return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank" style="text-decoration: underline;">Connect App with your Dropbox account</a></div>';
+			} else {
+				return '<div>Link: <a href="' . $this->oAuth->getAuthorizeUrl() . '" target="_blank" style="text-decoration: underline;">Connect App with your Dropbox account</a></div>';
 			}
-			return '<div>Link: <a href="' . $this->oauth->getAuthorizeUrl() . '" target="_blank" style="text-decoration: underline;">Connect App with your Dropbox account</a></div>';
 		}
 	}
 
@@ -174,7 +165,7 @@ class tx_faldropbox_tca {
 	 * @return string
 	 */
 	public function getRequestToken($parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
-		$this->initialize($parentArray, $formEngine);
+		$this->initialize($parentArray);
 		if (!$this->checkConfiguration()) {
 			return $this->error;
 		}
@@ -183,25 +174,17 @@ class tx_faldropbox_tca {
 		// remove cache entry if tokens have changed
 		if ($settings['appKey'] != $this->configuration['appKey'] || $settings['appSecret'] != $this->configuration['appSecret']) {
 			$this->registry->remove('fal_dropbox', 'settings');
+			$settings = $this->registry->get('fal_dropbox', 'settings');
 		}
-
-		$settings = $this->registry->get('fal_dropbox', 'settings');
 
 		// generate a token if never have done
 		if (empty($settings['requestToken'])) {
-			$this->oauth = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-				'Dropbox_OAuth_PEAR',
-				$this->configuration['appKey'],
-				$this->configuration['appSecret']
-			);
-			// getRequestToken crashes if token and secret are not valid
-			try {
-				$requestToken = $this->oauth->getRequestToken();
-			} catch(Exception $e) {
-				return '<div style="color: red;">The access key or the access secret is not corrent</div>';
-			}
+			$this->oAuth->setKeys($this->configuration['appKey'], $this->configuration['appSecret']);
 			$settings = $this->configuration;
-			$settings['requestToken'] = $requestToken;
+			$requestToken = $this->oAuth->getRequestToken();
+			// to be compatible with original oAuth-PEAR package we rename the keys here
+			$settings['requestToken']['token'] = $requestToken['oauth_token'];
+			$settings['requestToken']['token_secret'] = $requestToken['oauth_token_secret'];
 			$this->registry->set('fal_dropbox', 'settings', $settings);
 		}
 		return $this->renderRequestToken($settings['requestToken']);
@@ -237,13 +220,13 @@ class tx_faldropbox_tca {
 	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
 	 * @return string
 	 */
-	public function clearCache($parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
-		$this->initialize($parentArray, $formEngine);
+	public function clearCache($parentArray, TYPO3\CMS\Backend\Form\FormEngine &$formEngine) {
+		$this->initialize($parentArray);
 		if (!$this->checkConfiguration()) {
 			return $this->error;
 		}
 		$url = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . 'index.php?eID=falDropboxClearRegistry';
-		$this->formEngine->additionalJS_post[] = '
+		$formEngine->additionalJS_post[] = '
 			TYPO3.jQuery( "#falDropboxClearCache" ).click( function() {
 				TYPO3.jQuery.ajax({
 					type: "POST",
@@ -258,26 +241,6 @@ class tx_faldropbox_tca {
 		return '
 			<span id="falDropboxClearCache" style="cursor: pointer; border: 1px solid #000000; padding: 5px 10px; background: #FF7777;">Click to clear Cache</div>
 		';
-	}
-
-	/**
-	 * test dropbox
-	 *
-	 * @param array $parentArray
-	 * @param TYPO3\CMS\Backend\Form\FormEngine $formEngine
-	 * @return string
-	 */
-	public function testDropbox($parentArray, TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
-		$this->initialize($parentArray, $formEngine);
-		if (!$this->checkConfiguration()) {
-			return $this->error;
-		}
-
-		$oAuth = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_FalDropbox_Auth_OAuth');
-		$oAuth->init();
-		$oAuth->setKeys($this->configuration['appKey'], $this->configuration['appSecret']);
-
-		return $this->renderRequestToken($oAuth->getRequestToken());
 	}
 }
 ?>

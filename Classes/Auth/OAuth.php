@@ -40,6 +40,8 @@ class Tx_FalDropbox_Auth_OAuth {
 
 	/**
 	 * initializes this class
+	 *
+	 * @return Tx_FalDropbox_Auth_OAuth
 	 */
 	public function init() {
 		$objectManager = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Extbase_Object_ObjectManager');
@@ -48,11 +50,20 @@ class Tx_FalDropbox_Auth_OAuth {
 		// maybe it's good to move them into extConf
 		$this->oAuth->setLinks(array(
 			'request_token'=>'https://api.dropbox.com/1/oauth/request_token',
-			'authorize'=>'https://www.linkedin.com/uas/oauth/authorize',
-			'access_token'=>'https://api.linkedin.com/uas/oauth/accessToken'
+			'authorize'=>'https://www.dropbox.com/1/oauth/authorize',
+			'access_token'=>'https://api.dropbox.com/1/oauth/access_token'
 		));
+
+		return $this;
 	}
 
+	/**
+	 * set app keys
+	 *
+	 * @param string $appKey
+	 * @param string $appKeySecret
+	 * @return void
+	 */
 	public function setKeys($appKey, $appKeySecret) {
 		$this->oAuth->setOAuthConsumerKey($appKey);
 		$this->oAuth->setOAuthConsumerKeySecret($appKeySecret);
@@ -72,6 +83,10 @@ class Tx_FalDropbox_Auth_OAuth {
 			'oauth_timestamp' => $this->oAuth->getOAuthTimestamp(),
 			'oauth_version' => $this->oAuth->getOAuthVersion()
 		);
+		if ($this->oAuth->getOAuthRequestToken()) {
+			$parameters['oauth_token'] = $this->oAuth->getOAuthRequestToken();
+			$parameters['oauth_verifier'] = '';
+		}
 		ksort($parameters);
 		if ($withSignature) {
 			$parameters['oauth_signature'] = $this->getSignature();
@@ -86,6 +101,9 @@ class Tx_FalDropbox_Auth_OAuth {
 	 */
 	public function getSignature() {
 		$key = $this->urlencode($this->oAuth->getOAuthConsumerKeySecret()) . '&';
+		if ($this->oAuth->getOAuthRequestTokenSecret()) {
+			$key .= $this->urlencode($this->oAuth->getOAuthRequestTokenSecret());
+		}
 		return base64_encode(hash_hmac(
 			'sha1',
 			$this->getBaseString(),
@@ -102,7 +120,7 @@ class Tx_FalDropbox_Auth_OAuth {
 	public function getBaseString() {
 		$parts = array(
 			'POST',
-			$this->urlencode($this->oAuth->getLink('request_token')),
+			$this->urlencode($this->getLink()),
 			$this->urlencode($this->getQueryString())
 		);
 		return implode('&', $parts);
@@ -149,16 +167,29 @@ class Tx_FalDropbox_Auth_OAuth {
 	}
 
 	/**
+	 * get link for current step
+	 *
+	 * @return string
+	 */
+	public function getLink() {
+		if ($this->oAuth->getOAuthRequestToken()) {
+			return $this->oAuth->getLink('access_token');
+		} else {
+			return $this->oAuth->getLink('request_token');
+		}
+	}
+
+	/**
 	 * get headers for connection
 	 *
+	 * @param array url informations
 	 * @return array
 	 */
-	public function getHeaders() {
+	public function getHeaders(array $url) {
 		return array(
-			'POST /1/oauth/request_token HTTP/1.0',
-			'Host: api.dropbox.com',
+			'POST ' . $url['path'] . ' HTTP/1.0',
+			'Host: ' . $url['host'],
 			'Authorization: OAuth ' . $this->getAuthorizationString(),
-			'Content-Type: text/xml;charset=UTF-8',
 			'Content-Length: 0',
 			'Connection: close'
 		);
@@ -170,13 +201,14 @@ class Tx_FalDropbox_Auth_OAuth {
 	 * @return array
 	 */
 	public function getRequestToken() {
-		$result = $this->send();
+		$result = $this->send('request_token');
 
 		list($header, $body) = explode("\n\n", str_replace("\r", '', $result));
 		list($status) = explode("\n", $header);
 
 		if ($status != 'HTTP/1.1 200 OK') {
-			\TYPO3\CMS\Core\Utility\DebugUtility::debug('Error getting OAuth token and secret.', 'error');
+			$error = json_decode($body);
+			\TYPO3\CMS\Core\Utility\DebugUtility::debug($error->error, 'Misconfigured Dropbox configuration');
 			return array();
 		}
 
@@ -191,16 +223,55 @@ class Tx_FalDropbox_Auth_OAuth {
 	}
 
 	/**
-	 * send request
+	 * get access token
+	 *
+	 * @return array
+	 */
+	public function getAccessToken() {
+		$result = $this->send('access_token');
+
+		list($header, $body) = explode("\n\n", str_replace("\r", '', $result));
+		list($status) = explode("\n", $header);
+
+		if ($status != 'HTTP/1.1 200 OK') {
+			//$error = json_decode($body);
+			//\TYPO3\CMS\Core\Utility\DebugUtility::debug($error->error, 'Error while requesting the access token. Maybe you have to click the link first');
+			return false;
+		}
+
+		parse_str($body, $data);
+
+		/*if (empty($data['oauth_token'])) {
+			\TYPO3\CMS\Core\Utility\DebugUtility::debug('Failed to get Dropbox request token.');
+			return array();
+		}*/
+
+		return $data;
+	}
+
+	/**
+	 * get authorize url
 	 *
 	 * @return string
 	 */
-	public function send() {
-		$fp = fsockopen('ssl://api.dropbox.com', 443, $errno, $errstr, 2);
+	public function getAuthorizeUrl() {
+		$link = $this->oAuth->getLink('authorize');
+		return $link . '?oauth_token=' . $this->oAuth->getOAuthRequestToken();
+	}
+
+	/**
+	 * send request
+	 *
+	 * @param string request
+	 * @return string
+	 */
+	public function send($request) {
+		$url = parse_url($this->oAuth->getLink($request));
+		$fp = fsockopen('ssl://' . $url['host'], 443, $errno, $errstr, 2);
 		if (!$fp) {
 			\TYPO3\CMS\Core\Utility\DebugUtility::debug($errno . '-' . $errstr, 'error');
 		}
-		$push = implode("\r\n", $this->getHeaders()) . "\r\n\r\n";
+		$push = implode("\r\n", $this->getHeaders($url)) . "\r\n\r\n";
 		fputs($fp, $push);
 
 		while (!feof($fp)) {
@@ -216,6 +287,17 @@ class Tx_FalDropbox_Auth_OAuth {
 		fclose($fp);
 
 		return $result;
+	}
+
+	/**
+	 * set request token
+	 *
+	 * @param string $requestToken
+	 * @param string $requestTokenSecret
+	 */
+	public function setRequestToken($requestToken, $requestTokenSecret) {
+		$this->oAuth->setOAuthRequestToken($requestToken);
+		$this->oAuth->setOAuthRequestTokenSecret($requestTokenSecret);
 	}
 }
 ?>
