@@ -10,7 +10,7 @@
  */
 
 if (!class_exists('HTTP_OAuth_Consumer')) {
-	require_once t3lib_extMgm::extPath('fal_dropbox') . 'Classes/OAuth/OAuth/Consumer.php';
+	require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fal_dropbox') . 'Classes/OAuth/OAuth/Consumer.php';
 }
 if (!class_exists('HTTP_OAuth_Consumer'))
     throw new Dropbox_Exception('The HTTP_OAuth_Consumer class could not be found! Did you install the pear HTTP_OAUTH class?');

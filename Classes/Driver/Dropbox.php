@@ -24,7 +24,7 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-require_once t3lib_extMgm::extPath('fal_dropbox', 'Classes/Dropbox/autoload.php');
+require_once \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('fal_dropbox', 'Classes/Dropbox/autoload.php');
 
 /**
  *
@@ -36,7 +36,7 @@ require_once t3lib_extMgm::extPath('fal_dropbox', 'Classes/Dropbox/autoload.php'
 class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\AbstractDriver {
 
 	/**
-	 * @var Tx_Extbase_Object_ObjectManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
 	 */
 	protected $objectManager;
 
@@ -208,7 +208,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 			if (is_object($resource)) {
 				if(TYPO3_MODE == 'BE') {
 					if (method_exists($resource, 'isProcessed') && $resource->isProcessed()) {
-						$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+						$factory = $this->objectManager->create('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 						$file = $factory->retrieveFileOrFolderObject($resource->getStorage()->getUid() . ':' . $resource->getIdentifier());
 						$processingFolder = $this->storage->getProcessingFolder()->getIdentifier();
 						$result = $this->dropbox->media($processingFolder . $file->getNameWithoutExtension() . '.' . $file->getExtension());
@@ -217,7 +217,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 					}
 					return $result['url'];
 				} else {
-					$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+					$factory = $this->objectManager->create('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
 					$file = $factory->retrieveFileOrFolderObject($resource->getStorage()->getUid() . ':' . $resource->getIdentifier());
 
 					$id = sha1($file->getStorage()->getUid() . ':' . $file->getIdentifier());
@@ -648,7 +648,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 		$this->removeCacheForPath($parentFolder->getIdentifier());
 
 		/** @var $factory \TYPO3\CMS\Core\Resource\ResourceFactory */
-		$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Core\Resource\ResourceFactory');
+		$factory = $this->objectManager->create('TYPO3\CMS\Core\Resource\ResourceFactory');
 		$folderPath = $parentFolder->getIdentifier() . $newFolderName . '/';
 		return $factory->createFolderObject($this->storage, $folderPath, $newFolderName);
 	}

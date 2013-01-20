@@ -35,6 +35,7 @@ class Tx_FalDropbox_Auth_OAuth {
 
 	/**
 	 * @var Tx_FalDropbox_Domain_Model_OAuth
+	 * @inject
 	 */
 	protected $oAuth;
 
@@ -44,9 +45,6 @@ class Tx_FalDropbox_Auth_OAuth {
 	 * @return Tx_FalDropbox_Auth_OAuth
 	 */
 	public function init() {
-		$objectManager = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$this->oAuth = $objectManager->get('Tx_FalDropbox_Domain_Model_OAuth');
-
 		// maybe it's good to move them into extConf
 		$this->oAuth->setLinks(array(
 			'request_token'=>'https://api.dropbox.com/1/oauth/request_token',
@@ -72,7 +70,7 @@ class Tx_FalDropbox_Auth_OAuth {
 	/**
 	 * return parameters
 	 *
-	 * @param boolean return parameters with signature entry or not
+	 * @param boolean $withSignature return parameters with signature entry or not
 	 * @return array The parameters
 	 */
 	public function getParameters($withSignature = false) {
@@ -274,6 +272,7 @@ class Tx_FalDropbox_Auth_OAuth {
 		$push = implode("\r\n", $this->getHeaders($url)) . "\r\n\r\n";
 		fputs($fp, $push);
 
+		$result = '';
 		while (!feof($fp)) {
 			$line = fgets($fp, 2048);
 			$result .= $line;

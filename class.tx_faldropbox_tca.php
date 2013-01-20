@@ -42,6 +42,11 @@ class tx_faldropbox_tca {
 	protected $contentObject;
 
 	/**
+	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+	 */
+	protected $objectManager;
+
+	/**
 	 * @var \TYPO3\CMS\Core\Registry
 	 */
 	protected $registry;
@@ -74,11 +79,12 @@ class tx_faldropbox_tca {
 	 * @return void
 	 */
 	protected function initialize(array $parentArray) {
+		$this->objectManager = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		$this->parentArray = $parentArray;
 		$this->configuration = $this->getConfiguration();
-		$this->contentObject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
-		$this->registry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Registry');
-		$this->oAuth = TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('Tx_FalDropbox_Auth_OAuth')->init();
+		$this->contentObject = $this->objectManager->create('TYPO3\\CMS\\Frontend\\ContentObject\\ContentObjectRenderer');
+		$this->registry = $this->objectManager->get('TYPO3\\CMS\\Core\\Registry');
+		$this->oAuth = $this->objectManager->get('Tx_FalDropbox_Auth_OAuth')->init();
 	}
 
 	/**
@@ -144,17 +150,17 @@ class tx_faldropbox_tca {
 	public function checkConfiguration() {
 		if(empty($this->configuration['appKey'])) {
 			$this->error = '<div>You have to set App key first and save the record.</div>';
-			return false;
+			return FALSE;
 		}
 		if(empty($this->configuration['appSecret'])) {
 			$this->error = '<div>You have to set App key first and save the record.</div>';
-			return false;
+			return FALSE;
 		}
 		if(empty($this->configuration['accessType'])) {
 			$this->error = '<div>You have to save this record first.</div>';
-			return false;
+			return FALSE;
 		}
-		return true;
+		return TRUE;
 	}
 
 	/**
@@ -242,5 +248,6 @@ class tx_faldropbox_tca {
 			<span id="falDropboxClearCache" style="cursor: pointer; border: 1px solid #000000; padding: 5px 10px; background: #FF7777;">Click to clear Cache</div>
 		';
 	}
+
 }
 ?>
