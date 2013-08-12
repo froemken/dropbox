@@ -633,7 +633,7 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * @return \TYPO3\CMS\Core\Resource\Folder
 	 */
 	public function getDefaultFolder() {
-		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
+//		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
