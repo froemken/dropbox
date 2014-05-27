@@ -198,72 +198,61 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Returns the public URL to a file.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resource
-	 * @param bool  $relativeToCurrentScript    Determines whether the URL returned should be relative to the current script, in case it is relative at all (only for the LocalDriver)
+	 * @param string $identifier
 	 * @return string
 	 */
-	public function getPublicUrl(\TYPO3\CMS\Core\Resource\ResourceInterface $resource, $relativeToCurrentScript = FALSE) {
+	public function getPublicUrl($identifier) {
 		if ($this->storage->isPublic()) {
 			// as the storage is marked as public, we can simply use the public URL here.
-			if (is_object($resource)) {
-				if(TYPO3_MODE == 'BE') {
-					if (method_exists($resource, 'isProcessed') && $resource->isProcessed()) {
-						$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
-						$file = $factory->retrieveFileOrFolderObject($resource->getStorage()->getUid() . ':' . $resource->getIdentifier());
-						$processingFolder = $this->storage->getProcessingFolder()->getIdentifier();
-						$result = $this->dropbox->media($processingFolder . $file->getNameWithoutExtension() . '.' . $file->getExtension());
-					} else {
-						$result = $this->dropbox->media($resource->getIdentifier());
-					}
-					return $result['url'];
-				} else {
-					$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
-					$file = $factory->retrieveFileOrFolderObject($resource->getStorage()->getUid() . ':' . $resource->getIdentifier());
 
-					$id = sha1($file->getStorage()->getUid() . ':' . $file->getIdentifier());
-					$uploadPath = 'uploads/pics/fal-dropbox-' . $id . '.' . $file->getExtension();
-					file_put_contents(PATH_site . $uploadPath, $this->dropbox->getFile($resource->getIdentifier()));
-
-					return $uploadPath;
-				}
+			if(TYPO3_MODE == 'BE') {
+				$result = $this->dropbox->media($identifier);
+				return $result['url'];
 			} else {
-				return '/';
+				$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+				$file = $factory->retrieveFileOrFolderObject($this->storage->getUid() . ':' . $identifier);
+
+				$id = sha1($file->getStorage()->getUid() . ':' . $file->getIdentifier());
+				$uploadPath = 'uploads/pics/fal-dropbox-' . $id . '.' . $file->getExtension();
+				file_put_contents(PATH_site . $uploadPath, $this->dropbox->getFile($identifier));
+
+				return $uploadPath;
 			}
 		}
 	}
 
 	/**
-	 * Creates a (cryptographic) hash for a file.
+	 * Creates a hash for a file.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param string $fileIdentifier
 	 * @param string $hashAlgorithm The hash algorithm to use
 	 * @return string
 	 */
-	public function hash(\TYPO3\CMS\Core\Resource\FileInterface $file, $hashAlgorithm) {
+	public function hash($fileIdentifier, $hashAlgorithm) {
 		switch ($hashAlgorithm) {
 			case 'sha1':
-				return sha1($file->getIdentifier());
+				return sha1($fileIdentifier);
 				break;
 		}
 	}
 
 	/**
-	 * Creates a new file and returns the matching file object for it.
+	 * Creates a new (empty) file and returns the identifier.
 	 *
 	 * @param string $fileName
-	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
-	 * @return \TYPO3\CMS\Core\Resource\File
+	 * @param string $parentFolderIdentifier
+	 * @return string
 	 */
-	public function createFile($fileName, \TYPO3\CMS\Core\Resource\Folder $parentFolder) {
+	public function createFile($fileName, $parentFolderIdentifier) {
 		// get full target path incl. filename
-		$fileIdentifier = $parentFolder->getIdentifier() . $fileName;
+		$fileIdentifier = $parentFolderIdentifier . $fileName;
 
 		// dropbox cannot create (touch) files. So we have to do this here.
 		$emptyTempFilePath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('empty');
 		$this->dropbox->putFile($fileIdentifier, $emptyTempFilePath);
 
 		// delete cache entries for current folder
-		$this->removeCacheForPath($parentFolder->getIdentifier());
+		$this->removeCacheForPath($parentFolderIdentifier);
 		// delete cache entries for new file if exists
 		$this->removeCacheForPath($fileIdentifier);
 
@@ -278,52 +267,53 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * external location. So this might be an expensive operation (both in terms
 	 * of processing resources and money) for large files.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param string $fileIdentifier
 	 * @return string The file contents
 	 */
-	public function getFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file) {
-		return $this->dropbox->getFile($file->getIdentifier());
+	public function getFileContents($fileIdentifier) {
+		return $this->dropbox->getFile($fileIdentifier);
 	}
 
 	/**
 	 * Sets the contents of a file to the specified value.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param string $fileIdentifier
 	 * @param string $contents
 	 * @return integer The number of bytes written to the file
-	 * @throws RuntimeException if the operation failed
 	 */
-	public function setFileContents(\TYPO3\CMS\Core\Resource\FileInterface $file, $contents) {
+	public function setFileContents($fileIdentifier, $contents) {
 		$tempPath = \TYPO3\CMS\Core\Utility\GeneralUtility::tempnam('dropboxPutFile');
 		file_put_contents($tempPath, $contents);
-		$this->dropbox->putFile($file->getIdentifier(), $tempPath);
+		$this->dropbox->putFile($fileIdentifier, $tempPath);
 		unlink($tempPath);
 
 		// remove cache for folder
-		$this->removeCacheForPath(dirname($file->getIdentifier()));
+		$this->removeCacheForPath(dirname($fileIdentifier));
 		// the file was overwritten, so we have to remove the cache entry for the modified file too
-		$this->removeCacheForPath($file->getIdentifier());
+		$this->removeCacheForPath($fileIdentifier);
 	}
 
 	/**
-	 * Adds a file from the local server hard disk to a given path in TYPO3s virtual file system.
+	 * Adds a file from the local server hard disk to a given path in TYPO3s
+	 * virtual file system. This assumes that the local file exists, so no
+	 * further check is done here! After a successful the original file must
+	 * not exist anymore.
 	 *
-	 * This assumes that the local file exists, so no further check is done here!
-	 *
-	 * @param string $localFilePath
-	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
-	 * @param string $fileName The name to add the file under
-	 * @param \TYPO3\CMS\Core\Resource\AbstractFile $updateFileObject Optional file object to update (instead of creating a new object). With this parameter, this function can be used to "populate" a dummy file object with a real file underneath.
-	 * @return \TYPO3\CMS\Core\Resource\FileInterface
+	 * @param string $localFilePath (within PATH_site)
+	 * @param string $targetFolderIdentifier
+	 * @param string $newFileName optional, if not given original name is used
+	 * @param boolean $removeOriginal if set the original file will be removed
+	 *                                after successful operation
+	 * @return string the identifier of the new file
 	 */
-	public function addFile($localFilePath, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName, \TYPO3\CMS\Core\Resource\AbstractFile $updateFileObject = NULL) {
-		$fileIdentifier = $targetFolder->getIdentifier() . $fileName;
+	public function addFile($localFilePath, $targetFolderIdentifier, $newFileName = '', $removeOriginal = TRUE) {
+		$fileIdentifier = $targetFolderIdentifier . $newFileName;
 
 		$this->dropbox->putFile($fileIdentifier, $localFilePath);
 		unlink($localFilePath);
 
 		// remove cache for folder
-		$this->removeCacheForPath($targetFolder->getIdentifier());
+		$this->removeCacheForPath($targetFolderIdentifier);
 		// maybe the file was overwritten, so it's better to remove the files cache too
 		$this->removeCacheForPath($fileIdentifier);
 
@@ -364,29 +354,31 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	}
 
 	/**
-	 * Checks if a file inside a storage folder exists.
+	 * Checks if a file inside a folder exists
 	 *
 	 * @param string $fileName
-	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
+	 * @param string $folderIdentifier
 	 * @return boolean
 	 */
-	public function fileExistsInFolder($fileName, \TYPO3\CMS\Core\Resource\Folder $folder) {
-		$fileIdentifier = $folder->getIdentifier() . $fileName;
+	public function fileExistsInFolder($fileName, $folderIdentifier)  {
+		$fileIdentifier = $folderIdentifier . $fileName;
 
 		return $this->fileExists($fileIdentifier);
 	}
 
 	/**
-	 * Returns a (local copy of) a file for processing it. When changing the
+	 * Returns a path to a local copy of a file for processing it. When changing the
 	 * file, you have to take care of replacing the current version yourself!
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
-	 * @param bool $writable Set this to FALSE if you only need the file for read operations. This might speed up things, e.g. by using a cached local version. Never modify the file if you have set this flag!
+	 * @param string $fileIdentifier
+	 * @param bool $writable Set this to FALSE if you only need the file for read
+	 *                       operations. This might speed up things, e.g. by using
+	 *                       a cached local version. Never modify the file if you
+	 *                       have set this flag!
 	 * @return string The path to the file on the local disk
 	 */
-	// TODO decide if this should return a file handle object
-	public function getFileForLocalProcessing(\TYPO3\CMS\Core\Resource\FileInterface $file, $writable = TRUE) {
-		return $this->copyFileToTemporaryPath($file);
+	public function getFileForLocalProcessing($fileIdentifier, $writable = TRUE) {
+		return $this->copyFileToTemporaryPath($fileIdentifier);
 	}
 
 	/**
@@ -410,50 +402,50 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	}
 
 	/**
-	 * Renames a file
+	 * Renames a file in this storage.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
-	 * @param string $newName
-	 * @return string The new identifier of the file if the operation succeeds
-	 * @throws RuntimeException if renaming the file failed
+	 * @param string $fileIdentifier
+	 * @param string $newName The target path (including the file name!)
+	 * @return string The identifier of the file after renaming
 	 */
-	public function renameFile(\TYPO3\CMS\Core\Resource\FileInterface $file, $newName) {
-		$sourcePath = $file->getIdentifier();
-		$targetPath = dirname($file->getIdentifier()) . '/' . $newName;
-		$this->dropbox->move($sourcePath, $targetPath);
+	public function renameFile($fileIdentifier, $newName) {
+		$targetPath = dirname($fileIdentifier) . '/' . $newName;
+		$this->dropbox->move($fileIdentifier, $targetPath);
 		// remove cache for folder
-		$this->removeCacheForPath(dirname($file->getIdentifier()));
+		$this->removeCacheForPath(dirname($fileIdentifier));
 		// remove cache for this file
-		$this->removeCacheForPath($file->getIdentifier());
+		$this->removeCacheForPath($fileIdentifier);
 	}
 
 	/**
-	 * Replaces the contents (and file-specific metadata) of a file object with a local file.
+	 * Replaces a file with file in local file system.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\AbstractFile $file
+	 * @param string $fileIdentifier
 	 * @param string $localFilePath
-	 * @return boolean
+	 * @return boolean TRUE if the operation succeeded
 	 */
-	public function replaceFile(\TYPO3\CMS\Core\Resource\AbstractFile $file, $localFilePath) {
+	public function replaceFile($fileIdentifier, $localFilePath) {
 		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
-		$this->removeCacheForPath(dirname($file->getIdentifier()));
+		$this->removeCacheForPath(dirname($fileIdentifier));
 	}
 
 	/**
-	 * Returns information about a file for a given file identifier.
+	 * Returns information about a file.
 	 *
-	 * @param string $identifier The (relative) path to the file.
+	 * @param string $fileIdentifier
+	 * @param array $propertiesToExtract Array of properties which are be extracted
+	 *                                   If empty all will be extracted
 	 * @return array
 	 */
-	public function getFileInfoByIdentifier($identifier) {
-		$info = $this->getMetaData($identifier, false);
+	public function getFileInfoByIdentifier($fileIdentifier, array $propertiesToExtract = array()) {
+		$info = $this->getMetaData($fileIdentifier, false);
 		$fileInfo = array(
 			'mtime' => time(),
 			'ctime' => time(),
 			'mimetype' => $info['mime_type'],
-			'name' => basename($identifier),
+			'name' => basename($fileIdentifier),
 			'size' => $info['bytes'],
-			'identifier' => $identifier,
+			'identifier' => $fileIdentifier,
 			'storage' => $this->storage->getUid()
 		);
 
@@ -500,37 +492,36 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 
 	/**
 	 * Moves a file *within* the current storage.
-	 * Note that this is only about an intra-storage move action, where a file is just
-	 * moved to another folder in the same storage.
+	 * Note that this is only about an inner-storage move action,
+	 * where a file is just moved to another folder in the same storage.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
-	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
-	 * @param string $fileName
-	 * @return string The new identifier of the file
+	 * @param string $fileIdentifier
+	 * @param string $targetFolderIdentifier
+	 * @param string $newFileName
+	 *
+	 * @return string
 	 */
-	public function moveFileWithinStorage(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName) {
-		$sourcePath = $file->getIdentifier();
-		$targetPath = $targetFolder->getIdentifier() . $fileName;
-		$this->dropbox->move($sourcePath, $targetPath);
-		$this->removeCacheForPath(dirname($sourcePath));
+	public function moveFileWithinStorage($fileIdentifier, $targetFolderIdentifier, $newFileName) {
+		$targetPath = $targetFolderIdentifier . $newFileName;
+		$this->dropbox->move($fileIdentifier, $targetPath);
+		$this->removeCacheForPath(dirname($fileIdentifier));
 		$this->removeCacheForPath(dirname($targetPath));
-		return $targetFolder->getIdentifier() . $fileName;
+		return $targetFolderIdentifier . $newFileName;
 	}
 
 	/**
 	 * Copies a file *within* the current storage.
-	 * Note that this is only about an intra-storage copy action, where a file is just
-	 * copied to another folder in the same storage.
+	 * Note that this is only about an inner storage copy action,
+	 * where a file is just copied to another folder in the same storage.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
-	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
+	 * @param string $fileIdentifier
+	 * @param string $targetFolderIdentifier
 	 * @param string $fileName
-	 * @return \TYPO3\CMS\Core\Resource\FileInterface The new (copied) file object.
+	 * @return string the Identifier of the new file
 	 */
-	public function copyFileWithinStorage(\TYPO3\CMS\Core\Resource\FileInterface $file, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $fileName) {
-		$sourcePath = $file->getIdentifier();
-		$targetPath = $targetFolder->getIdentifier() . $fileName;
-		$this->dropbox->copy($sourcePath, $targetPath);
+	public function copyFileWithinStorage($fileIdentifier, $targetFolderIdentifier, $fileName) {
+		$targetPath = $targetFolderIdentifier . $fileName;
+		$this->dropbox->copy($fileIdentifier, $targetPath);
 		$this->removeCacheForPath(dirname($targetPath));
 		return $this->getFile($targetPath);
 	}
@@ -538,53 +529,55 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	/**
 	 * Folder equivalent to moveFileWithinStorage().
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToMove
-	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
+	 * @param string $sourceFolderIdentifier
+	 * @param string $targetFolderIdentifier
 	 * @param string $newFolderName
-	 * @return array A map of old to new file identifiers
+	 *
+	 * @return array All files which are affected, map of old => new file identifiers
 	 */
-	public function moveFolderWithinStorage(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newFolderName) {
+	public function moveFolderWithinStorage($sourceFolderIdentifier, $targetFolderIdentifier, $newFolderName) {
 		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
 	 * Folder equivalent to copyFileWithinStorage().
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\Folder $folderToMove
-	 * @param \TYPO3\CMS\Core\Resource\Folder $targetFolder
-	 * @param string $newFileName
+	 * @param string $sourceFolderIdentifier
+	 * @param string $targetFolderIdentifier
+	 * @param string $newFolderName
+	 *
 	 * @return boolean
 	 */
-	public function copyFolderWithinStorage(\TYPO3\CMS\Core\Resource\Folder $folderToMove, \TYPO3\CMS\Core\Resource\Folder $targetFolder, $newFileName) {
+	public function copyFolderWithinStorage($sourceFolderIdentifier, $targetFolderIdentifier, $newFolderName) {
 		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
-	 * Removes a file from this storage. This does not check if the file is
+	 * Removes a file from the filesystem. This does not check if the file is
 	 * still used or if it is a bad idea to delete it for some other reason
 	 * this has to be taken care of in the upper layers (e.g. the Storage)!
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param string $fileIdentifier
 	 * @return boolean TRUE if deleting the file succeeded
 	 */
-	public function deleteFile(\TYPO3\CMS\Core\Resource\FileInterface $file) {
-		$status = $this->dropbox->delete($file->getIdentifier());
+	public function deleteFile($fileIdentifier) {
+		$status = $this->dropbox->delete($fileIdentifier);
 		if ($status['is_deleted']) {
-			$this->removeCacheForPath(dirname($file->getIdentifier()));
+			$this->removeCacheForPath(dirname($fileIdentifier));
 			return true;
 		} else return false;
 	}
 
 	/**
-	 * Removes a folder from this storage.
+	 * Removes a folder in filesystem.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
+	 * @param string $folderIdentifier
 	 * @param boolean $deleteRecursively
 	 * @return boolean
 	 */
-	public function deleteFolder(\TYPO3\CMS\Core\Resource\Folder $folder, $deleteRecursively = FALSE) {
+	public function deleteFolder($folderIdentifier, $deleteRecursively = FALSE) {
 		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
-		$this->removeCacheForPath(dirname($folder->getIdentifier()));
+		$this->removeCacheForPath(dirname($folderIdentifier));
 	}
 
 	/**
@@ -640,16 +633,17 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	 * Creates a folder.
 	 *
 	 * @param string $newFolderName
-	 * @param \TYPO3\CMS\Core\Resource\Folder $parentFolder
-	 * @return \TYPO3\CMS\Core\Resource\Folder The new (created) folder object
+	 * @param string $parentFolderIdentifier
+	 * @param boolean $recursive
+	 * @return string the Identifier of the new folder
 	 */
-	public function createFolder($newFolderName, \TYPO3\CMS\Core\Resource\Folder $parentFolder) {
+	public function createFolder($newFolderName, $parentFolderIdentifier = '', $recursive = FALSE) {
 		$this->dropbox->createFolder($newFolderName);
-		$this->removeCacheForPath($parentFolder->getIdentifier());
+		$this->removeCacheForPath($parentFolderIdentifier);
 
 		/** @var $factory \TYPO3\CMS\Core\Resource\ResourceFactory */
 		$factory = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Core\Resource\ResourceFactory');
-		$folderPath = $parentFolder->getIdentifier() . $newFolderName . '/';
+		$folderPath = $parentFolderIdentifier . $newFolderName . '/';
 		return $factory->createFolderObject($this->storage, $folderPath, $newFolderName);
 	}
 
@@ -667,50 +661,172 @@ class Tx_FalDropbox_Driver_Dropbox extends \TYPO3\CMS\Core\Resource\Driver\Abstr
 	}
 
 	/**
-	 * Checks if a file inside a storage folder exists.
+	 * Checks if a folder inside a folder exists.
 	 *
 	 * @param string $folderName
-	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
+	 * @param string $folderIdentifier
 	 * @return boolean
 	 */
-	public function folderExistsInFolder($folderName, \TYPO3\CMS\Core\Resource\Folder $folder) {
-		$folderIdentifier = $folder->getIdentifier() . $folderName . '/';
+	public function folderExistsInFolder($folderName, $folderIdentifier) {
+		$folderIdentifier = $folderIdentifier . $folderName . '/';
 		return $this->resourceExists($folderIdentifier);
 	}
 
 	/**
 	 * Renames a folder in this storage.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
-	 * @param string $newName The target path (including the file name!)
-	 * @return array A map of old to new file identifiers
-	 * @throws RuntimeException if renaming the folder failed
+	 * @param string $folderIdentifier
+	 * @param string $newName
+	 * @return array A map of old to new file identifiers of all affected resources
 	 */
-	public function renameFolder(\TYPO3\CMS\Core\Resource\Folder $folder, $newName) {
+	public function renameFolder($folderIdentifier, $newName) {
 		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
-	 * Checks if a given object or identifier is within a container, e.g. if
+	 * Checks if a given identifier is within a container, e.g. if
 	 * a file or folder is within another folder.
-	 * This can e.g. be used to check for webmounts.
+	 * This can e.g. be used to check for web-mounts.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\Folder $container
-	 * @param mixed $content An object or an identifier to check
-	 * @return boolean TRUE if $content is within $container
+	 * Hint: this also needs to return TRUE if the given identifier
+	 * matches the container identifier to allow access to the root
+	 * folder of a filemount.
+	 *
+	 * @param string $folderIdentifier
+	 * @param string $identifier identifier to be checked against $folderIdentifier
+	 * @return boolean TRUE if $content is within or matches $folderIdentifier
 	 */
-	public function isWithin(\TYPO3\CMS\Core\Resource\Folder $container, $content) {
+	public function isWithin($folderIdentifier, $identifier) {
 		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
 
 	/**
 	 * Checks if a folder contains files and (if supported) other folders.
 	 *
-	 * @param \TYPO3\CMS\Core\Resource\Folder $folder
+	 * @param string $folderIdentifier
 	 * @return boolean TRUE if there are no files and folders within $folder
 	 */
-	public function isFolderEmpty(\TYPO3\CMS\Core\Resource\Folder $folder) {
+	public function isFolderEmpty($folderIdentifier) {
 		TYPO3\CMS\Core\Utility\DebugUtility::debug(__FUNCTION__, 'Method');
 	}
+
+	/**
+	 * Makes sure the path given as parameter is valid
+	 *
+	 * @param string $filePath The file path (most times filePath)
+	 * @return string
+	 */
+	protected function canonicalizeAndCheckFilePath($filePath) {
+
+	}
+
+	/**
+	 * Makes sure the identifier given as parameter is valid
+	 *
+	 * @param string $fileIdentifier The file Identifier
+	 * @return string
+	 * @throws \TYPO3\CMS\Core\Resource\Exception\InvalidPathException
+	 */
+	protected function canonicalizeAndCheckFileIdentifier($fileIdentifier) {
+
+	}
+
+	/**
+	 * Makes sure the identifier given as parameter is valid
+	 *
+	 * @param string $folderIdentifier The folder identifier
+	 * @return string
+	 */
+	protected function canonicalizeAndCheckFolderIdentifier($folderIdentifier) {
+
+	}
+
+	/**
+	 * Merges the capabilites merged by the user at the storage
+	 * configuration into the actual capabilities of the driver
+	 * and returns the result.
+	 *
+	 * @param integer $capabilities
+	 *
+	 * @return integer
+	 */
+	public function mergeConfigurationCapabilities($capabilities) {
+
+	}
+
+	/**
+	 * Returns the identifier of the folder the file resides in
+	 *
+	 * @param string $fileIdentifier
+	 *
+	 * @return string
+	 */
+	public function getParentFolderIdentifierOfIdentifier($fileIdentifier) {
+
+	}
+
+	/**
+	 * Returns the permissions of a file/folder as an array
+	 * (keys r, w) of boolean flags
+	 *
+	 * @param string $identifier
+	 * @return array
+	 */
+	public function getPermissions($identifier) {
+
+	}
+
+	/**
+	 * Directly output the contents of the file to the output
+	 * buffer. Should not take care of header files or flushing
+	 * buffer before. Will be taken care of by the Storage.
+	 *
+	 * @param string $identifier
+	 * @return void
+	 */
+	public function dumpFileContents($identifier) {
+
+	}
+
+	/**
+	 * Returns information about a file.
+	 *
+	 * @param string $folderIdentifier
+	 * @return array
+	 */
+	public function getFolderInfoByIdentifier($folderIdentifier) {
+
+	}
+
+	/**
+	 * Returns a list of files inside the specified path
+	 *
+	 * @param string $folderIdentifier
+	 * @param integer $start
+	 * @param integer $numberOfItems
+	 * @param boolean $recursive
+	 * @param array $filenameFilterCallbacks callbacks for filtering the items
+	 *
+	 * @return array of FileIdentifiers
+	 */
+	public function getFilesInFolder($folderIdentifier, $start = 0, $numberOfItems = 0, $recursive = FALSE, array $filenameFilterCallbacks = array()) {
+
+	}
+	/**
+	 * Returns a list of folders inside the specified path
+	 *
+	 * @param string $folderIdentifier
+	 * @param integer $start
+	 * @param integer $numberOfItems
+	 * @param boolean $recursive
+	 * @param array $folderNameFilterCallbacks callbacks for filtering the items
+	 *
+	 * @return array of Folder Identifier
+	 */
+	public function getFoldersInFolder($folderIdentifier, $start = 0, $numberOfItems = 0, $recursive = FALSE, array $folderNameFilterCallbacks = array()) {
+		
+	}
+
+
 }
 ?>
