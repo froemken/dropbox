@@ -1,29 +1,31 @@
 <?php
+namespace SFroemken\FalDropbox\Dropbox;
+
+// The Dropbox SDK autoloader.  You probably shouldn't be using this.  Instead,
+// use a global autoloader, like the Composer autoloader.
+//
+// But if you really don't want to use a global autoloader, do this:
+//
+//     require_once "<path-to-here>/Dropbox/autoload.php"
 
 /**
- * This file registers a new autoload function using spl_autoload_register. 
- *
- * @package Dropbox 
- * @copyright Copyright (C) 2010 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
- * @license http://code.google.com/p/dropbox-php/wiki/License MIT
+ * @internal
  */
+function autoload($name)
+{
+    // If the name doesn't start with "Dropbox\", then its not once of our classes.
+    if (\substr_compare($name, "Dropbox\\", 0, 8) !== 0) return;
 
-/**
- * Autoloader function
- *
- * @param $className string
- * @return void
- */
-function Dropbox_autoload($className) {
+    // Take the "Dropbox\" prefix off.
+    $stem = \substr($name, 8);
 
-    if(strpos($className,'Dropbox_')===0) {
+    // Convert "\" and "_" to path separators.
+    $pathified_stem = \str_replace(array("\\", "_"), '/', $stem);
 
-        include dirname(__FILE__) . '/' . str_replace('_','/',substr($className,8)) . '.php';
-
+    $path = __DIR__ . "/" . $pathified_stem . ".php";
+    if (\is_file($path)) {
+        require_once $path;
     }
-
 }
 
-spl_autoload_register('Dropbox_autoload');
-
+\spl_autoload_register('Dropbox\autoload');

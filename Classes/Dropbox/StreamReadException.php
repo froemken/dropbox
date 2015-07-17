@@ -2,9 +2,9 @@
 namespace SFroemken\FalDropbox\Dropbox;
 
 /**
- * The base class for all API call exceptions.
+ * Thrown when there's an error reading from a stream that was passed in by the caller.
  */
-class Exception extends \Exception
+class StreamReadException extends \Exception
 {
     /**
      * @internal

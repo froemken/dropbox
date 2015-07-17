@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2013-07-04T09:16:00Z" product-name="fal_dropbox">
+		<header/>
+		<body>
+
+			<trans-unit id="key">
+				<source>App key. You find it after creating a Dropbox App on: https://www.dropbox.com/developers</source>
+			</trans-unit>
+			<trans-unit id="secret">
+				<source>App secret You find it after creating a Dropbox App on: https://www.dropbox.com/developers</source>
+			</trans-unit>
+			<trans-unit id="authCode">
+				<source>Click on the link below and login to Dropbox. Grand access to the app and copy the AuthCode into this field</source>
+			</trans-unit>
+			<trans-unit id="accessToken">
+				<source>After inserting the AuthCode you have to save this record and open it again. Below you will find an access_token. Copy it into this field.</source>
+			</trans-unit>
+			<trans-unit id="userId">
+				<source>After inserting the AuthCode you have to save this record and open it again. Below you will find an userId. Copy it into this field.</source>
+			</trans-unit>
+			<trans-unit id="accessType">
+				<source>Access Type</source>
+			</trans-unit>
+			<trans-unit id="accessType.appFolder">
+				<source>App Folder</source>
+			</trans-unit>
+			<trans-unit id="accessType.fullDropbox">
+				<source>Full Dropbox</source>
+			</trans-unit>
+			<trans-unit id="dropboxStatus">
+				<source>Connect TYPO3 with your Dropbox / Dropbox status</source>
+			</trans-unit>
+
+		</body>
+	</file>
+</xliff>
