@@ -1,22 +1,20 @@
-fal_dropbox is an extension for TYPO3 >= 6.0.0
-It extends FAL to connect to your dropbox account in file list module
+fal_dropbox is an extension for TYPO3 >= 6.2.0
+It extends FAL to show files from your dropbox account in file list module
 
 INSTALL
 
 1.) Install and activate fal_dropbox extension in Ext-Manager
-2.) Maybe it's a TYPO3-Core Bug. But after installing this extension you have to compare your datebase in INSTALL_TOOL
 2.) Create a new file storage record on pid 0 called "Dropbox"
 3.) On Tab "Configuration" choose "Dropbox". FlexForm reloads
 3a.) GoTo: https://www.dropbox.com/developers
-3b.) Create your own Dropbox App "MyApps" (maybe you must login first)
-3c.) Give it a name and a description
-3d.) Please choose "App folder". "Full Dropbox" is just not implemented in this extension
-3e.) Now you should see the data of your app. Copy the data to FlexForm (AppKey/AppSecret)
-3f.) Save
-3g.) After saving a Dropbox Link appears
-3h.) Click it and allow your app to connect to your dropbox account
-3i.) After successful connection click save in FlexForm again.
-3j.) With a little bit of luck you should be connected now (green text)
+3b.) Choose "App console" on the left
+3c.) Click on button "Create app" on the upper right
+3d.) Choose "Dropbox API App"
+3e.) Now you can decide, if you want your app to work in its own folder. Or, if you want to have full access to all of your files
+3f.) Give it a name
+3g.) Save app with "Create App"
+3h.) After saving you see your newly created App. Choose it.
+3i.) Click it and allow your app to connect to your dropbox account
 
 4.) Have fun with FAL Dropbox
 

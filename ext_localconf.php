@@ -12,3 +12,4 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['fal_dropbox'] = 
 
 // create a temporary cache
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fal_dropbox']['backend'] = 'TYPO3\\CMS\\Core\\Cache\\Backend\\TransientMemoryBackend';
+
