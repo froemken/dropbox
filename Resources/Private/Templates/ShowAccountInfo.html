@@ -1,0 +1,22 @@
+<div class="typo3-message message-ok">You are now connected with your dropbox account</div>
+
+<table class="t3-table">
+	<tbody>
+	<tr>
+		<td>Name</td>
+		<td>{account.display_name}</td>
+	</tr>
+	<tr>
+		<td>E-Mail</td>
+		<td>{account.email}</td>
+	</tr>
+	<tr>
+		<td>Quota</td>
+		<td>{account.quota_info.quota -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
+	</tr>
+	<tr>
+		<td>Used</td>
+		<td>{account.quota_info.normal -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
+	</tr>
+	</tbody>
+</table>

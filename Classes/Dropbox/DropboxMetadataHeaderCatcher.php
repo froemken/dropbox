@@ -1,6 +1,8 @@
 <?php
 namespace SFroemken\FalDropbox\Dropbox;
 
+use SFroemken\FalDropbox\Dropbox\Exception\BadResponse;
+
 /**
  * @internal
  */
@@ -33,7 +35,7 @@ final class DropboxMetadataHeaderCatcher
      * @param resource $ch
      * @param string $header
      * @return int
-     * @throws Exception_BadResponse
+     * @throws BadResponse
      */
     function headerFunction($ch, $header)
     {
@@ -73,10 +75,10 @@ final class DropboxMetadataHeaderCatcher
     function getMetadata()
     {
         if ($this->error !== null) {
-            throw new Exception_BadResponse($this->error);
+            throw new BadResponse($this->error);
         }
         if ($this->metadata === null) {
-            throw new Exception_BadResponse("Missing X-Dropbox-Metadata header");
+            throw new BadResponse("Missing X-Dropbox-Metadata header");
         }
         return $this->metadata;
     }

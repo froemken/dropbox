@@ -5,7 +5,7 @@ if (!defined('TYPO3_MODE')) {
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['fal_dropbox'] = array(
 	'class' => 'SFroemken\\FalDropbox\\Driver\\Dropbox',
-	'shortName' => 'SF Dropbox',
+	'shortName' => 'Dropbox',
 	'flexFormDS' => 'FILE:EXT:fal_dropbox/Configuration/FlexForms/Dropbox.xml',
 	'label' => 'Dropbox'
 );

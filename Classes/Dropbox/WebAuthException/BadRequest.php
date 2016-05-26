@@ -1,12 +1,12 @@
 <?php
-namespace SFroemken\FalDropbox\Dropbox;
+namespace SFroemken\FalDropbox\Dropbox\WebAuthException;
 
 /**
  * Thrown if the redirect URL was missing parameters or if the given parameters were not valid.
  *
  * The recommended action is to show an HTTP 400 error page.
  */
-class WebAuthException_BadRequest extends \Exception
+class BadRequest extends \Exception
 {
     /**
      * @param string $message

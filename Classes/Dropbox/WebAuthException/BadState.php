@@ -1,5 +1,5 @@
 <?php
-namespace SFroemken\FalDropbox\Dropbox;
+namespace SFroemken\FalDropbox\Dropbox\WebAuthException;
 
 /**
  * Thrown if all the parameters are correct, but there's no CSRF token in the session.  This
@@ -7,7 +7,7 @@ namespace SFroemken\FalDropbox\Dropbox;
  *
  * The recommended action is to redirect the user's browser to try the approval process again.
  */
-class WebAuthException_BadState extends \Exception
+class BadState extends \Exception
 {
     /**
      * @internal

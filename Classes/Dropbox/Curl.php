@@ -1,6 +1,8 @@
 <?php
 namespace SFroemken\FalDropbox\Dropbox;
 
+use SFroemken\FalDropbox\Dropbox\Exception\NetworkIO;
+
 /**
  * A minimal wrapper around a cURL handle.
  *
@@ -70,7 +72,7 @@ final class Curl
 
         $body = curl_exec($this->handle);
         if ($body === false) {
-            throw new Exception_NetworkIO("Error executing HTTP request: " . curl_error($this->handle));
+            throw new NetworkIO("Error executing HTTP request: " . curl_error($this->handle));
         }
 
         $statusCode = curl_getinfo($this->handle, CURLINFO_HTTP_CODE);

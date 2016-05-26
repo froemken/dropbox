@@ -2,6 +2,8 @@
 
 namespace SFroemken\FalDropbox\Dropbox;
 
+use SFroemken\FalDropbox\Dropbox\Exception\NetworkIO;
+
 /**
  * Call the <code>test()</code> method.
  */
@@ -116,7 +118,7 @@ class SSLTester
         try {
             $curl->exec();
         }
-        catch (Exception_NetworkIO $ex) {
+        catch (NetworkIO $ex) {
             if (strpos($ex->getMessage(), $expectedExceptionMessage) == 0) {
                 return true;
             } else {

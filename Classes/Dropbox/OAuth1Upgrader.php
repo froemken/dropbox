@@ -1,6 +1,8 @@
 <?php
 namespace SFroemken\FalDropbox\Dropbox;
 
+use SFroemken\FalDropbox\Dropbox\Exception\BadResponse;
+
 /**
  * Lets you convert OAuth 1 access tokens to OAuth 2 access tokens.  First call {@link
  * OAuth1AccessTokenUpgrader::createOAuth2AccessToken()} to get an OAuth 2 access token.
@@ -44,16 +46,16 @@ class OAuth1Upgrader extends AuthBase
         $parts = RequestUtil::parseResponseJson($response->body);
 
         if (!array_key_exists('token_type', $parts) || !is_string($parts['token_type'])) {
-            throw new Exception_BadResponse("Missing \"token_type\" field.");
+            throw new BadResponse("Missing \"token_type\" field.");
         }
         $tokenType = $parts['token_type'];
         if (!array_key_exists('access_token', $parts) || !is_string($parts['access_token'])) {
-            throw new Exception_BadResponse("Missing \"access_token\" field.");
+            throw new BadResponse("Missing \"access_token\" field.");
         }
         $accessToken = $parts['access_token'];
 
         if ($tokenType !== "Bearer" && $tokenType !== "bearer") {
-            throw new Exception_BadResponse("Unknown \"token_type\"; expecting \"Bearer\", got  "
+            throw new BadResponse("Unknown \"token_type\"; expecting \"Bearer\", got  "
                 . Util::q($tokenType));
         }
 

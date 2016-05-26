@@ -1,6 +1,14 @@
 <?php
 namespace SFroemken\FalDropbox\Dropbox;
 
+use SFroemken\FalDropbox\Dropbox\Exception\BadRequest;
+use SFroemken\FalDropbox\Dropbox\Exception\BadResponse;
+use SFroemken\FalDropbox\Dropbox\Exception\BadResponseCode;
+use SFroemken\FalDropbox\Dropbox\Exception\InvalidAccessToken;
+use SFroemken\FalDropbox\Dropbox\Exception\NetworkIO;
+use SFroemken\FalDropbox\Dropbox\Exception\RetryLater;
+use SFroemken\FalDropbox\Dropbox\Exception\ServerError;
+
 if (!function_exists('curl_init')) {
     throw new \Exception("The Dropbox SDK requires the cURL PHP extension, but it looks like you don't have it (couldn't find function \"curl_init\").  Library: \"" . __FILE__ . "\".");
 }
@@ -226,13 +234,13 @@ final class RequestUtil
     /**
      * @param string $responseBody
      * @return mixed
-     * @throws Exception_BadResponse
+     * @throws BadResponse
      */
     static function parseResponseJson($responseBody)
     {
         $obj = json_decode($responseBody, true, 10);
         if ($obj === null) {
-            throw new Exception_BadResponse("Got bad JSON from server: $responseBody");
+            throw new BadResponse("Got bad JSON from server: $responseBody");
         }
         return $obj;
     }
@@ -247,12 +255,12 @@ final class RequestUtil
             $message .= "\n".$httpResponse->body;
         }
 
-        if ($sc === 400) return new Exception_BadRequest($message);
-        if ($sc === 401) return new Exception_InvalidAccessToken($message);
-        if ($sc === 500 || $sc === 502) return new Exception_ServerError($message);
-        if ($sc === 503) return new Exception_RetryLater($message);
+        if ($sc === 400) return new BadRequest($message);
+        if ($sc === 401) return new InvalidAccessToken($message);
+        if ($sc === 500 || $sc === 502) return new ServerError($message);
+        if ($sc === 503) return new RetryLater($message);
 
-        return new Exception_BadResponseCode("Unexpected $message", $sc);
+        return new BadResponseCode("Unexpected $message", $sc);
     }
 
     /**
@@ -278,13 +286,13 @@ final class RequestUtil
                 return $action();
             }
             // These exception types are the ones we think are possibly transient errors.
-            catch (Exception_NetworkIO $ex) {
+            catch (NetworkIO $ex) {
                 $savedEx = $ex;
             }
-            catch (Exception_ServerError $ex) {
+            catch (ServerError $ex) {
                 $savedEx = $ex;
             }
-            catch (Exception_RetryLater $ex) {
+            catch (RetryLater $ex) {
                 $savedEx = $ex;
             }
 

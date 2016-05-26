@@ -24,8 +24,9 @@ namespace SFroemken\FalDropbox\Tca;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use SFroemken\FalDropbox\Dropbox\AppInfo;
+use SFroemken\FalDropbox\Dropbox\Exception\InvalidAccessToken;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Service\FlexFormService;
 
 /**
  * @package fal_dropbox
@@ -33,159 +34,75 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class RequestToken {
 
-	/**
-	 * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-	 */
-	protected $objectManager;
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     */
+    protected $objectManager;
 
-	/**
-	 * @var \SFroemken\FalDropbox\Dropbox\AppInfo
-	 */
-	protected $appInfo;
+    /**
+     * @var array
+     */
+    protected $parentArray = array();
 
-	/**
-	 * @var \SFroemken\FalDropbox\Configuration\Dropbox
-	 */
-	protected $configuration;
+    /**
+     * initializes this object
+     *
+     * @param array $parentArray
+     * @return void
+     */
+    protected function initialize(array $parentArray) {
+        $this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+        $this->parentArray = $parentArray;
+    }
 
-	/**
-	 * @var array
-	 */
-	protected $parentArray = array();
+    /**
+     * get requestToken
+     *
+     * @param array $parentArray
+     * @param \TYPO3\CMS\Backend\Form\FormEngine $formEngine
+     * @return string
+     */
+    public function getRequestToken($parentArray, \TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
+        $this->initialize($parentArray);
+        /** @var FlexFormService $flexFormService */
+        $flexFormService = $this->objectManager->get(FlexFormService::class);
+        $config = $flexFormService->convertFlexFormContentToArray($parentArray['row']['configuration']);
+        return $this->getHtmlForConnected($config['accessToken']);
+    }
 
-	/**
-	 * initializes this object
-	 *
-	 * @param array $parentArray
-	 * @return void
-	 */
-	protected function initialize(array $parentArray) {
-		$this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		$this->parentArray = $parentArray;
-		$this->configuration = $this->getConfiguration();
-		$this->appInfo = $this->getAppInfo();
-	}
+    /**
+     * get HTML to show the user, that he is connected with his dropbox account
+     *
+     * @param string $accessToken
+     * @return string
+     */
+    public function getHtmlForConnected($accessToken) {
+        try {
+            /** @var \SFroemken\FalDropbox\Dropbox\Client $dropboxClient */
+            $dropboxClient = $this->objectManager->get(
+                'SFroemken\\FalDropbox\\Dropbox\\Client',
+                $accessToken,
+                'TYPO3 CMS'
+            );
+            $accountInfo = $dropboxClient->getAccountInfo();
+            if (!is_array($accountInfo)) {
+                $accountInfo = array();
+            }
+            /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
+            $view = $this->objectManager->get('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+            $view->setTemplatePathAndFilename(
+                GeneralUtility::getFileAbsFileName(
+                    'EXT:fal_dropbox/Resources/Private/Templates/ShowAccountInfo.html'
+                )
+            );
+            $view->assign('account', $accountInfo);
+            $content = $view->render();
+        } catch (InvalidAccessToken $e) {
+            $content = 'Access Token is invalid';
+        } catch (\Exception $e) {
+            $content = 'Could not retrieve account info from Dropbox';
+        }
 
-	/**
-	 * Get App Info
-	 *
-	 * @return \SFroemken\FalDropbox\Dropbox\AppInfo
-	 */
-	public function getAppInfo() {
-		if (!$this->configuration->getKey() || !$this->configuration->getSecret()) {
-			return NULL;
-		} else {
-			return AppInfo::loadFromJson($this->configuration->getArray());
-		}
-	}
-
-	/**
-	 * get Configuration
-	 *
-	 * @return \SFroemken\FalDropbox\Configuration\Dropbox
-	 */
-	protected function getConfiguration() {
-		$flexformConfiguration = array();
-		if (isset($this->parentArray['row']) && isset($this->parentArray['row']['configuration'])) {
-			$flexformConfiguration = GeneralUtility::xml2array(
-				$this->parentArray['row']['configuration']
-			);
-			$flexformConfiguration = $flexformConfiguration['data']['sDEF']['lDEF'];
-		}
-
-		/** @var \SFroemken\FalDropbox\Configuration\Dropbox $configuration */
-		$configuration = $this->objectManager->get('SFroemken\\FalDropbox\\Configuration\\Dropbox');
-		$configuration->setConfiguration($flexformConfiguration);
-
-		return $configuration;
-	}
-
-	/**
-	 * get requestToken
-	 *
-	 * @param array $parentArray
-	 * @param \TYPO3\CMS\Backend\Form\FormEngine $formEngine
-	 * @return string
-	 */
-	public function getRequestToken($parentArray, \TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
-		$this->initialize($parentArray);
-
-		if ($this->appInfo instanceof AppInfo) {
-			if ($this->configuration->getAccessToken()) {
-				return $this->getHtmlForConnected();
-			} elseif ($this->configuration->getAuthCode()) {
-				try {
-					$webAuth = $this->objectManager->get('SFroemken\\FalDropbox\\Dropbox\\WebAuthNoRedirect', $this->appInfo, 'TYPO3 CMS');
-					list($accessToken, $dropboxUserId) = $webAuth->finish($this->configuration->getAuthCode());
-					return '<div>Copy and save as Access Token: ' . $accessToken . '</div><div>Copy and save as User ID: ' . $dropboxUserId . '</div>';
-				} catch(\Exception $e) {
-					return $this->getHtmlForDropboxLink();
-				}
-			} else {
-				return $this->getHtmlForDropboxLink();
-			}
-		} else {
-			// dropbox configuration is not completed
-			return '<div style="background-color: lightcoral;">You are NOT connected with your dropbox account. Please enter key and secret first and save the record.</div>';
-		}
-	}
-
-	/**
-	 * get HTML to show the user, that he is connected with his dropbox account
-	 *
-	 * @return string
-	 */
-	public function getHtmlForConnected() {
-		try {
-			/** @var \SFroemken\FalDropbox\Dropbox\Client $dropboxClient */
-			$dropboxClient = $this->objectManager->get(
-				'SFroemken\\FalDropbox\\Dropbox\\Client',
-				$this->configuration->getAccessToken(),
-				'TYPO3 CMS'
-			);
-			$accountInfo = $dropboxClient->getAccountInfo();
-
-			$content = '';
-			$content .= '<div style="background-color: lightgreen;">You are now connected with your dropbox account</div>';
-			$content .= '
-			<table border="1" cellspacing="2" cellpadding="2">
-				<tr>
-					<td>Name</td>
-					<td>' . $accountInfo['display_name'] . '</td>
-				</tr>
-				<tr>
-					<td>E-Mail</td>
-					<td>' . $accountInfo['email'] . '</td>
-				</tr>
-				<tr>
-					<td>Quota</td>
-					<td>' . GeneralUtility::formatSize($accountInfo['quota_info']['quota'], ' | KB| MB| GB') . '</td>
-				</tr>
-				<tr>
-					<td>Used</td>
-					<td>' . GeneralUtility::formatSize($accountInfo['quota_info']['normal'], ' | KB| MB| GB') . '</td>
-				</tr>
-			</table>
-		';
-		} catch (\Exception $e) {
-			$this->registry->removeAllByNamespace('fal_dropbox');
-			$content = $this->getHtmlForDropboxLink();
-		}
-
-		return $content;
-	}
-
-	/**
-	 * get HTML-Code for Dropbox Link
-	 */
-	public function getHtmlForDropboxLink() {
-		$webAuth = $this->objectManager->get('SFroemken\\FalDropbox\\Dropbox\\WebAuthNoRedirect', $this->appInfo, 'TYPO3 CMS');
-		$authorizeUrl = $webAuth->start();
-		return '
-			<div>
-				Link: <a href="' . $authorizeUrl . '" target="_blank" style="text-decoration: underline;">Connect App with your Dropbox account</a>
-			</div>
-		';
-	}
-
+        return $content;
+    }
 }

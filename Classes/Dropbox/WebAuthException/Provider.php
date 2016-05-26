@@ -1,10 +1,10 @@
 <?php
-namespace SFroemken\FalDropbox\Dropbox;
+namespace SFroemken\FalDropbox\Dropbox\WebAuthException;
 
 /**
  * Thrown if Dropbox returns some other error about the authorization request.
  */
-class WebAuthException_Provider extends \Exception
+class Provider extends \Exception
 {
     /**
      * @param string $message

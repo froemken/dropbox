@@ -4,25 +4,9 @@
 		<header/>
 		<body>
 
-			<trans-unit id="key">
-				<source>App key. You find it after creating a Dropbox App on: https://www.dropbox.com/developers</source>
-				<target>App key. Diesen findet Ihr nach Einrichtung einer App auf: https://www.dropbox.com/developers</target>
-			</trans-unit>
-			<trans-unit id="secret">
-				<source>App secret You find it after creating a Dropbox App on: https://www.dropbox.com/developers</source>
-				<target>App secret. Diesen findet Ihr nach Einrichtung einer App auf: https://www.dropbox.com/developers</target>
-			</trans-unit>
-			<trans-unit id="authCode">
-				<source>Click on the link below and login to Dropbox. Grand access to the app and copy the AuthCode into this field</source>
-				<target>Klicke auf den Link unten. Melde Dich bei Dropbox an und erlaube den Zugriff auf die App. Kopiere dann den AuthCode hier rein</target>
-			</trans-unit>
 			<trans-unit id="accessToken">
 				<source>After inserting the AuthCode you have to save this record and open it again. Below you will find an access_token. Copy it into this field.</source>
 				<target>Nach dem Einfügen des AuthCodes muss dieser Datensatz einmal gespeichert und erneut geöffnet werden. Unten erscheint nun der Access Token. Diesen bitte in dieses Feld hier hineinkopieren</target>
-			</trans-unit>
-			<trans-unit id="userId">
-				<source>After inserting the AuthCode you have to save this record and open it again. Below you will find an userId. Copy it into this field.</source>
-				<target>Nach dem Einfügen des AuthCodes muss dieser Datensatz einmal gespeichert und erneut geöffnet werden. Unten erscheint nun die Dropbox UserId. Diese bitte in dieses Feld hier hineinkopieren</target>
 			</trans-unit>
 			<trans-unit id="accessType.appFolder">
 				<source>App Folder</source>

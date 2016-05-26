@@ -1,10 +1,10 @@
 <?php
-namespace SFroemken\FalDropbox\Dropbox;
+namespace SFroemken\FalDropbox\Dropbox\WebAuthException;
 
 /**
  * Thrown if the user chose not to grant your app access to their Dropbox account.
  */
-class WebAuthException_NotApproved extends \Exception
+class NotApproved extends \Exception
 {
     /**
      * @param string $message

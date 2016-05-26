@@ -1,10 +1,10 @@
 <?php
-namespace SFroemken\FalDropbox\Dropbox;
+namespace SFroemken\FalDropbox\Dropbox\Exception;
 
 /**
  * Thrown when the the Dropbox server responds with an HTTP status code we didn't expect.
  */
-final class Exception_BadResponseCode extends Exception_BadResponse
+final class BadResponseCode extends BadResponse
 {
     /** @var int */
     private $statusCode;

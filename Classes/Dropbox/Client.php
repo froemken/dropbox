@@ -1,6 +1,8 @@
 <?php
 namespace SFroemken\FalDropbox\Dropbox;
 
+use SFroemken\FalDropbox\Dropbox\Exception\BadResponse;
+
 /**
  * The class used to make most Dropbox API calls.  You can use this once you've gotten an
  * {@link AccessToken} via {@link WebAuth}.
@@ -13,11 +15,11 @@ class Client
      * The access token used by this client to make authenticated API calls.  You can get an
      * access token via {@link WebAuth}.
      *
-     * @return AccessToken
+     * @return string AccessToken
      */
     function getAccessToken() { return $this->accessToken; }
 
-    /** @var AccessToken */
+    /** @var string AccessToken */
     private $accessToken;
 
     /**
@@ -441,18 +443,18 @@ class Client
                 }
                 if ($r === false) {  // Server didn't recognize our upload ID
                     // This is very unlikely since we're uploading all the chunks in sequence.
-                    throw new Exception_BadResponse("Server forgot our uploadId");
+                    throw new BadResponse("Server forgot our uploadId");
                 }
 
                 // Otherwise, the server is at a different byte offset from us.
                 $serverByteOffset = $r;
                 assert($serverByteOffset !== $byteOffset);  // chunkedUploadContinue ensures this.
                 // An earlier byte offset means the server has lost data we sent earlier.
-                if ($serverByteOffset < $byteOffset) throw new Exception_BadResponse(
+                if ($serverByteOffset < $byteOffset) throw new BadResponse(
                     "Server is at an ealier byte offset: us=$byteOffset, server=$serverByteOffset");
                 $diff = $serverByteOffset - $byteOffset;
                 // If the server is past where we think it could possibly be, something went wrong.
-                if ($diff > $len) throw new Exception_BadResponse(
+                if ($diff > $len) throw new BadResponse(
                     "Server is more than a chunk ahead: us=$byteOffset, server=$serverByteOffset");
                 // The normal case is that the server is a bit further along than us because of a
                 // partially-uploaded chunk.  Finish it off.
@@ -548,18 +550,18 @@ class Client
         $response = $this->_chunkedUpload(array(), $data);
 
         if ($response->statusCode === 404) {
-            throw new Exception_BadResponse("Got a 404, but we didn't send up an 'upload_id'");
+            throw new BadResponse("Got a 404, but we didn't send up an 'upload_id'");
         }
 
         $correction = self::_chunkedUploadCheckForOffsetCorrection($response);
-        if ($correction !== null) throw new Exception_BadResponse(
+        if ($correction !== null) throw new BadResponse(
             "Got an offset-correcting 400 response, but we didn't send an offset");
 
         if ($response->statusCode !== 200) throw RequestUtil::unexpectedStatus($response);
 
         list($uploadId, $byteOffset) = self::_chunkedUploadParse200Response($response->body);
         $len = strlen($data);
-        if ($byteOffset !== $len) throw new Exception_BadResponse(
+        if ($byteOffset !== $len) throw new BadResponse(
             "We sent $len bytes, but server returned an offset of $byteOffset");
 
         return $uploadId;
@@ -607,10 +609,10 @@ class Client
         $correction = self::_chunkedUploadCheckForOffsetCorrection($response);
         if ($correction !== null) {
             list($correctedUploadId, $correctedByteOffset) = $correction;
-            if ($correctedUploadId !== $uploadId) throw new Exception_BadResponse(
+            if ($correctedUploadId !== $uploadId) throw new BadResponse(
                 "Corrective 400 upload_id mismatch: us=".
                 Util::q($uploadId)." server=".Util::q($correctedUploadId));
-            if ($correctedByteOffset === $byteOffset) throw new Exception_BadResponse(
+            if ($correctedByteOffset === $byteOffset) throw new BadResponse(
                 "Corrective 400 offset is the same as ours: $byteOffset");
             return $correctedByteOffset;
         }
@@ -619,9 +621,9 @@ class Client
         list($retUploadId, $retByteOffset) = self::_chunkedUploadParse200Response($response->body);
 
         $nextByteOffset = $byteOffset + strlen($data);
-        if ($uploadId !== $retUploadId) throw new Exception_BadResponse(
+        if ($uploadId !== $retUploadId) throw new BadResponse(
                 "upload_id mismatch: us=".Util::q($uploadId) .", server=".Util::q($uploadId));
-        if ($nextByteOffset !== $retByteOffset) throw new Exception_BadResponse(
+        if ($nextByteOffset !== $retByteOffset) throw new BadResponse(
                 "next-offset mismatch: us=$nextByteOffset, server=$retByteOffset");
 
         return true;
@@ -1425,13 +1427,13 @@ class Client
      * @return \DateTime
      *    A standard PHP <code>\DateTime</code> instance.
      *
-     * @throws Exception_BadResponse
+     * @throws BadResponse
      *    Thrown if <code>$apiDateTimeString</code> isn't correctly formatted.
      */
     static function parseDateTime($apiDateTimeString)
     {
         $dt = \DateTime::createFromFormat(self::$dateTimeFormat, $apiDateTimeString);
-        if ($dt === false) throw new Exception_BadResponse(
+        if ($dt === false) throw new BadResponse(
             "Bad date/time from server: ".Util::q($apiDateTimeString));
         return $dt;
     }
@@ -1443,7 +1445,7 @@ class Client
      */
     static function getField($j, $fieldName)
     {
-        if (!array_key_exists($fieldName, $j)) throw new Exception_BadResponse(
+        if (!array_key_exists($fieldName, $j)) throw new BadResponse(
             "missing field \"$fieldName\" in ".Util::q($j));
         return $j[$fieldName];
     }

@@ -1,6 +1,8 @@
 <?php
 namespace SFroemken\FalDropbox\Dropbox;
 
+use SFroemken\FalDropbox\Dropbox\Exception\BadResponse;
+
 /**
  * The base class for the two auth options.
  */
@@ -41,20 +43,20 @@ class WebAuthBase extends AuthBase
         $parts = RequestUtil::parseResponseJson($response->body);
 
         if (!array_key_exists('token_type', $parts) || !is_string($parts['token_type'])) {
-            throw new Exception_BadResponse("Missing \"token_type\" field.");
+            throw new BadResponse("Missing \"token_type\" field.");
         }
         $tokenType = $parts['token_type'];
         if (!array_key_exists('access_token', $parts) || !is_string($parts['access_token'])) {
-            throw new Exception_BadResponse("Missing \"access_token\" field.");
+            throw new BadResponse("Missing \"access_token\" field.");
         }
         $accessToken = $parts['access_token'];
         if (!array_key_exists('uid', $parts) || !is_string($parts['uid'])) {
-            throw new Exception_BadResponse("Missing \"uid\" string field.");
+            throw new BadResponse("Missing \"uid\" string field.");
         }
         $userId = $parts['uid'];
 
         if ($tokenType !== "Bearer" && $tokenType !== "bearer") {
-            throw new Exception_BadResponse("Unknown \"token_type\"; expecting \"Bearer\", got  "
+            throw new BadResponse("Unknown \"token_type\"; expecting \"Bearer\", got  "
                                             .Util::q($tokenType));
         }
 

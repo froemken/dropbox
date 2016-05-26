@@ -1,5 +1,5 @@
 <?php
-namespace SFroemken\FalDropbox\Dropbox;
+namespace SFroemken\FalDropbox\Dropbox\WebAuthException;
 
 /**
  * Thrown if the given 'state' parameter doesn't contain the CSRF token from the user's session.
@@ -7,7 +7,7 @@ namespace SFroemken\FalDropbox\Dropbox;
  *
  * The recommended action is to respond with an HTTP 403 error page.
  */
-class WebAuthException_Csrf extends \Exception
+class Csrf extends \Exception
 {
     /**
      * @param string $message

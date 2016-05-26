@@ -6,36 +6,6 @@
 	<ROOT>
 		<type>array</type>
 		<el>
-			<key>
-				<TCEforms>
-					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:key</label>
-					<config>
-						<type>input</type>
-						<eval>trim</eval>
-						<size>30</size>
-					</config>
-				</TCEforms>
-			</key>
-			<secret>
-				<TCEforms>
-					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:secret</label>
-					<config>
-						<type>input</type>
-						<eval>trim</eval>
-						<size>30</size>
-					</config>
-				</TCEforms>
-			</secret>
-			<authCode>
-				<TCEforms>
-					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:authCode</label>
-					<config>
-						<type>input</type>
-						<eval>trim</eval>
-						<size>30</size>
-					</config>
-				</TCEforms>
-			</authCode>
 			<accessToken>
 				<TCEforms>
 					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessToken</label>
@@ -43,19 +13,19 @@
 						<type>input</type>
 						<eval>trim</eval>
 						<size>30</size>
+						<wizards>
+							<accessToken>
+								<type>popup</type>
+								<title>GetAccessToken</title>
+								<module>
+									<name>access_token</name>
+								</module>
+								<JSopenParams>height=480,width=640,status=0,menubar=0,scrollbars=1</JSopenParams>
+							</accessToken>
+						</wizards>
 					</config>
 				</TCEforms>
 			</accessToken>
-			<userId>
-				<TCEforms>
-					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:userId</label>
-					<config>
-						<type>input</type>
-						<eval>trim</eval>
-						<size>30</size>
-					</config>
-				</TCEforms>
-			</userId>
 			<accessType>
 				<TCEforms>
 					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessType</label>
