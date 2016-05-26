@@ -18,7 +18,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * A Service to generate an accessToken via Dropbox
  */
-class AccessTokenService {
+class AccessTokenService 
+{
 
     /**
      * @var string

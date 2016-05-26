@@ -32,7 +32,8 @@ use TYPO3\CMS\Extbase\Service\FlexFormService;
  * @package fal_dropbox
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RequestToken {
+class RequestToken 
+{
 
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -50,7 +51,8 @@ class RequestToken {
      * @param array $parentArray
      * @return void
      */
-    protected function initialize(array $parentArray) {
+    protected function initialize(array $parentArray) 
+    {
         $this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
         $this->parentArray = $parentArray;
     }
@@ -62,7 +64,8 @@ class RequestToken {
      * @param \TYPO3\CMS\Backend\Form\FormEngine $formEngine
      * @return string
      */
-    public function getRequestToken($parentArray, \TYPO3\CMS\Backend\Form\FormEngine $formEngine) {
+    public function getRequestToken($parentArray, \TYPO3\CMS\Backend\Form\FormEngine $formEngine)
+    {
         $this->initialize($parentArray);
         /** @var FlexFormService $flexFormService */
         $flexFormService = $this->objectManager->get(FlexFormService::class);
@@ -76,7 +79,8 @@ class RequestToken {
      * @param string $accessToken
      * @return string
      */
-    public function getHtmlForConnected($accessToken) {
+    public function getHtmlForConnected($accessToken)
+    {
         try {
             /** @var \SFroemken\FalDropbox\Dropbox\Client $dropboxClient */
             $dropboxClient = $this->objectManager->get(
