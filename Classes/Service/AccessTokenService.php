@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * A Service to generate an accessToken via Dropbox
  */
-class AccessTokenService 
+class AccessTokenService
 {
 
     /**
@@ -37,19 +37,23 @@ class AccessTokenService
     protected $view;
 
     /**
-     * inject view
+     * initialize
      *
-     * @param \TYPO3\CMS\Fluid\View\StandaloneView $view
      * @return void
      */
-    public function injectView(\TYPO3\CMS\Fluid\View\StandaloneView $view)
+    public function initialize()
     {
-        $this->view = $view;
+        $this->view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
         $this->view->setTemplatePathAndFilename(
             GeneralUtility::getFileAbsFileName(
                 'EXT:fal_dropbox/Resources/Private/Templates/GetAccessToken.html'
             )
         );
+        $this->view->setLayoutRootPaths(array(
+            GeneralUtility::getFileAbsFileName(
+                'EXT:fal_dropbox/Resources/Private/Layouts/'
+            )
+        ));
     }
 
     /**
@@ -57,6 +61,7 @@ class AccessTokenService
      */
     public function main()
     {
+        $this->initialize();
         $formFields = GeneralUtility::_POST('dropbox');
         $parameters = GeneralUtility::_GP('P');
         $appKey = htmlspecialchars($formFields['appKey']);
@@ -69,6 +74,14 @@ class AccessTokenService
             }
         }
 
+        if (
+            GeneralUtility::compat_version('7.6') ||
+            GeneralUtility::compat_version('8.0')
+        ) {
+            $this->view->assign('layoutPath', 'Typo3_76');
+        } else {
+            $this->view->assign('layoutPath', 'Typo3_62');
+        }
         $this->view->assign('appKey', $appKey);
         $this->view->assign('appSecret', $appSecret);
         $this->view->assign('parameters', json_encode($parameters));

@@ -5,7 +5,7 @@
 		<body>
 
 			<trans-unit id="accessToken">
-				<source>After inserting the AuthCode you have to save this record and open it again. Below you will find an access_token. Copy it into this field.</source>
+				<source>Insert the access_token of Dropbox or create one with help of the wizard.</source>
 			</trans-unit>
 			<trans-unit id="accessType">
 				<source>Access Type</source>

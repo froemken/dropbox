@@ -32,7 +32,7 @@ use TYPO3\CMS\Extbase\Service\FlexFormService;
  * @package fal_dropbox
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class RequestToken 
+class RequestToken
 {
 
     /**
@@ -51,7 +51,7 @@ class RequestToken
      * @param array $parentArray
      * @return void
      */
-    protected function initialize(array $parentArray) 
+    protected function initialize(array $parentArray)
     {
         $this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
         $this->parentArray = $parentArray;
@@ -61,15 +61,22 @@ class RequestToken
      * get requestToken
      *
      * @param array $parentArray
-     * @param \TYPO3\CMS\Backend\Form\FormEngine $formEngine
+     * @param object $formEngine
      * @return string
      */
-    public function getRequestToken($parentArray, \TYPO3\CMS\Backend\Form\FormEngine $formEngine)
+    public function getRequestToken($parentArray, $formEngine)
     {
         $this->initialize($parentArray);
-        /** @var FlexFormService $flexFormService */
-        $flexFormService = $this->objectManager->get(FlexFormService::class);
-        $config = $flexFormService->convertFlexFormContentToArray($parentArray['row']['configuration']);
+        if (is_string($parentArray['row']['configuration'])) {
+            /** @var FlexFormService $flexFormService */
+            $flexFormService = $this->objectManager->get(FlexFormService::class);
+            $config = $flexFormService->convertFlexFormContentToArray($parentArray['row']['configuration']);
+        } else {
+            $config = array();
+            foreach ($parentArray['row']['configuration']['data']['sDEF']['lDEF'] as $key => $value) {
+                $config[$key] = $value['vDEF'];
+            }
+        }
         return $this->getHtmlForConnected($config['accessToken']);
     }
 

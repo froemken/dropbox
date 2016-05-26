@@ -5,8 +5,8 @@
 		<body>
 
 			<trans-unit id="accessToken">
-				<source>After inserting the AuthCode you have to save this record and open it again. Below you will find an access_token. Copy it into this field.</source>
-				<target>Nach dem Einfügen des AuthCodes muss dieser Datensatz einmal gespeichert und erneut geöffnet werden. Unten erscheint nun der Access Token. Diesen bitte in dieses Feld hier hineinkopieren</target>
+				<source>Insert the access_token of Dropbox or create one with help of the wizard.</source>
+				<target>Tragen Sie hier den access_token von Dropbox ein oder erstellen Sie einen über den Wizard.</target>
 			</trans-unit>
 			<trans-unit id="accessType.appFolder">
 				<source>App Folder</source>

@@ -4,7 +4,9 @@ if (!defined('TYPO3_MODE')) {
 }
 
 // Register accessToken wizard
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModulePath(
-    'access_token',
-    'EXT:fal_dropbox/Classes/Wizards/AccessToken/'
-);
+if (!\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version('8.0')) {
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModulePath(
+        'access_token',
+        'EXT:fal_dropbox/Classes/Wizards/AccessToken/'
+    );
+}

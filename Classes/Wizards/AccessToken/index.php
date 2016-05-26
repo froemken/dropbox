@@ -16,8 +16,6 @@
  * Wizard to generate an accessToken via Dropbox
  */
 
-/** @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 /** @var \SFroemken\FalDropbox\Service\AccessTokenService $accessTokenService */
-$accessTokenService = $objectManager->get('SFroemken\\FalDropbox\\Service\\AccessTokenService');
+$accessTokenService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('SFroemken\\FalDropbox\\Service\\AccessTokenService');
 echo $accessTokenService->main();

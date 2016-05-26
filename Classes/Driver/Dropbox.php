@@ -960,7 +960,6 @@ class Dropbox extends AbstractDriver
                 $info = $this->cache->get($cacheKey);
             } else {
                 $info = $this->dropboxClient->getMetadataWithChildren($path);
-                $this->cache->set($cacheKey, $info);
                 // create cache entries for sub resources
                 if (!empty($info['contents'])) {
                     foreach ($info['contents'] as $key => $resource) {
@@ -971,6 +970,7 @@ class Dropbox extends AbstractDriver
                         }
                     }
                 }
+                $this->cache->set($cacheKey, $info);
             }
         } catch(\Exception $e) {
             // if something crashes return an empty array

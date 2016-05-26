@@ -1,18 +1,6 @@
-<f:be.container
-	pageTitle="getAccessToken"
-	enableJumpToUrl="false"
-	enableClickMenu="false"
-	loadPrototype="false"
-	loadScriptaculous="false"
-	loadExtJs="false"
-	loadExtJsTheme="false"
-	extJsAdapter="jQuery"
-	enableExtJsDebug="false"
-	loadJQuery="true"
-	includeCssFiles="{0: '{f:uri.resource(path: \'Css/bootstrap.min.css\', extensionName: \'fal_dropbox\')}'}"
-	includeJsFiles="{0: '{f:uri.resource(path: \'JavaScript/bootstrap.min.js\', extensionName: \'fal_dropbox\')}', 1: '{f:uri.resource(path: \'JavaScript/main.js\', extensionName: \'fal_dropbox\')}'}"
-	includeCsh="false"
->
+<f:layout name="{layoutPath}" />
+
+<f:section name="main">
 	<div class="container">
 		<f:if condition="{errors}">
 			<f:for each="{errors}" as="error">
@@ -63,4 +51,4 @@
 			</f:else>
 		</f:if>
 	</div>
-</f:be.container>
+</f:section>
