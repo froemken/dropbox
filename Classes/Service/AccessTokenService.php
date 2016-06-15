@@ -13,6 +13,7 @@ namespace SFroemken\FalDropbox\Service;
  *
  * The TYPO3 project - inspiring people to share!
  */
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -58,6 +59,8 @@ class AccessTokenService
 
     /**
      * start HTML-Output
+     *
+     * @return Response|string
      */
     public function main()
     {
@@ -74,19 +77,21 @@ class AccessTokenService
             }
         }
 
-        if (
-            GeneralUtility::compat_version('7.6') ||
-            GeneralUtility::compat_version('8.0')
-        ) {
-            $this->view->assign('layoutPath', 'Typo3_76');
-        } else {
-            $this->view->assign('layoutPath', 'Typo3_62');
-        }
         $this->view->assign('appKey', $appKey);
         $this->view->assign('appSecret', $appSecret);
         $this->view->assign('parameters', json_encode($parameters));
         $this->view->assign('errors', $this->errors);
-        return $this->view->render();
+
+        if (GeneralUtility::compat_version('7.6')) {
+            $this->view->assign('layoutPath', 'Typo3_76');
+            /** @var Response $response */
+            $response = GeneralUtility::makeInstance(Response::class);
+            $response->getBody()->write($this->view->render());
+            return $response;
+        } else {
+            $this->view->assign('layoutPath', 'Typo3_62');
+            return $this->view->render();
+        }
     }
 
     /**

@@ -11,7 +11,7 @@
  *****************************************************************/
 
 $EM_CONF[$_EXTKEY] = array (
-    'title' => 'fal_dropbox',
+    'title' => 'FAL Dropbox',
     'description' => 'Provides a DropBox driver for TYPO3 File Abstraction Layer.',
     'category' => 'plugin',
     'author' => 'Stefan Froemken',

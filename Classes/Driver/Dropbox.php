@@ -990,6 +990,7 @@ class Dropbox extends AbstractDriver
         if (!empty($resource)) {
             $cacheKey = $this->getCacheIdentifierForPath($resource['path']);
             if (!$this->cache->has($cacheKey)) {
+                // we need this condition. Else only root folders will be shown
                 if (!$resource['is_dir']) {
                     $this->cache->set($cacheKey, $resource);
                 }

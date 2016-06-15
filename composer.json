@@ -1,0 +1,33 @@
+{
+    "name": "sfroemken/fal_dropbox",
+    "type": "typo3-cms-extension",
+    "description": "Add a FAL driver for Dropbox to TYPO3",
+    "version": "0.2.0",
+    "license": "GPL-2.0+",
+    "keywords": ["typo3", "TYPO3 CMS", "dropbox", "fal", "fal_dropbox"],
+    "homepage": "http://www.typo3lexikon.de",
+    "authors": [
+      {
+        "name": "Stefan Froemken",
+        "email": "froemken@gmail.com",
+        "role": "Lead Developer"
+      }
+    ],
+    "support": {
+      "email": "froemken@gmail.com",
+      "issues": "https://github.com/froemken/fal_dropbox/issues",
+      "source": "https://github.com/froemken/fal_dropbox"
+    },
+    "require": {
+      "php": ">=5.3.7 <6.0",
+      "typo3/cms-core": ">=6.2.14,<8.0"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "~4.8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SFroemken\\FalDropbox\\": "Classes"
+        }
+    }
+}

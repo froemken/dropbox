@@ -1,4 +1,13 @@
-<f:layout name="{layoutPath}" />
+{namespace d=SFroemken\FalDropbox\ViewHelpers}
+
+<f:if condition="{d:compatVersion(version: '7.6')}">
+	<f:then>
+		<f:layout name="Typo3_76" />
+	</f:then>
+	<f:else>
+		<f:layout name="Typo3_62" />
+	</f:else>
+</f:if>
 
 <f:section name="main">
 	<div class="container">
