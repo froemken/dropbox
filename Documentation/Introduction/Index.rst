@@ -5,16 +5,15 @@
 
 .. include:: ../Includes.txt
 
-
 What does it do?
 ================
 
 This extension adds a FAL driver to TYPO3 which works with Dropbox API.
 
-.. figure:: ../Images/IntroductionPackage.png
+Screenshot
+----------
+
+.. figure:: ../Images/fal_dropbox_fileadmin.jpg
 	:width: 500px
-	:alt: Introduction Package
-
-	Introduction Package just after installation (caption of the image)
-
-	How the Frontend of the Introduction Package looks like just after installation (legend of the image)
+	:align: left
+	:alt: FAL Dropbox fileadmin

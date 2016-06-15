@@ -2,7 +2,7 @@
     "name": "sfroemken/fal_dropbox",
     "type": "typo3-cms-extension",
     "description": "Add a FAL driver for Dropbox to TYPO3",
-    "version": "0.2.0",
+    "version": "1.0.0",
     "license": "GPL-2.0+",
     "keywords": ["typo3", "TYPO3 CMS", "dropbox", "fal", "fal_dropbox"],
     "homepage": "http://www.typo3lexikon.de",

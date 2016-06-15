@@ -5,7 +5,6 @@
 
 .. include:: Includes.txt
 
-
 .. _start:
 
 =============================================================
@@ -27,7 +26,7 @@ FAL Dropbox
 		Provides a DropBox driver for TYPO3 File Abstraction Layer.
 
 	:Keywords:
-		comma,separated,list,keywords
+		fal, dropbox
 
 	:Copyright:
 		2016
@@ -48,14 +47,11 @@ FAL Dropbox
 	The content of this document is related to TYPO3,
 	a GNU/GPL CMS/Framework available from `www.typo3.org <https://typo3.org/>`__.
 
-
 	**Table of Contents**
 
 .. toctree::
-	:maxdepth: 3
+	:maxdepth: 2
 	:titlesonly:
 
 	Introduction/Index
-	UsersManual/Index
 	AdministratorManual/Index
-	Links

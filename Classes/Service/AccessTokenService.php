@@ -83,13 +83,11 @@ class AccessTokenService
         $this->view->assign('errors', $this->errors);
 
         if (GeneralUtility::compat_version('7.6')) {
-            $this->view->assign('layoutPath', 'Typo3_76');
             /** @var Response $response */
             $response = GeneralUtility::makeInstance(Response::class);
             $response->getBody()->write($this->view->render());
             return $response;
         } else {
-            $this->view->assign('layoutPath', 'Typo3_62');
             return $this->view->render();
         }
     }

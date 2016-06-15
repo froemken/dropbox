@@ -5,32 +5,53 @@
 
 .. include:: ../../Includes.txt
 
-
 .. _installation:
 
 Installation
 ============
 
-The extension needs to be installed as any other extension of TYPO3 CMS:
+The extension needs to be installed like any other extension of TYPO3 CMS:
 
-#. Switch to the module "Extension Manager".
+#. Visit fal_dropbox at `Github <https://github.com/froemken/fal_dropbox>`_
+
+#. You will find a Download-Button where you can select between Download as Zip or Link for cloning this project.
 
 #. Get the extension
 
-   #. **Get it from the Extension Manager:** Press the "Retrieve/Update"
-      button and search for the extension key *fal_dropbox* and import the
-      extension from the repository.
+   #. **Get it via Zip:** Switch to the Extensionmanager and upload fal_dropbox
 
-   #. **Get it from typo3.org:** You can always get current version from
-      `http://typo3.org/extensions/repository/view/fal_dropbox/current/
-      <http://typo3.org/extensions/repository/view/fal_dropbox/current/>`_ by
-      downloading either the t3x or zip version. Upload
-      the file afterwards in the Extension Manager.
+   #. **Get it via Git:** If Git is available on your system, switch into
+      the typo3conf/ext/ directory and clone it from Github:
 
-Latest version from git
------------------------
-You can get the latest version from git by using the git command:
+      .. code-block:: bash
 
-.. code-block:: bash
+         git clone https://github.com/froemken/fal_dropbox.git
 
-   git clone git@github.com:froemken/fal_dropbox.git
+   #. **Get it via Composer:** If you run TYPO3 in composer mode you can add a new Repository
+      into you composer.json:
+
+      .. code-block:: bash
+
+         {
+           "repositories": [
+             {
+               "type": "composer",
+               "url": "https://composer.typo3.org/"
+             },
+             {
+               "type": "vcs",
+               "url": "https://github.com/froemken/fal_dropbox"
+             }
+           ],
+           "name": "my-vendor/my-typo3-cms-distribution",
+           "require": {
+             "typo3/cms": "7.6.*",
+             "sfroemken/fal_dropbox": "0.2.*"
+           },
+           "extra": {
+             "typo3/cms": {
+               "cms-package-dir": "{$vendor-dir}/typo3/cms",
+               "web-dir": "web"
+             }
+           }
+         }

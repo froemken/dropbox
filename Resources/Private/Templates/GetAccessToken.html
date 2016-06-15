@@ -2,10 +2,25 @@
 
 <f:if condition="{d:compatVersion(version: '7.6')}">
 	<f:then>
-		<f:layout name="Typo3_76" />
+		<f:be.container
+			pageTitle="getAccessToken"
+			enableClickMenu="false"
+			loadJQuery="true"
+			includeJsFiles="{0: '{f:uri.resource(path: \'JavaScript/main76.js\', extensionName: \'fal_dropbox\')}'}"
+		>
+			<f:render section="main" arguments="{_all}" />
+		</f:be.container>
 	</f:then>
 	<f:else>
-		<f:layout name="Typo3_62" />
+		<f:be.container
+			pageTitle="getAccessToken"
+			enableClickMenu="false"
+			loadJQuery="true"
+			includeCssFiles="{0: '{f:uri.resource(path: \'Css/bootstrap.min.css\', extensionName: \'fal_dropbox\')}'}"
+			includeJsFiles="{0: '{f:uri.resource(path: \'JavaScript/bootstrap.min.js\', extensionName: \'fal_dropbox\')}', 1: '{f:uri.resource(path: \'JavaScript/main62.js\', extensionName: \'fal_dropbox\')}'}"
+		>
+			<f:render section="main" arguments="{_all}" />
+		</f:be.container>
 	</f:else>
 </f:if>
 
@@ -22,7 +37,12 @@
 
 		<f:if condition="{getAuthCodeLink}">
 			<f:then>
-				<div><f:link.external target="_blank" uri="{getAuthCodeLink}">Authorize your Dropbox App</f:link.external></div>
+				<div class="panel panel-info">
+					<div class="panel-heading">Authorize your Dropbox App</div>
+					<div class="panel-body">
+						<f:link.external target="_blank" uri="{getAuthCodeLink}">Authorization Link (opens in new tab)</f:link.external>
+					</div>
+				</div>
 
 				<f:form method="POST" id="getAccessToken" addQueryString="1">
 					<f:form.hidden id="parameters" name="parameters" value="{parameters}" />
