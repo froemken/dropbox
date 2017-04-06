@@ -65,8 +65,13 @@ class AccessTokenService
     public function main()
     {
         $this->initialize();
+        /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
+        $uriBuilder = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Routing\\UriBuilder');
+        $formUri = (string)$uriBuilder->buildUriFromRoute('access_token');
+        
         $formFields = GeneralUtility::_POST('dropbox');
         $parameters = GeneralUtility::_GP('P');
+        
         $appKey = htmlspecialchars($formFields['appKey']);
         $appSecret = htmlspecialchars($formFields['appSecret']);
 
@@ -79,6 +84,7 @@ class AccessTokenService
 
         $this->view->assign('appKey', $appKey);
         $this->view->assign('appSecret', $appSecret);
+        $this->view->assign('formUri', $formUri);
         $this->view->assign('parameters', json_encode($parameters));
         $this->view->assign('errors', $this->errors);
 
