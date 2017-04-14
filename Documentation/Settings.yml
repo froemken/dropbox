@@ -4,10 +4,10 @@
 
 ---
 conf.py:
-  copyright: 2016
+  copyright: 2017
   project: FAL Dropbox
-  version: 1.0.0
-  release: 1.0.0
+  version: 2.0.0
+  release: 2.0.0
   latex_documents:
   - - Index
     - fal_dropbox.tex

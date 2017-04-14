@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * This file is part of the TYPO3 CMS project.
  *
  * It is free software; you can redistribute it and/or modify it under
@@ -17,5 +17,7 @@
  */
 
 /** @var \SFroemken\FalDropbox\Service\AccessTokenService $accessTokenService */
-$accessTokenService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('SFroemken\\FalDropbox\\Service\\AccessTokenService');
+$accessTokenService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+    \SFroemken\FalDropbox\Service\AccessTokenService::class
+);
 echo $accessTokenService->main();

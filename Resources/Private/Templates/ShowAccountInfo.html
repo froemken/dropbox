@@ -3,20 +3,38 @@
 <table class="t3-table table table-striped">
 	<tbody>
 	<tr>
+		<td>Type</td>
+		<td>{account.accountType}</td>
+	</tr>
+	<tr>
 		<td>Name</td>
-		<td>{account.display_name}</td>
+		<td><f:link.external uri="{account.referralLink}" target="_blank">{account.displayName}</f:link.external></td>
 	</tr>
 	<tr>
 		<td>E-Mail</td>
 		<td>{account.email}</td>
 	</tr>
+	<f:if condition="{account.profile_photo_url}">
+		<tr>
+			<td>Image</td>
+			<td>{account.profile_photo_url}</td>
+		</tr>
+	</f:if>
 	<tr>
-		<td>Quota</td>
-		<td>{account.quota_info.quota -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
+		<td>Disabled</td>
+		<td>{f:if(condition: account.disabled, then: 'Yes', else: 'No')}</td>
+	</tr>
+	<tr>
+		<td>Paired</td>
+		<td>{f:if(condition: account.is_paired, then: 'Yes', else: 'No')}</td>
+	</tr>
+	<tr>
+		<td>Allocated</td>
+		<td>{quota.allocation.allocated -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
 	</tr>
 	<tr>
 		<td>Used</td>
-		<td>{account.quota_info.normal -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
+		<td>{quota.used -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
 	</tr>
 	</tbody>
 </table>

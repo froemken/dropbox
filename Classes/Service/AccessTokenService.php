@@ -1,7 +1,7 @@
 <?php
 namespace SFroemken\FalDropbox\Service;
 
-/**
+/*
  * This file is part of the TYPO3 CMS project.
  *
  * It is free software; you can redistribute it and/or modify it under
@@ -13,15 +13,18 @@ namespace SFroemken\FalDropbox\Service;
  *
  * The TYPO3 project - inspiring people to share!
  */
+use Kunnu\Dropbox\Dropbox;
+use Kunnu\Dropbox\DropboxApp;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * A Service to generate an accessToken via Dropbox
  */
 class AccessTokenService
 {
-
     /**
      * @var string
      */
@@ -30,7 +33,7 @@ class AccessTokenService
     /**
      * @var array
      */
-    protected $errors = array();
+    protected $errors = [];
 
     /**
      * @var \TYPO3\CMS\Fluid\View\StandaloneView
@@ -44,17 +47,17 @@ class AccessTokenService
      */
     public function initialize()
     {
-        $this->view = GeneralUtility::makeInstance('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
+        $this->view = GeneralUtility::makeInstance(StandaloneView::class);
         $this->view->setTemplatePathAndFilename(
             GeneralUtility::getFileAbsFileName(
                 'EXT:fal_dropbox/Resources/Private/Templates/GetAccessToken.html'
             )
         );
-        $this->view->setLayoutRootPaths(array(
+        $this->view->setLayoutRootPaths([
             GeneralUtility::getFileAbsFileName(
                 'EXT:fal_dropbox/Resources/Private/Layouts/'
             )
-        ));
+        ]);
     }
 
     /**
@@ -66,26 +69,32 @@ class AccessTokenService
     {
         $this->initialize();
         /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
-        $uriBuilder = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Routing\\UriBuilder');
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $formUri = (string)$uriBuilder->buildUriFromRoute('access_token');
         
         $formFields = GeneralUtility::_POST('dropbox');
-        $parameters = GeneralUtility::_GP('P');
+        $parameters = GeneralUtility::_GET('P');
+        if (empty($parameters)) {
+            $parameters = GeneralUtility::_POST('parameters');
+        }
         
         $appKey = htmlspecialchars($formFields['appKey']);
         $appSecret = htmlspecialchars($formFields['appSecret']);
 
         if (!empty($formFields['appKey'])) {
-            $uri = $this->createGetAuthCodeLink($appKey);
+            $dropbox = new Dropbox(new DropboxApp($appKey, $appSecret));
+            $uri = $dropbox->getAuthHelper()->getAuthUrl();
             if (!empty($uri)) {
                 $this->view->assign('getAuthCodeLink', $uri);
+                $this->view->assign('parameters', $parameters);
             }
+        } else {
+            $this->view->assign('parameters', json_encode($parameters));
         }
 
         $this->view->assign('appKey', $appKey);
         $this->view->assign('appSecret', $appSecret);
         $this->view->assign('formUri', $formUri);
-        $this->view->assign('parameters', json_encode($parameters));
         $this->view->assign('errors', $this->errors);
 
         if (GeneralUtility::compat_version('7.6')) {
@@ -99,28 +108,6 @@ class AccessTokenService
     }
 
     /**
-     * Create Link where you can authorize your appKey
-     *
-     * @param string $appKey
-     * @return string
-     */
-    protected function createGetAuthCodeLink($appKey)
-    {
-        $uri = sprintf(
-            $this->dropboxAuthorizeUrl,
-            $appKey,
-            'code'
-        );
-        $report = array();
-        GeneralUtility::getUrl($uri, 2, false, $report);
-        if (!empty($report['error'])) {
-            $this->addError($report['error'], $report['message']);
-            $uri = '';
-        }
-        return $uri;
-    }
-
-    /**
      * Add error
      *
      * @param int $errorNo
@@ -129,9 +116,9 @@ class AccessTokenService
      */
     protected function addError($errorNo, $errorMessage)
     {
-        $this->errors[] = array(
+        $this->errors[] = [
             'number' => $errorNo,
             'message' => $errorMessage
-        );
+        ];
     }
 }

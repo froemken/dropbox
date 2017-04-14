@@ -1,32 +1,24 @@
 <?php
 namespace SFroemken\FalDropbox\Tca;
 
-/***************************************************************
- *  Copyright notice
+/*
+ * This file is part of the TYPO3 CMS project.
  *
- *  (c) 2012 Stefan froemken <froemken@gmail.com>
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
  *
- *  All rights reserved
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
  *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-use SFroemken\FalDropbox\Dropbox\Exception\InvalidAccessToken;
+ * The TYPO3 project - inspiring people to share!
+ */
+use Kunnu\Dropbox\Dropbox;
+use Kunnu\Dropbox\DropboxApp;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Service\FlexFormService;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * @package fal_dropbox
@@ -34,16 +26,10 @@ use TYPO3\CMS\Extbase\Service\FlexFormService;
  */
 class RequestToken
 {
-
-    /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
-     */
-    protected $objectManager;
-
     /**
      * @var array
      */
-    protected $parentArray = array();
+    protected $parentArray = [];
 
     /**
      * initializes this object
@@ -53,7 +39,6 @@ class RequestToken
      */
     protected function initialize(array $parentArray)
     {
-        $this->objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
         $this->parentArray = $parentArray;
     }
 
@@ -69,10 +54,10 @@ class RequestToken
         $this->initialize($parentArray);
         if (is_string($parentArray['row']['configuration'])) {
             /** @var FlexFormService $flexFormService */
-            $flexFormService = $this->objectManager->get(FlexFormService::class);
+            $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
             $config = $flexFormService->convertFlexFormContentToArray($parentArray['row']['configuration']);
         } else {
-            $config = array();
+            $config = [];
             foreach ($parentArray['row']['configuration']['data']['sDEF']['lDEF'] as $key => $value) {
                 $config[$key] = $value['vDEF'];
             }
@@ -84,34 +69,29 @@ class RequestToken
      * get HTML to show the user, that he is connected with his dropbox account
      *
      * @param string $accessToken
+     *
      * @return string
      */
     public function getHtmlForConnected($accessToken)
     {
+        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
+        $view = GeneralUtility::makeInstance(StandaloneView::class);
+        $view->setTemplatePathAndFilename(
+            GeneralUtility::getFileAbsFileName(
+                'EXT:fal_dropbox/Resources/Private/Templates/ShowAccountInfo.html'
+            )
+        );
+
         try {
-            /** @var \SFroemken\FalDropbox\Dropbox\Client $dropboxClient */
-            $dropboxClient = $this->objectManager->get(
-                'SFroemken\\FalDropbox\\Dropbox\\Client',
-                $accessToken,
-                'TYPO3 CMS'
-            );
-            $accountInfo = $dropboxClient->getAccountInfo();
-            if (!is_array($accountInfo)) {
-                $accountInfo = array();
-            }
-            /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
-            $view = $this->objectManager->get('TYPO3\\CMS\\Fluid\\View\\StandaloneView');
-            $view->setTemplatePathAndFilename(
-                GeneralUtility::getFileAbsFileName(
-                    'EXT:fal_dropbox/Resources/Private/Templates/ShowAccountInfo.html'
-                )
-            );
-            $view->assign('account', $accountInfo);
+            /** @var DropboxApp $dropboxClient */
+            $dropboxApp = GeneralUtility::makeInstance(DropboxApp::class, '', '',  $accessToken);
+            /** @var Dropbox $dropbox */
+            $dropbox = GeneralUtility::makeInstance(Dropbox::class, $dropboxApp);
+            $view->assign('account', $dropbox->getCurrentAccount());
+            $view->assign('quota', $dropbox->getSpaceUsage());
             $content = $view->render();
-        } catch (InvalidAccessToken $e) {
-            $content = 'Access Token is invalid';
         } catch (\Exception $e) {
-            $content = 'Could not retrieve account info from Dropbox';
+            $content = 'Please setup access token first to see your account info here.';
         }
 
         return $content;
