@@ -1,4 +1,4 @@
-fal_dropbox is an extension for TYPO3 >= 6.2.0
+fal_dropbox is an extension for TYPO3 >= 7.6.0
 It extends FAL to show files from your dropbox account in file list module
 
 INSTALL
