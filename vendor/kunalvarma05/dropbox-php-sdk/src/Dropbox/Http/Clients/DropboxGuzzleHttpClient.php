@@ -1,29 +1,30 @@
 <?php
+
 namespace Kunnu\Dropbox\Http\Clients;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\StreamInterface;
-use GuzzleHttp\Exception\RingException;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\RequestException;
 use Kunnu\Dropbox\Http\DropboxRawResponse;
+use GuzzleHttp\Exception\BadResponseException;
 use Kunnu\Dropbox\Exceptions\DropboxClientException;
 
 /**
- * DropboxGuzzleHttpClient
+ * DropboxGuzzleHttpClient.
  */
 class DropboxGuzzleHttpClient implements DropboxHttpClientInterface
 {
     /**
-     * GuzzleHttp client
+     * GuzzleHttp client.
      *
      * @var \GuzzleHttp\Client
      */
     protected $client;
 
     /**
-     * Create a new DropboxGuzzleHttpClient instance
+     * Create a new DropboxGuzzleHttpClient instance.
      *
      * @param Client $client GuzzleHttp Client
      */
@@ -34,7 +35,7 @@ class DropboxGuzzleHttpClient implements DropboxHttpClientInterface
     }
 
     /**
-     * Send request to the server and fetch the raw response
+     * Send request to the server and fetch the raw response.
      *
      * @param  string $url     URL/Endpoint to send the request to
      * @param  string $method  Request Method
@@ -54,10 +55,12 @@ class DropboxGuzzleHttpClient implements DropboxHttpClientInterface
         try {
             //Send the Request
             $rawResponse = $this->client->send($request, $options);
+        } catch (BadResponseException $e) {
+            throw new DropboxClientException($e->getResponse()->getBody(), $e->getCode(), $e);
         } catch (RequestException $e) {
             $rawResponse = $e->getResponse();
 
-            if ($e->getPrevious() instanceof RingException || !$rawResponse instanceof ResponseInterface) {
+            if (! $rawResponse instanceof ResponseInterface) {
                 throw new DropboxClientException($e->getMessage(), $e->getCode());
             }
         }
@@ -83,7 +86,7 @@ class DropboxGuzzleHttpClient implements DropboxHttpClientInterface
     }
 
     /**
-     * Get the Response Body
+     * Get the Response Body.
      *
      * @param string|\Psr\Http\Message\ResponseInterface $response Response object
      *
@@ -103,6 +106,6 @@ class DropboxGuzzleHttpClient implements DropboxHttpClientInterface
             $body = $body->getContents();
         }
 
-        return $body;
+        return (string) $body;
     }
 }
