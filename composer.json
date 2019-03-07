@@ -18,8 +18,7 @@
     "source": "https://github.com/froemken/fal_dropbox"
   },
   "require": {
-    "php": ">=7.1.0 <8.0",
-    "typo3/cms": ">=8.7.0,<10.0",
-    "kunalvarma05/dropbox-php-sdk": ">=0.2.0"
+    "typo3/cms": "^8.7.13 || ^9.5.0",
+    "kunalvarma05/dropbox-php-sdk": "^0.2"
   }
 }
