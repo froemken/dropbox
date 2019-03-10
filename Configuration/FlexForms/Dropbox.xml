@@ -13,16 +13,11 @@
 						<type>input</type>
 						<eval>trim</eval>
 						<size>30</size>
-						<wizards>
+						<fieldControl>
 							<accessToken>
-								<type>popup</type>
-								<title>GetAccessToken</title>
-								<module>
-									<name>access_token</name>
-								</module>
-								<JSopenParams>height=480,width=640,status=0,menubar=0,scrollbars=1</JSopenParams>
+								<renderType>accessToken</renderType>
 							</accessToken>
-						</wizards>
+						</fieldControl>
 					</config>
 				</TCEforms>
 			</accessToken>

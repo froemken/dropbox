@@ -1,28 +1,10 @@
-{namespace d=SFroemken\FalDropbox\ViewHelpers}
+<f:be.container
+	pageTitle="getAccessToken"
+	includeRequireJsModules="{0: 'TYPO3/CMS/FalDropbox/AccessTokenModule'}"
+>
+	<f:render section="main" arguments="{_all}" />
+</f:be.container>
 
-<f:if condition="{d:compatVersion(version: '7.6')}">
-	<f:then>
-		<f:be.container
-			pageTitle="getAccessToken"
-			enableClickMenu="false"
-			loadJQuery="true"
-			includeJsFiles="{0: '{f:uri.resource(path: \'JavaScript/main76.js\', extensionName: \'fal_dropbox\')}'}"
-		>
-			<f:render section="main" arguments="{_all}" />
-		</f:be.container>
-	</f:then>
-	<f:else>
-		<f:be.container
-			pageTitle="getAccessToken"
-			enableClickMenu="false"
-			loadJQuery="true"
-			includeCssFiles="{0: '{f:uri.resource(path: \'Css/bootstrap.min.css\', extensionName: \'fal_dropbox\')}'}"
-			includeJsFiles="{0: '{f:uri.resource(path: \'JavaScript/bootstrap.min.js\', extensionName: \'fal_dropbox\')}', 1: '{f:uri.resource(path: \'JavaScript/main62.js\', extensionName: \'fal_dropbox\')}'}"
-		>
-			<f:render section="main" arguments="{_all}" />
-		</f:be.container>
-	</f:else>
-</f:if>
 
 <f:section name="main">
 	<div class="container">
