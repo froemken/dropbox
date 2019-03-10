@@ -15,6 +15,7 @@ namespace SFroemken\FalDropbox\Service;
  */
 use Kunnu\Dropbox\Dropbox;
 use Kunnu\Dropbox\DropboxApp;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -64,6 +65,7 @@ class AccessTokenService
      * start HTML-Output
      *
      * @return Response|string
+     * @throws RouteNotFoundException
      */
     public function main()
     {
@@ -97,14 +99,10 @@ class AccessTokenService
         $this->view->assign('formUri', $formUri);
         $this->view->assign('errors', $this->errors);
 
-        if (GeneralUtility::compat_version('7.6')) {
-            /** @var Response $response */
-            $response = GeneralUtility::makeInstance(Response::class);
-            $response->getBody()->write($this->view->render());
-            return $response;
-        } else {
-            return $this->view->render();
-        }
+        /** @var Response $response */
+        $response = GeneralUtility::makeInstance(Response::class);
+        $response->getBody()->write($this->view->render());
+        return $response;
     }
 
     /**
