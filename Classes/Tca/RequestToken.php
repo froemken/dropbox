@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace SFroemken\FalDropbox\Tca;
 
 /*
@@ -34,7 +35,6 @@ class RequestToken
      * initializes this object
      *
      * @param array $parentArray
-     * @return void
      */
     protected function initialize(array $parentArray)
     {
@@ -48,7 +48,7 @@ class RequestToken
      * @param object $formEngine
      * @return string
      */
-    public function getRequestToken($parentArray, $formEngine)
+    public function getRequestToken($parentArray, $formEngine): string
     {
         $this->initialize($parentArray);
         if (is_string($parentArray['row']['configuration'])) {
@@ -68,10 +68,9 @@ class RequestToken
      * get HTML to show the user, that he is connected with his dropbox account
      *
      * @param string $accessToken
-     *
      * @return string
      */
-    public function getHtmlForConnected($accessToken)
+    public function getHtmlForConnected($accessToken): string
     {
         /** @var \TYPO3\CMS\Fluid\View\StandaloneView $view */
         $view = GeneralUtility::makeInstance(StandaloneView::class);

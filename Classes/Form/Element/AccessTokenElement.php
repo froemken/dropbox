@@ -1,5 +1,7 @@
 <?php
+declare(strict_types = 1);
 namespace SFroemken\FalDropbox\Form\Element;
+
 /*
  * This file is part of the fal_dropbox project.
  *
@@ -46,7 +48,7 @@ class AccessTokenElement extends \TYPO3\CMS\Backend\Form\Element\AbstractFormEle
      * @return array
      * @throws RouteNotFoundException
      */
-    public function render()
+    public function render(): array
     {
         $options = $this->data['renderData']['fieldControlOptions'];
         $parameterArray = $this->data['parameterArray'];

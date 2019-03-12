@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace SFroemken\FalDropbox\Service;
 
 /*
@@ -13,6 +14,7 @@ namespace SFroemken\FalDropbox\Service;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
 use Kunnu\Dropbox\Dropbox;
 use Kunnu\Dropbox\DropboxApp;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
@@ -43,8 +45,6 @@ class AccessTokenService
 
     /**
      * initialize
-     *
-     * @return void
      */
     public function initialize()
     {
@@ -64,10 +64,10 @@ class AccessTokenService
     /**
      * start HTML-Output
      *
-     * @return Response|string
+     * @return Response
      * @throws RouteNotFoundException
      */
-    public function main()
+    public function main(): Response
     {
         $this->initialize();
         /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
@@ -110,7 +110,6 @@ class AccessTokenService
      *
      * @param int $errorNo
      * @param string $errorMessage
-     * @return void
      */
     protected function addError($errorNo, $errorMessage)
     {

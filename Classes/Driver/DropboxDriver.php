@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace SFroemken\FalDropbox\Driver;
 
 /*
@@ -13,6 +14,7 @@ namespace SFroemken\FalDropbox\Driver;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
 use Kunnu\Dropbox\Dropbox;
 use Kunnu\Dropbox\DropboxApp;
 use Kunnu\Dropbox\Exceptions\DropboxClientException;
@@ -59,8 +61,6 @@ class DropboxDriver extends AbstractDriver
     
     /**
      * processes the configuration, should be overridden by subclasses
-     *
-     * @return void
      */
     public function processConfiguration()
     {
@@ -71,7 +71,6 @@ class DropboxDriver extends AbstractDriver
      * Sets the storage uid the driver belongs to
      *
      * @param int $storageUid
-     * @return void
      */
     public function setStorageUid($storageUid)
     {
@@ -102,10 +101,9 @@ class DropboxDriver extends AbstractDriver
      * Returns the capabilities of this driver.
      *
      * @return int
-     *
      * @see Storage::CAPABILITY_* constants
      */
-    public function getCapabilities()
+    public function getCapabilities(): int
     {
         // if PUBLIC is available, each file will initiate a request to Dropbox-Api to retrieve a public share link
         // this is extremely slow.
@@ -122,7 +120,7 @@ class DropboxDriver extends AbstractDriver
      * @param int $capabilities
      * @return int
      */
-    public function mergeConfigurationCapabilities($capabilities)
+    public function mergeConfigurationCapabilities($capabilities): int
     {
         $this->capabilities &= $capabilities;
         return $this->capabilities;
@@ -133,7 +131,7 @@ class DropboxDriver extends AbstractDriver
      *
      * @return string
      */
-    public function getRootLevelFolder()
+    public function getRootLevelFolder(): string
     {
         return '/';
     }
@@ -145,7 +143,7 @@ class DropboxDriver extends AbstractDriver
      * @throws InvalidPathException
      * @throws DropboxClientException
      */
-    public function getDefaultFolder()
+    public function getDefaultFolder(): string
     {
         $identifier = '/user_upload/';
         $createFolder = !$this->folderExists($identifier);
@@ -162,7 +160,7 @@ class DropboxDriver extends AbstractDriver
      * @return mixed
      * @throws InvalidPathException
      */
-    public function getParentFolderIdentifierOfIdentifier($fileIdentifier)
+    public function getParentFolderIdentifierOfIdentifier($fileIdentifier): string
     {
         $fileIdentifier = $this->canonicalizeAndCheckFileIdentifier($fileIdentifier);
         return rtrim(GeneralUtility::fixWindowsFilePath(PathUtility::dirname($fileIdentifier)), '/') . '/';
@@ -175,7 +173,7 @@ class DropboxDriver extends AbstractDriver
      * @param string $identifier
      * @return string
      */
-    public function getPublicUrl($identifier)
+    public function getPublicUrl($identifier): string
     {
         // This driver is marked as non public, so this will never be called:
         // return $this->dropbox->createShareableLink($identifier);
@@ -193,7 +191,7 @@ class DropboxDriver extends AbstractDriver
      * @throws InvalidPathException
      * @throws DropboxClientException
      */
-    public function createFolder($newFolderName, $parentFolderIdentifier = '', $recursive = false)
+    public function createFolder($newFolderName, $parentFolderIdentifier = '', $recursive = false): string
     {
         $newFolderName = trim($newFolderName, '/');
         $parentFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($parentFolderIdentifier);
@@ -212,7 +210,7 @@ class DropboxDriver extends AbstractDriver
      * @throws InvalidPathException
      * @throws DropboxClientException
      */
-    public function renameFolder($folderIdentifier, $newName)
+    public function renameFolder($folderIdentifier, $newName): array
     {
         $folderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($folderIdentifier);
         $newName = $this->sanitizeFileName($newName);
@@ -233,7 +231,7 @@ class DropboxDriver extends AbstractDriver
      * @param bool $deleteRecursively
      * @return bool
      */
-    public function deleteFolder($folderIdentifier, $deleteRecursively = false)
+    public function deleteFolder($folderIdentifier, $deleteRecursively = false): bool
     {
         $identifier = $folderIdentifier === '/' ?: rtrim($folderIdentifier, '/');
         try {
@@ -251,7 +249,7 @@ class DropboxDriver extends AbstractDriver
      * @return bool
      * @throws InvalidPathException
      */
-    public function fileExists($fileIdentifier)
+    public function fileExists($fileIdentifier): bool
     {
         $parentFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier(
             PathUtility::dirname($fileIdentifier)
@@ -274,7 +272,7 @@ class DropboxDriver extends AbstractDriver
      * @return bool
      * @throws InvalidPathException
      */
-    public function folderExists($folderIdentifier)
+    public function folderExists($folderIdentifier): bool
     {
         $parentFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier(
             PathUtility::dirname($folderIdentifier)
@@ -302,7 +300,7 @@ class DropboxDriver extends AbstractDriver
      * @param string $folderIdentifier
      * @return bool true if there are no files and folders within $folder
      */
-    public function isFolderEmpty($folderIdentifier)
+    public function isFolderEmpty($folderIdentifier): bool
     {
         $info = $this->getMetaData($folderIdentifier);
         return !isset($info['folders']) && !isset($info['files']);
@@ -322,7 +320,7 @@ class DropboxDriver extends AbstractDriver
      * @return string the identifier of the new file
      * @throws InvalidPathException
      */
-    public function addFile($localFilePath, $targetFolderIdentifier, $newFileName = '', $removeOriginal = true)
+    public function addFile($localFilePath, $targetFolderIdentifier, $newFileName = '', $removeOriginal = true): string
     {
         $localFilePath = $this->canonicalizeAndCheckFilePath($localFilePath);
         $newFileIdentifier = $this->canonicalizeAndCheckFolderIdentifier($targetFolderIdentifier) . $newFileName;
@@ -348,7 +346,7 @@ class DropboxDriver extends AbstractDriver
      * @return string
      * @throws InvalidPathException
      */
-    public function createFile($fileName, $parentFolderIdentifier)
+    public function createFile($fileName, $parentFolderIdentifier): string
     {
         $parentFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($parentFolderIdentifier);
         $fileIdentifier =  $this->canonicalizeAndCheckFileIdentifier(
@@ -377,7 +375,7 @@ class DropboxDriver extends AbstractDriver
      * @throws InvalidPathException
      * @throws DropboxClientException
      */
-    public function copyFileWithinStorage($fileIdentifier, $targetFolderIdentifier, $fileName)
+    public function copyFileWithinStorage($fileIdentifier, $targetFolderIdentifier, $fileName): string
     {
         $fileIdentifier = $this->canonicalizeAndCheckFileIdentifier($fileIdentifier);
         $targetFileIdentifier = $this->canonicalizeAndCheckFileIdentifier($targetFolderIdentifier . '/' . $fileName);
@@ -397,7 +395,7 @@ class DropboxDriver extends AbstractDriver
      * @throws InvalidPathException
      * @throws DropboxClientException
      */
-    public function renameFile($fileIdentifier, $newName)
+    public function renameFile($fileIdentifier, $newName): string
     {
         $fileIdentifier = $this->canonicalizeAndCheckFileIdentifier($fileIdentifier);
         $newName = $this->sanitizeFileName($newName);
@@ -417,7 +415,7 @@ class DropboxDriver extends AbstractDriver
      * @param string $localFilePath
      * @return bool true if the operation succeeded
      */
-    public function replaceFile($fileIdentifier, $localFilePath)
+    public function replaceFile($fileIdentifier, $localFilePath): bool
     {
         try {
             if (is_uploaded_file($localFilePath)) {
@@ -444,7 +442,7 @@ class DropboxDriver extends AbstractDriver
      * @param string $fileIdentifier
      * @return bool true if deleting the file succeeded
      */
-    public function deleteFile($fileIdentifier)
+    public function deleteFile($fileIdentifier): bool
     {
         try {
             $this->dropbox->delete($fileIdentifier);
@@ -461,7 +459,7 @@ class DropboxDriver extends AbstractDriver
      * @param string $hashAlgorithm The hash algorithm to use
      * @return string
      */
-    public function hash($fileIdentifier, $hashAlgorithm)
+    public function hash($fileIdentifier, $hashAlgorithm): string
     {
         if (!in_array($hashAlgorithm, $this->supportedHashAlgorithms)) {
             throw new \InvalidArgumentException('Hash algorithm "' . $hashAlgorithm . '" is not supported.', 1304964032);
@@ -491,7 +489,7 @@ class DropboxDriver extends AbstractDriver
      * @throws InvalidPathException
      * @throws DropboxClientException
      */
-    public function moveFileWithinStorage($fileIdentifier, $targetFolderIdentifier, $newFileName)
+    public function moveFileWithinStorage($fileIdentifier, $targetFolderIdentifier, $newFileName): string
     {
         $fileIdentifier = $this->canonicalizeAndCheckFileIdentifier($fileIdentifier);
         $targetFileIdentifier = $this->canonicalizeAndCheckFileIdentifier($targetFolderIdentifier . '/' . $newFileName);
@@ -512,7 +510,7 @@ class DropboxDriver extends AbstractDriver
      * @throws InvalidPathException
      * @throws DropboxClientException
      */
-    public function moveFolderWithinStorage($sourceFolderIdentifier, $targetFolderIdentifier, $newFolderName)
+    public function moveFolderWithinStorage($sourceFolderIdentifier, $targetFolderIdentifier, $newFolderName): array
     {
         $sourceFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($sourceFolderIdentifier);
         $targetFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($targetFolderIdentifier . '/' . $newFolderName);
@@ -533,7 +531,7 @@ class DropboxDriver extends AbstractDriver
      * @throws InvalidPathException
      * @throws DropboxClientException
      */
-    public function copyFolderWithinStorage($sourceFolderIdentifier, $targetFolderIdentifier, $newFolderName)
+    public function copyFolderWithinStorage($sourceFolderIdentifier, $targetFolderIdentifier, $newFolderName): bool
     {
         $sourceFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($sourceFolderIdentifier);
         $targetFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($targetFolderIdentifier . '/' . $newFolderName);
@@ -557,7 +555,7 @@ class DropboxDriver extends AbstractDriver
      * @return string The file contents
      * @throws DropboxClientException
      */
-    public function getFileContents($fileIdentifier)
+    public function getFileContents($fileIdentifier): string
     {
         return $this->dropbox->download($fileIdentifier)->getContents();
     }
@@ -569,7 +567,7 @@ class DropboxDriver extends AbstractDriver
      * @param string $contents
      * @return int The number of bytes written to the file
      */
-    public function setFileContents($fileIdentifier, $contents)
+    public function setFileContents($fileIdentifier, $contents): int
     {
         $localFilePath = GeneralUtility::tempnam('fal_dropbox');
         $bytes = file_put_contents($localFilePath, $contents);
@@ -592,7 +590,7 @@ class DropboxDriver extends AbstractDriver
      * @return bool
      * @throws InvalidPathException
      */
-    public function fileExistsInFolder($fileName, $folderIdentifier)
+    public function fileExistsInFolder($fileName, $folderIdentifier): bool
     {
         $fileIdentifier = $folderIdentifier . $fileName;
         return $this->fileExists($fileIdentifier);
@@ -606,7 +604,7 @@ class DropboxDriver extends AbstractDriver
      * @return bool
      * @throws InvalidPathException
      */
-    public function folderExistsInFolder($folderName, $folderIdentifier)
+    public function folderExistsInFolder($folderName, $folderIdentifier): bool
     {
         $identifier = $folderIdentifier . '/' . $folderName;
         $identifier = $this->canonicalizeAndCheckFolderIdentifier($identifier);
@@ -625,35 +623,17 @@ class DropboxDriver extends AbstractDriver
      * @return string The path to the file on the local disk
      * @throws DropboxClientException
      */
-    public function getFileForLocalProcessing($fileIdentifier, $writable = true)
+    public function getFileForLocalProcessing($fileIdentifier, $writable = true): string
     {
         return $this->copyFileToTemporaryPath($fileIdentifier);
     }
-    
-    /**
-     * Returns the permissions of a file/folder as an array
-     * (keys r, w) of boolean flags
-     *
-     * @param string $identifier
-     * @return array
-     */
-    public function getPermissions($identifier)
-    {
-        // we are authenticated as a valid dropbox user
-        // so all files are readable and writeable
-        return [
-            'r' => true,
-            'w' => true
-        ];
-    }
-    
+
     /**
      * Directly output the contents of the file to the output
      * buffer. Should not take care of header files or flushing
      * buffer before. Will be taken care of by the Storage.
      *
      * @param string $identifier
-     * @return void
      * @throws DropboxClientException
      */
     public function dumpFileContents($identifier)
@@ -677,7 +657,7 @@ class DropboxDriver extends AbstractDriver
      * @return bool true if $content is within or matches $folderIdentifier
      * @throws InvalidPathException
      */
-    public function isWithin($folderIdentifier, $identifier)
+    public function isWithin($folderIdentifier, $identifier): bool
     {
         $folderIdentifier = $this->canonicalizeAndCheckFileIdentifier($folderIdentifier);
         $entryIdentifier = $this->canonicalizeAndCheckFileIdentifier($identifier);
@@ -701,7 +681,7 @@ class DropboxDriver extends AbstractDriver
      * @return array
      * @throws InvalidPathException
      */
-    public function getFileInfoByIdentifier($fileIdentifier, array $propertiesToExtract = [])
+    public function getFileInfoByIdentifier($fileIdentifier, array $propertiesToExtract = []): array
     {
         $dirPath = PathUtility::dirname($fileIdentifier);
         $dirPath = $this->canonicalizeAndCheckFolderIdentifier($dirPath);
@@ -771,7 +751,7 @@ class DropboxDriver extends AbstractDriver
      * @return array
      * @throws InvalidPathException
      */
-    public function getFolderInfoByIdentifier($folderIdentifier)
+    public function getFolderInfoByIdentifier($folderIdentifier): array
     {
         $folderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($folderIdentifier);
         
@@ -790,7 +770,7 @@ class DropboxDriver extends AbstractDriver
      * @return string file identifier
      * @throws InvalidPathException
      */
-    public function getFileInFolder($fileName, $folderIdentifier)
+    public function getFileInFolder($fileName, $folderIdentifier): string
     {
         return $this->canonicalizeAndCheckFileIdentifier($folderIdentifier . '/' . $fileName);
     }
@@ -811,7 +791,7 @@ class DropboxDriver extends AbstractDriver
      * @param bool $sortRev true to indicate reverse sorting (last to first)
      * @return array of FileIdentifiers
      */
-    public function getFilesInFolder($folderIdentifier, $start = 0, $numberOfItems = 0, $recursive = false, array $filenameFilterCallbacks = [], $sort = '', $sortRev = false)
+    public function getFilesInFolder($folderIdentifier, $start = 0, $numberOfItems = 0, $recursive = false, array $filenameFilterCallbacks = [], $sort = '', $sortRev = false): array
     {
         $files = [];
         $info = $this->getMetaData($folderIdentifier);
@@ -831,7 +811,7 @@ class DropboxDriver extends AbstractDriver
      * @return string folder identifier
      * @throws InvalidPathException
      */
-    public function getFolderInFolder($folderName, $folderIdentifier)
+    public function getFolderInFolder($folderName, $folderIdentifier): string
     {
         $folderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($folderIdentifier . '/' . $folderName);
         return $folderIdentifier;
@@ -853,7 +833,7 @@ class DropboxDriver extends AbstractDriver
      * @param bool $sortRev true to indicate reverse sorting (last to first)
      * @return array of Folder Identifier
      */
-    public function getFoldersInFolder($folderIdentifier, $start = 0, $numberOfItems = 0, $recursive = false, array $folderNameFilterCallbacks = [], $sort = '', $sortRev = false)
+    public function getFoldersInFolder($folderIdentifier, $start = 0, $numberOfItems = 0, $recursive = false, array $folderNameFilterCallbacks = [], $sort = '', $sortRev = false): array
     {
         $folders = [];
         $info = $this->getMetaData($folderIdentifier);
@@ -871,9 +851,9 @@ class DropboxDriver extends AbstractDriver
      * @param string  $folderIdentifier
      * @param bool $recursive
      * @param array   $filenameFilterCallbacks callbacks for filtering the items
-     * @return integer Number of files in folder
+     * @return int Number of files in folder
      */
-    public function countFilesInFolder($folderIdentifier, $recursive = false, array $filenameFilterCallbacks = [])
+    public function countFilesInFolder($folderIdentifier, $recursive = false, array $filenameFilterCallbacks = []): int
     {
         $info = $this->getMetaData($folderIdentifier);
         return isset($info['files']) ? count($info['files']) : 0;
@@ -885,9 +865,9 @@ class DropboxDriver extends AbstractDriver
      * @param string  $folderIdentifier
      * @param bool $recursive
      * @param array   $folderNameFilterCallbacks callbacks for filtering the items
-     * @return integer Number of folders in folder
+     * @return int Number of folders in folder
      */
-    public function countFoldersInFolder($folderIdentifier, $recursive = false, array $folderNameFilterCallbacks = [])
+    public function countFoldersInFolder($folderIdentifier, $recursive = false, array $folderNameFilterCallbacks = []): int
     {
         $info = $this->getMetaData($folderIdentifier);
         return isset($info['folders']) ? count($info['folders']) : 0;
@@ -900,7 +880,7 @@ class DropboxDriver extends AbstractDriver
      * @return string
      * @throws InvalidPathException
      */
-    protected function canonicalizeAndCheckFilePath($filePath)
+    protected function canonicalizeAndCheckFilePath($filePath): string
     {
         $filePath = PathUtility::getCanonicalPath($filePath);
         
@@ -920,7 +900,7 @@ class DropboxDriver extends AbstractDriver
      * @throws \TYPO3\CMS\Core\Resource\Exception\InvalidPathException
      *
      */
-    protected function canonicalizeAndCheckFileIdentifier($fileIdentifier)
+    protected function canonicalizeAndCheckFileIdentifier($fileIdentifier): string
     {
         if ($fileIdentifier !== '') {
             $fileIdentifier = $this->canonicalizeAndCheckFilePath($fileIdentifier);
@@ -939,7 +919,7 @@ class DropboxDriver extends AbstractDriver
      * @return string
      * @throws InvalidPathException
      */
-    protected function canonicalizeAndCheckFolderIdentifier($folderIdentifier)
+    protected function canonicalizeAndCheckFolderIdentifier($folderIdentifier): string
     {
         if ($folderIdentifier === '/') {
             $canonicalizedIdentifier = $folderIdentifier;
@@ -955,7 +935,7 @@ class DropboxDriver extends AbstractDriver
      * @param string $path Path to receive information from
      * @return array file or folder information
      */
-    public function getMetaData($path)
+    public function getMetaData($path): array
     {
         $path = $path === '/' ? '/' : rtrim($path, '/');
         
@@ -1013,7 +993,7 @@ class DropboxDriver extends AbstractDriver
      * @param string $path
      * @return string
      */
-    protected function getCacheIdentifierForPath($path)
+    protected function getCacheIdentifierForPath($path): string
     {
         return sha1($this->storageUid . ':' . trim($path, '/'));
     }
@@ -1024,7 +1004,7 @@ class DropboxDriver extends AbstractDriver
      * @param $identifier
      * @return bool
      */
-    public function resourceExists($identifier)
+    public function resourceExists($identifier): bool
     {
         if (empty($identifier)) {
             throw new \InvalidArgumentException('Resource path cannot be empty');
@@ -1045,7 +1025,7 @@ class DropboxDriver extends AbstractDriver
      * @return array
      * @throws InvalidPathException
      */
-    public function getFileInfo(\TYPO3\CMS\Core\Resource\FileInterface $file)
+    public function getFileInfo(\TYPO3\CMS\Core\Resource\FileInterface $file): array
     {
         return $this->getFileInfoByIdentifier($file->getIdentifier());
     }
@@ -1058,7 +1038,7 @@ class DropboxDriver extends AbstractDriver
      * @throws \RuntimeException
      * @throws DropboxClientException
      */
-    protected function copyFileToTemporaryPath($fileIdentifier)
+    protected function copyFileToTemporaryPath($fileIdentifier): string
     {
         $temporaryPath = $this->getTemporaryPathForFile($fileIdentifier);
         file_put_contents($temporaryPath, $this->dropbox->download($fileIdentifier)->getContents());

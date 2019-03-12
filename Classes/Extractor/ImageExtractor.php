@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace SFroemken\FalDropbox\Extractor;
 
 /*
@@ -13,6 +14,7 @@ namespace SFroemken\FalDropbox\Extractor;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Index\ExtractorInterface;
 
@@ -27,7 +29,7 @@ class ImageExtractor implements ExtractorInterface
      *
      * @return array
      */
-    public function getFileTypeRestrictions()
+    public function getFileTypeRestrictions(): array
     {
         return [File::FILETYPE_IMAGE];
     }
@@ -38,7 +40,7 @@ class ImageExtractor implements ExtractorInterface
      *
      * @return array
      */
-    public function getDriverRestrictions()
+    public function getDriverRestrictions(): array
     {
         return ['fal_dropbox'];
     }
@@ -48,7 +50,7 @@ class ImageExtractor implements ExtractorInterface
      *
      * @return int
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 50;
     }
@@ -58,7 +60,7 @@ class ImageExtractor implements ExtractorInterface
      *
      * @return int
      */
-    public function getExecutionPriority()
+    public function getExecutionPriority(): int
     {
         return 50;
     }
@@ -67,10 +69,9 @@ class ImageExtractor implements ExtractorInterface
      * Checks if the given file can be processed by this Extractor
      *
      * @param File $file
-     *
      * @return bool
      */
-    public function canProcess(File $file)
+    public function canProcess(File $file): bool
     {
         return in_array($file->getExtension(), ['jpg', 'jpeg', 'bmp', 'png', 'gif'], true);
     }
@@ -81,10 +82,9 @@ class ImageExtractor implements ExtractorInterface
      *
      * @param File $file
      * @param array $previousExtractedData optional, contains the array of already extracted data
-     *
      * @return array
      */
-    public function extractMetaData(File $file, array $previousExtractedData = [])
+    public function extractMetaData(File $file, array $previousExtractedData = []): array
     {
         // Currently Dropbox does not transfer width/height
         $localPath = $file->getForLocalProcessing();
