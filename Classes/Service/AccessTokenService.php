@@ -80,10 +80,10 @@ class AccessTokenService
             $parameters = GeneralUtility::_POST('parameters');
         }
         
-        $appKey = htmlspecialchars($formFields['appKey']);
-        $appSecret = htmlspecialchars($formFields['appSecret']);
+        $appKey = htmlspecialchars($formFields['appKey'] ?? '');
+        $appSecret = htmlspecialchars($formFields['appSecret'] ?? '');
 
-        if (!empty($formFields['appKey'])) {
+        if (!empty($appKey)) {
             $dropbox = new Dropbox(new DropboxApp($appKey, $appSecret));
             $uri = $dropbox->getAuthHelper()->getAuthUrl();
             if (!empty($uri)) {
