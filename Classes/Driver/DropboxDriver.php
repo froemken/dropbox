@@ -59,7 +59,14 @@ class DropboxDriver extends AbstractDriver
      * @var array
      */
     protected $settings = [];
-    
+
+    /**
+     * A list of all supported hash algorithms, written all lower case.
+     *
+     * @var array
+     */
+    protected $supportedHashAlgorithms = ['sha1', 'md5'];
+
     /**
      * processes the configuration, should be overridden by subclasses
      */
