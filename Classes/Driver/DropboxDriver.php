@@ -628,6 +628,23 @@ class DropboxDriver extends AbstractDriver
     {
         return $this->copyFileToTemporaryPath($fileIdentifier);
     }
+    
+    /**
+     * Returns the permissions of a file/folder as an array
+     * (keys r, w) of boolean flags
+     *
+     * @param string $identifier
+     * @return array
+     */
+    public function getPermissions($identifier): array
+    {
+        // we are authenticated as a valid dropbox user
+        // so all files are readable and writeable
+        return [
+            'r' => true,
+            'w' => true
+        ];
+    }
 
     /**
      * Directly output the contents of the file to the output
