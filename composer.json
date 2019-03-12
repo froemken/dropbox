@@ -23,7 +23,8 @@
   },
   "autoload": {
     "psr-4": {
-      "SFroemken\\FalDropbox\\": "Classes"
+      "SFroemken\\FalDropbox\\": "Classes",
+      "Kunnu\\Dropbox\\": "vendor/kunalvarma05/dropbox-php-sdk/src/Dropbox"
     }
   }
 }
