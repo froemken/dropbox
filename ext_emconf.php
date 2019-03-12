@@ -10,7 +10,7 @@
  * writing. "version" and "dependencies" must not be touched!
  *****************************************************************/
 
-$EM_CONF[$_EXTKEY] = array (
+$EM_CONF[$_EXTKEY] = [
     'title' => 'FAL Dropbox',
     'description' => 'Provides a DropBox driver for TYPO3 File Abstraction Layer.',
     'category' => 'plugin',
@@ -27,13 +27,13 @@ $EM_CONF[$_EXTKEY] = array (
     'clearCacheOnLoad' => 0,
     'lockType' => '',
     'version' => '2.0.0',
-    'constraints' => array (
-        'depends' => array (
+    'constraints' => [
+        'depends' => [
             'typo3' => '8.7.13-9.5.99',
-        ),
-        'conflicts' => array (
-        ),
-        'suggests' => array (
-        ),
-    ),
-);
+        ],
+        'conflicts' => [
+        ],
+        'suggests' => [
+        ],
+    ],
+];
