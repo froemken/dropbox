@@ -17,6 +17,7 @@ namespace SFroemken\FalDropbox\Driver;
 
 use Kunnu\Dropbox\Dropbox;
 use Kunnu\Dropbox\DropboxApp;
+use Kunnu\Dropbox\DropboxFile;
 use Kunnu\Dropbox\Exceptions\DropboxClientException;
 use Kunnu\Dropbox\Models\FileMetadata;
 use Kunnu\Dropbox\Models\FolderMetadata;
@@ -640,6 +641,14 @@ class DropboxDriver extends AbstractDriver
     {
         $handle = fopen('php://output', 'w');
         fputs($handle, $this->dropbox->download($identifier)->getContents());
+        $this->dropbox->download(
+            $identifier,
+            DropboxFile::createByStream(
+                'php://output',
+                $handle,
+                DropboxFile::MODE_WRITE
+            )
+        );
         fclose($handle);
     }
     
