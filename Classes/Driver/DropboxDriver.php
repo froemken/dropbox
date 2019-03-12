@@ -474,10 +474,12 @@ class DropboxDriver extends AbstractDriver
         }
         switch ($hashAlgorithm) {
             case 'sha1':
-                $hash = sha1_file($fileIdentifier);
+                // $hash = sha1_file($fileIdentifier);
+                $hash = sha1($fileIdentifier);
                 break;
             case 'md5':
-                $hash = md5_file($fileIdentifier);
+                // $hash = md5_file($fileIdentifier);
+                $hash = md5($fileIdentifier);
                 break;
             default:
                 throw new \RuntimeException('Hash algorithm ' . $hashAlgorithm . ' is not implemented.', 1329644451);
