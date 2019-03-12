@@ -13,16 +13,15 @@ namespace SFroemken\FalDropbox\Tca;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
 use Kunnu\Dropbox\Dropbox;
 use Kunnu\Dropbox\DropboxApp;
+use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Service\FlexFormService;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
- * @package fal_dropbox
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * This class retrieves and shows Dropbox Account information
  */
 class RequestToken
 {

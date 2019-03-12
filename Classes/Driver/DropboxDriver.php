@@ -23,15 +23,12 @@ use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
 use TYPO3\CMS\Core\Resource\Exception\InvalidPathException;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
-use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
- * @author Stefan Froemken <froemken@gmail.com>
- * @package fal_dropbox
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * Class which contains all methods to arrange files and folders
  */
 class DropboxDriver extends AbstractDriver
 {

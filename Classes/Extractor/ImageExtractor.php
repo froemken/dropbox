@@ -17,9 +17,8 @@ use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Index\ExtractorInterface;
 
 /**
- * Class ImageExtractor
- *
- * @package SFroemken\FalDropbox\Extractor
+ * Special Image Extractor to extract width and height from Dropbox
+ * as these information were not delivered by Dropbox API
  */
 class ImageExtractor implements ExtractorInterface
 {
