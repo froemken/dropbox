@@ -1,0 +1,20 @@
+# ignore generated documentation
+*GENERATED*
+
+# ignore typical clutter of IDEs and editors (this could be added in .git/info/exclude,
+#  but we add it here for convenience)
+*~
+*.bak
+*.idea
+*.project
+*.swp
+.project
+.webprj
+nbproject
+
+# Ignore temporary files
+*.DS_Store
+
+# Ignore composer stuff
+bin/*
+vendor/*
