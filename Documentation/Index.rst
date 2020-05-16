@@ -1,57 +1,62 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
+.. every .rst file should include Includes.txt
+.. use correct path!
 
 .. include:: Includes.txt
+
+.. Every manual should have a start label for cross-referencing to
+.. start page. Do not remove this!
 
 .. _start:
 
 =============================================================
-FAL Dropbox
+fal_dropbox
 =============================================================
 
-.. only:: html
+:Version:
+   |release|
 
-	:Classification:
-		fal_dropbox
+:Language:
+   en
 
-	:Version:
-		|release|
+:Authors:
+   Stefan Froemken
 
-	:Language:
-		en
+:Email:
+   froemken@gmail.com
 
-	:Description:
-		Provides a DropBox driver for TYPO3 File Abstraction Layer.
+:License:
+   This extension documentation is published under the
+   `CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>`__ (Creative Commons)
+   license
 
-	:Keywords:
-		fal, dropbox
+Add a FAL driver for Dropbox to TYPO3
 
-	:Copyright:
-		2017
+**TYPO3**
 
-	:Author:
-		Stefan Froemken
+The content of this document is related to TYPO3 CMS,
+a GNU/GPL CMS/Framework available from `typo3.org <https://typo3.org/>`_ .
 
-	:Email:
-		froemken@gmail.com
+**Community Documentation**
 
-	:License:
-		This document is published under the Open Publication License
-		available from http://www.opencontent.org/openpub/
+This documentation is community documentation for the TYPO3 extension {extension.name}
 
-	:Rendered:
-		|today|
+It is maintained as part of this third party extension.
 
-	The content of this document is related to TYPO3,
-	a GNU/GPL CMS/Framework available from `www.typo3.org <https://typo3.org/>`__.
+If you find an error or something is missing, please:
+`Report a Problem <https://github.com/TYPO3-Documentation/TYPO3CMS-Example-ExtensionManual/issues/new>`__
 
-	**Table of Contents**
+**Extension Manual**
+
+This documentation is for the TYPO3 extension <extkey>.
+
+**For Contributors**
+
+You are welcome to help improve this guide.
+Just click on "Edit me on GitHub" on the top right to submit your change request.
 
 .. toctree::
-	:maxdepth: 2
-	:titlesonly:
+   :maxdepth: 3
 
-	Introduction/Index
-	AdministratorManual/Index
+   Introduction/Index
+   AdministratorManual/Index
+   Sitemap
