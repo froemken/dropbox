@@ -26,6 +26,7 @@
 					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessType</label>
 					<config>
 						<type>select</type>
+						<renderType>selectSingle</renderType>
 						<items type="array">
 							<numIndex index="0" type="array">
 								<numIndex index="0">LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessType.appFolder</numIndex>
@@ -47,7 +48,7 @@
 					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessType.dropboxStatus</label>
 					<config>
 						<type>user</type>
-						<userFunc>SFroemken\FalDropbox\Tca\RequestToken->getRequestToken</userFunc>
+						<renderType>dropboxStatus</renderType>
 					</config>
 				</TCEforms>
 			</requestToken>

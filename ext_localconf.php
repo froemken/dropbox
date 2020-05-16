@@ -20,6 +20,12 @@ call_user_func(static function() {
         'priority' => '70',
         'class' => \SFroemken\FalDropbox\Form\Element\AccessTokenElement::class
     ];
+    // Show dropbox status in file storage
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1589660489] = [
+        'nodeName' => 'dropboxStatus',
+        'priority' => '70',
+        'class' => \SFroemken\FalDropbox\Form\Element\DropboxStatusElement::class
+    ];
 
     $extractorRegistry = \TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::getInstance();
     $extractorRegistry->registerExtractionService(\SFroemken\FalDropbox\Extractor\ImageExtractor::class);
