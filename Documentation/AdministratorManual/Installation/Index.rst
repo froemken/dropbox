@@ -3,6 +3,7 @@
 
 .. _installation:
 
+============
 Installation
 ============
 
