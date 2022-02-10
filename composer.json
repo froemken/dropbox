@@ -50,7 +50,7 @@
   "scripts": {
     "php:fix": ".build/vendor/bin/php-cs-fixer --config=Build/.php_cs.php fix Classes",
     "ci:php:lint": "find *.php Classes Configuration Tests -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l",
-    "ci:php:fixer": ".build/vendor/bin/php-cs-fixer --config=Build/.php_cs.php fix --dry-run -v --show-progress=dots --diff-format=udiff Classes",
+    "ci:php:fixer": ".build/vendor/bin/php-cs-fixer --config=Build/.php_cs.php fix --dry-run -v --show-progress=dots --diff Classes",
     "link-extension": [
       "@php -r 'is_dir($extFolder=__DIR__.\"/.build/public/typo3conf/ext/\") || mkdir($extFolder, 0777, true);'",
       "@php -r 'file_exists($extFolder=__DIR__.\"/.build/public/typo3conf/ext/fal_dropbox\") || symlink(__DIR__,$extFolder);'"
