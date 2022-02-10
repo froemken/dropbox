@@ -14,20 +14,15 @@ namespace SFroemken\FalDropbox\Driver;
 use Kunnu\Dropbox\Dropbox;
 use Kunnu\Dropbox\DropboxApp;
 use Kunnu\Dropbox\DropboxFile;
-use Kunnu\Dropbox\Exceptions\DropboxClientException;
 use Kunnu\Dropbox\Models\FileMetadata;
 use Kunnu\Dropbox\Models\FolderMetadata;
 use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
 use TYPO3\CMS\Core\Resource\Exception\InvalidPathException;
-use TYPO3\CMS\Core\Resource\FileInterface;
-use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class which contains all methods to arrange files and folders
