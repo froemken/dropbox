@@ -260,7 +260,7 @@ class DropboxDriver extends AbstractDriver
         );
         $info = $this->getMetaData($parentFolderIdentifier);
         if (isset($info['files'])) {
-            foreach($info['files'] as $files) {
+            foreach ($info['files'] as $files) {
                 if ($files['path_display'] === '/' . trim($fileIdentifier, '/')) {
                     return true;
                 }
@@ -289,7 +289,7 @@ class DropboxDriver extends AbstractDriver
 
         $info = $this->getMetaData($parentFolderIdentifier);
         if (isset($info['folders'])) {
-            foreach($info['folders'] as $folder) {
+            foreach ($info['folders'] as $folder) {
                 if ($folder['path_display'] === '/' . trim($folderIdentifier, '/')) {
                     return true;
                 }
@@ -541,14 +541,15 @@ class DropboxDriver extends AbstractDriver
     {
         $sourceFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($sourceFolderIdentifier);
         $targetFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($targetFolderIdentifier . '/' . $newFolderName);
-        if ($sourceFolderIdentifier == $targetFolderIdentifier) {
+
+        if ($sourceFolderIdentifier === $targetFolderIdentifier) {
             return false;
-        } else {
-            // dropbox don't like slashes at the end of identifier
-            $this->dropbox->copy(rtrim($sourceFolderIdentifier, '/'), rtrim($targetFolderIdentifier, '/'));
-            $this->cache->flush();
-            return true;
         }
+        // dropbox don't like slashes at the end of identifier
+        $this->dropbox->copy(rtrim($sourceFolderIdentifier, '/'), rtrim($targetFolderIdentifier, '/'));
+        $this->cache->flush();
+
+        return true;
     }
 
     /**
@@ -662,7 +663,7 @@ class DropboxDriver extends AbstractDriver
     public function dumpFileContents($identifier)
     {
         $handle = fopen('php://output', 'w');
-        fputs($handle, $this->dropbox->download($identifier)->getContents());
+        fwrite($handle, $this->dropbox->download($identifier)->getContents());
         $this->dropbox->download(
             $identifier,
             DropboxFile::createByStream(
@@ -759,9 +760,8 @@ class DropboxDriver extends AbstractDriver
                 $parts = GeneralUtility::split_fileref($fileIdentifier);
                 if (in_array($parts['fileext'], ['jpg', 'jpeg', 'bmp', 'svg', 'ico', 'pdf', 'png', 'tiff'])) {
                     return 'image/' . $parts['fileext'];
-                } else {
-                    return 'text/' . $parts['fileext'];
                 }
+                return 'text/' . $parts['fileext'];
             case 'identifier':
                 return $identifier;
             case 'storage':
@@ -929,7 +929,6 @@ class DropboxDriver extends AbstractDriver
      * @param string $fileIdentifier The file Identifier
      * @return string
      * @throws \TYPO3\CMS\Core\Resource\Exception\InvalidPathException
-     *
      */
     protected function canonicalizeAndCheckFileIdentifier($fileIdentifier): string
     {
@@ -998,10 +997,11 @@ class DropboxDriver extends AbstractDriver
 
                 $this->cache->set($cacheKey, $info);
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $exception) {
             // if something crashes return an empty array
             $info = [];
         }
+
         return $info;
     }
 
@@ -1040,13 +1040,14 @@ class DropboxDriver extends AbstractDriver
         if (empty($identifier)) {
             throw new \InvalidArgumentException('Resource path cannot be empty');
         }
+
         $identifier = $identifier === '/' ? $identifier : rtrim($identifier, '/');
         $info = $this->getMetaData($identifier);
-        if (is_array($info) && count($info)) {
+        if (is_array($info) && $info !== []) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
