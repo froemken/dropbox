@@ -69,13 +69,13 @@ class AccessTokenService
         /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $formUri = (string)$uriBuilder->buildUriFromRoute('access_token');
-        
+
         $formFields = GeneralUtility::_POST('dropbox');
         $parameters = GeneralUtility::_GET('P');
         if (empty($parameters)) {
             $parameters = GeneralUtility::_POST('parameters');
         }
-        
+
         $appKey = htmlspecialchars($formFields['appKey'] ?? '');
         $appSecret = htmlspecialchars($formFields['appSecret'] ?? '');
 
