@@ -59,7 +59,7 @@ class DropboxStatusElement extends AbstractFormElement
         );
 
         try {
-            $dropboxApp = GeneralUtility::makeInstance(DropboxApp::class, '', '',  $accessToken);
+            $dropboxApp = GeneralUtility::makeInstance(DropboxApp::class, '', '', $accessToken);
             $dropbox = GeneralUtility::makeInstance(Dropbox::class, $dropboxApp);
             $view->assign('account', $dropbox->getCurrentAccount());
             $view->assign('quota', $dropbox->getSpaceUsage());

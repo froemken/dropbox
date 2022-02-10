@@ -29,7 +29,7 @@ class ImageExtractor implements ExtractorInterface
     {
         return [File::FILETYPE_IMAGE];
     }
-    
+
     /**
      * Get all supported DriverClasses
      * empty array indicates no restrictions
@@ -40,7 +40,7 @@ class ImageExtractor implements ExtractorInterface
     {
         return ['fal_dropbox'];
     }
-    
+
     /**
      * Returns the data priority of the extraction Service
      *
@@ -50,7 +50,7 @@ class ImageExtractor implements ExtractorInterface
     {
         return 50;
     }
-    
+
     /**
      * Returns the execution priority of the extraction Service
      *
@@ -60,7 +60,7 @@ class ImageExtractor implements ExtractorInterface
     {
         return 50;
     }
-    
+
     /**
      * Checks if the given file can be processed by this Extractor
      *
@@ -71,7 +71,7 @@ class ImageExtractor implements ExtractorInterface
     {
         return in_array($file->getExtension(), ['jpg', 'jpeg', 'bmp', 'png', 'gif'], true);
     }
-    
+
     /**
      * The actual processing TASK
      * Should return an array with database properties for sys_file_metadata to write
