@@ -21,7 +21,7 @@ if (PHP_SAPI !== 'cli') {
 }
 
 $headerComment = <<<COMMENT
-This file is part of the package jweiland/events2.
+This file is part of the package sfroemken/fal_dropbox.
 
 For the full copyright and license information, please read the
 LICENSE file that was distributed with this source code.
