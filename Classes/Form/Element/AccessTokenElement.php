@@ -11,13 +11,15 @@ declare(strict_types=1);
 
 namespace SFroemken\FalDropbox\Form\Element;
 
+use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Wizard/Control next to field access_token in Dropbox XML configuration
  */
-class AccessTokenElement extends \TYPO3\CMS\Backend\Form\Element\AbstractFormElement
+class AccessTokenElement extends AbstractFormElement
 {
     /**
      * @var array
@@ -65,7 +67,7 @@ class AccessTokenElement extends \TYPO3\CMS\Backend\Form\Element\AbstractFormEle
             ],
         ];
 
-        $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $url = $uriBuilder->buildUriFromRoute('access_token', $urlParameters);
 
         $onClick = [];

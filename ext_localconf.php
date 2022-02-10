@@ -1,9 +1,9 @@
 <?php
-if (!defined('TYPO3_MODE')) {
+if (!defined('TYPO3')) {
     die ('Access denied.');
 }
 
-call_user_func(static function() {
+call_user_func(static function (): void {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['fal_dropbox'] = [
         'class' => \SFroemken\FalDropbox\Driver\DropboxDriver::class,
         'shortName' => 'Dropbox',
@@ -12,7 +12,8 @@ call_user_func(static function() {
     ];
 
     // create a temporary cache
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fal_dropbox']['backend'] = \TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend::class;
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fal_dropbox']['backend']
+        = \TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend::class;
 
     // Add wizard/control to access_token in XML structure
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1552228283] = [
@@ -27,6 +28,7 @@ call_user_func(static function() {
         'class' => \SFroemken\FalDropbox\Form\Element\DropboxStatusElement::class
     ];
 
-    $extractorRegistry = \TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::getInstance();
-    $extractorRegistry->registerExtractionService(\SFroemken\FalDropbox\Extractor\ImageExtractor::class);
+    \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+        \TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::class
+    )->registerExtractionService(\SFroemken\FalDropbox\Extractor\ImageExtractor::class);
 });

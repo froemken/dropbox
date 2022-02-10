@@ -29,20 +29,11 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 class DropboxDriver extends AbstractDriver
 {
-    /**
-     * @var FrontendInterface
-     */
-    protected $cache;
+    protected FrontendInterface $cache;
 
-    /**
-     * @var Dropbox
-     */
-    protected $dropbox;
+    protected ?Dropbox $dropbox = null;
 
-    /**
-     * @var array
-     */
-    protected $settings = [];
+    protected array $settings = [];
 
     /**
      * A list of all supported hash algorithms, written all lower case.
@@ -448,7 +439,7 @@ class DropboxDriver extends AbstractDriver
             $folderIdentifier .= '/';
         }
 
-        return GeneralUtility::isFirstPartOfStr($entryIdentifier, $folderIdentifier);
+        return \str_starts_with($entryIdentifier, $folderIdentifier);
     }
 
     public function getFileInfoByIdentifier($fileIdentifier, array $propertiesToExtract = []): array

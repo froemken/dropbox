@@ -23,9 +23,6 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class DropboxStatusElement extends AbstractFormElement
 {
-    /**
-     * @return array
-     */
     public function render(): array
     {
         $resultArray = $this->initializeResultArray();
@@ -40,14 +37,12 @@ class DropboxStatusElement extends AbstractFormElement
         }
 
         $resultArray['html'] = $this->getHtmlForConnected((string)$config['accessToken']);
+
         return $resultArray;
     }
 
     /**
-     * get HTML to show the user, that he is connected with his dropbox account
-     *
-     * @param string $accessToken
-     * @return string
+     * Get HTML to show the user, that he is connected with his dropbox account
      */
     public function getHtmlForConnected(string $accessToken): string
     {

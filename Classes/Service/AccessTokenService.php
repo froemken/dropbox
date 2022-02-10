@@ -24,25 +24,9 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class AccessTokenService
 {
-    /**
-     * @var string
-     */
-    protected $dropboxAuthorizeUrl = 'https://www.dropbox.com/oauth2/authorize?client_id=%s&response_type=%s';
+    protected StandaloneView $view;
 
-    /**
-     * @var array
-     */
-    protected $errors = [];
-
-    /**
-     * @var \TYPO3\CMS\Fluid\View\StandaloneView
-     */
-    protected $view;
-
-    /**
-     * initialize
-     */
-    public function initialize()
+    public function initialize(): void
     {
         $this->view = GeneralUtility::makeInstance(StandaloneView::class);
         $this->view->setTemplatePathAndFilename(
@@ -50,23 +34,16 @@ class AccessTokenService
                 'EXT:fal_dropbox/Resources/Private/Templates/GetAccessToken.html'
             )
         );
-        $this->view->setLayoutRootPaths([
-            GeneralUtility::getFileAbsFileName(
-                'EXT:fal_dropbox/Resources/Private/Layouts/'
-            )
-        ]);
     }
 
     /**
-     * start HTML-Output
-     *
-     * @return Response
+     * Start HTML-Output
+     * @throws \JsonException
      * @throws RouteNotFoundException
      */
     public function main(): Response
     {
         $this->initialize();
-        /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $formUri = (string)$uriBuilder->buildUriFromRoute('access_token');
 
@@ -87,7 +64,7 @@ class AccessTokenService
                 $this->view->assign('parameters', $parameters);
             }
         } else {
-            $this->view->assign('parameters', json_encode($parameters));
+            $this->view->assign('parameters', \json_encode($parameters, JSON_THROW_ON_ERROR));
         }
 
         $this->view->assign('appKey', $appKey);
@@ -95,23 +72,9 @@ class AccessTokenService
         $this->view->assign('formUri', $formUri);
         $this->view->assign('errors', $this->errors);
 
-        /** @var Response $response */
         $response = GeneralUtility::makeInstance(Response::class);
         $response->getBody()->write($this->view->render());
-        return $response;
-    }
 
-    /**
-     * Add error
-     *
-     * @param int $errorNo
-     * @param string $errorMessage
-     */
-    protected function addError($errorNo, $errorMessage)
-    {
-        $this->errors[] = [
-            'number' => $errorNo,
-            'message' => $errorMessage
-        ];
+        return $response;
     }
 }
