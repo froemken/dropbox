@@ -6,6 +6,6 @@ return [
     // Register accessToken wizard
     'access_token' => [
         'path' => '/wizard/accessToken',
-        'target' => \SFroemken\FalDropbox\Service\AccessTokenService::class . '::main'
+        'target' => \StefanFroemken\Dropbox\Service\AccessTokenService::class . '::main'
     ]
 ];

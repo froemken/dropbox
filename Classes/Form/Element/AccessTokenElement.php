@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the package sfroemken/fal_dropbox.
+ * This file is part of the package stefanfroemken/dropbox.
  *
  * For the full copyright and license information, please read the
  * LICENSE file that was distributed with this source code.
  */
 
-namespace SFroemken\FalDropbox\Form\Element;
+namespace StefanFroemken\Dropbox\Form\Element;
 
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;

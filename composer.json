@@ -1,5 +1,5 @@
 {
-	"name": "sfroemken/fal_dropbox",
+	"name": "stefanfroemken/dropbox",
 	"type": "typo3-cms-extension",
 	"description": "Add a FAL driver for Dropbox to TYPO3",
 	"license": "GPL-2.0-or-later",
