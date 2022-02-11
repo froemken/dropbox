@@ -8,7 +8,7 @@
 		"TYPO3 CMS",
 		"dropbox",
 		"fal",
-		"dropbox"
+		"driver"
 	],
 	"homepage": "http://www.typo3lexikon.de",
 	"authors": [
@@ -34,14 +34,14 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"SFroemken\\FalDropbox\\": "Classes",
+			"StefanFroemken\\Dropbox\\": "Classes",
 			"Kunnu\\Dropbox\\": "vendor/kunalvarma05/dropbox-php-sdk/src/Dropbox",
 			"Tightenco\\Collect\\": "vendor/tightenco/collect/src/Collect"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"SFroemken\\FalDropbox\\Tests\\": "Tests"
+			"StefanFroemken\\Dropbox\\Tests\\": "Tests"
 		}
 	},
 	"config": {
