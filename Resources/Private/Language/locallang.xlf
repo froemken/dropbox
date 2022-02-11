@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2013-07-04T09:16:00Z" product-name="fal_dropbox">
+	<file source-language="en" datatype="plaintext" original="messages" date="2013-07-04T09:16:00Z" product-name="dropbox">
 		<header/>
 		<body>
-
 			<trans-unit id="key">
 				<source>App key. You find it after creating a Dropbox App on: https://www.dropbox.com/developers</source>
 			</trans-unit>
-
 		</body>
 	</file>
 </xliff>

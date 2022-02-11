@@ -1,5 +1,4 @@
-﻿.. include:: ../../Includes.txt
-
+﻿.. include:: ../Includes.txt
 
 .. _installation:
 
@@ -7,48 +6,37 @@
 Installation
 ============
 
-The extension needs to be installed like any other extension of TYPO3 CMS:
+Installation Type
+=================
 
-#. Visit fal_dropbox at `Github <https://github.com/froemken/fal_dropbox>`_
+Composer
+""""""""
 
-#. You will find a Download-Button where you can select between Download as Zip or Link for cloning this project.
+You can install `dropbox` with following shell command:
 
-#. Get the extension
+.. code-block:: bash
 
-   #. **Get it via Zip:** Switch to the Extensionmanager and upload fal_dropbox
+   composer req stefanfroemken/dropbox
 
-   #. **Get it via Git:** If Git is available on your system, switch into
-      the typo3conf/ext/ directory and clone it from Github:
+Extensionmanager
+""""""""""""""""
 
-      .. code-block:: bash
+If you want to install `dropbox` traditionally with Extensionmanager, follow these steps:
 
-         git clone https://github.com/froemken/fal_dropbox.git
+#. Visit ExtensionManager
 
-   #. **Get it via Composer:** If you run TYPO3 in composer mode you can add a new Repository
-      into you composer.json:
+#. Switch over to `Get Extensions`
 
-      .. code-block:: bash
+#. Search for `dropbox`
 
-         {
-           "repositories": [
-             {
-               "type": "composer",
-               "url": "https://composer.typo3.org/"
-             },
-             {
-               "type": "vcs",
-               "url": "https://github.com/froemken/fal_dropbox"
-             }
-           ],
-           "name": "my-vendor/my-typo3-cms-distribution",
-           "require": {
-             "typo3/cms": "7.6.*",
-             "stefanfroemken/dropbox": "0.2.*"
-           },
-           "extra": {
-             "typo3/cms": {
-               "cms-package-dir": "{$vendor-dir}/typo3/cms",
-               "web-dir": "web"
-             }
-           }
-         }
+#. Install extension
+
+DEV Version (GIT)
+"""""""""""""""""
+
+You can install the latest DEV Version with following GIT command:
+
+.. code-block:: bash
+
+   git clone https://github.com/froemken/dropbox.git
+

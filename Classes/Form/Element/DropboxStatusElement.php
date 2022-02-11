@@ -49,7 +49,7 @@ class DropboxStatusElement extends AbstractFormElement
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename(
             GeneralUtility::getFileAbsFileName(
-                'EXT:fal_dropbox/Resources/Private/Templates/ShowAccountInfo.html'
+                'EXT:dropbox/Resources/Private/Templates/ShowAccountInfo.html'
             )
         );
 

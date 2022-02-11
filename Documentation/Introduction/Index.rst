@@ -12,7 +12,7 @@ This extension adds a FAL driver to TYPO3 which works with Dropbox API.
 Screenshot
 ==========
 
-.. figure:: ../Images/fal_dropbox_fileadmin.jpg
+.. figure:: ../Images/dropbox_fileadmin.jpg
    :width: 500px
    :align: left
    :alt: FAL Dropbox fileadmin

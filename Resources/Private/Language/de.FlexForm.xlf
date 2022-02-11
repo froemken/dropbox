@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2013-07-04T09:16:00Z" product-name="fal_dropbox">
+	<file source-language="en" datatype="plaintext" original="messages" date="2013-07-04T09:16:00Z" product-name="dropbox">
 		<header/>
 		<body>
-
 			<trans-unit id="accessToken">
 				<source>Insert the access_token of Dropbox or create one with help of the wizard.</source>
 				<target>Tragen Sie hier den access_token von Dropbox ein oder erstellen Sie einen über den Wizard.</target>
@@ -20,7 +19,6 @@
 				<source>Connect TYPO3 with your Dropbox / Dropbox status</source>
 				<target>Verknüpft TYPO3 mit Deiner Dropbox / Dropbox Status</target>
 			</trans-unit>
-
 		</body>
 	</file>
 </xliff>

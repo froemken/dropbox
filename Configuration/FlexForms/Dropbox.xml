@@ -8,7 +8,7 @@
 		<el>
 			<accessToken>
 				<TCEforms>
-					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessToken</label>
+					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessToken</label>
 					<config>
 						<type>input</type>
 						<eval>trim</eval>
@@ -23,17 +23,17 @@
 			</accessToken>
 			<accessType>
 				<TCEforms>
-					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessType</label>
+					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType</label>
 					<config>
 						<type>select</type>
 						<renderType>selectSingle</renderType>
 						<items type="array">
 							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessType.appFolder</numIndex>
+								<numIndex index="0">LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.appFolder</numIndex>
 								<numIndex index="1">AppFolder</numIndex>
 							</numIndex>
 							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessType.fullDropbox</numIndex>
+								<numIndex index="0">LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.fullDropbox</numIndex>
 								<numIndex index="1">FullDropbox</numIndex>
 							</numIndex>
 						</items>
@@ -45,7 +45,7 @@
 			</accessType>
 			<requestToken>
 				<TCEforms>
-					<label>LLL:EXT:fal_dropbox/Resources/Private/Language/FlexForm.xlf:accessType.dropboxStatus</label>
+					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.dropboxStatus</label>
 					<config>
 						<type>user</type>
 						<renderType>dropboxStatus</renderType>

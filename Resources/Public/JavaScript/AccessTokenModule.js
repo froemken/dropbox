@@ -1,5 +1,5 @@
 /*
- * This file is part of the fal_dropbox project.
+ * This file is part of the stefanfroemken/dropbox project.
  *
  * It is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, either version 2
