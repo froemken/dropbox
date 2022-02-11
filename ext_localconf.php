@@ -31,4 +31,7 @@ call_user_func(static function (): void {
     \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
         \TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::class
     )->registerExtractionService(\StefanFroemken\Dropbox\Extractor\ImageExtractor::class);
+
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['dropboxRenameExtensionKey']
+        = \StefanFroemken\Dropbox\Upgrade\RenameExtensionKeyUpgrade::class;
 });
