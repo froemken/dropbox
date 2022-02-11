@@ -2,8 +2,9 @@
 
 ## 1 What does it do?
 
-fal_dropbox is an Extension for TYPO3 >= 10.4.0.
-It extends FAL to show files from your dropbox account in file list module
+`dropbox` is an Extension for TYPO3 >= 10.4.0.
+It extends TYPO3's FAL (File Abstraction Layer) to show files from your
+Dropbox Account in file list module of TYPO3.
 
 ## 2 Installation
 
@@ -19,7 +20,7 @@ composer require stefanfroemken/dropbox
 
 ### Installation as extension from TER
 
-Download and install fal_dropbox with the extension manager.
+Download and install `dropbox` with the extension manager.
 
 ## Setup
 
@@ -37,21 +38,19 @@ Download and install fal_dropbox with the extension manager.
 
 3.) Have fun with FAL Dropbox
 
-ToDo:
+**ToDo:**
+
 * rename folder
 * delete folder
-* it would be cool to remove all the big packages like oauth, HTTP_Request2 and so on
-   * I tried to change HTTP_Request with my own little Request-Object (fsockopen)
 
-Done:
+** Done:**
+
 * you can create folders
 * you can navigate through the folders
 * move files
 * copy files
 * create references to tt_content records
-* show image in popUp
+* show image in PopUp
 * rename file
 * creation of thumbs works
 * copy files to upload folder
-
-Stefan

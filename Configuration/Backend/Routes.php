@@ -1,7 +1,5 @@
 <?php
-/**
- * Definitions for routes provided by EXT:fal_dropbox
- */
+
 return [
     // Register accessToken wizard
     'access_token' => [

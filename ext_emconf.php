@@ -1,7 +1,7 @@
 <?php
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'FAL Dropbox',
+    'title' => 'Dropbox FAL Driver',
     'description' => 'Provides a Dropbox driver for TYPO3 File Abstraction Layer.',
     'category' => 'fe',
     'author' => 'Stefan Froemken',

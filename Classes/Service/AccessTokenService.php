@@ -31,7 +31,7 @@ class AccessTokenService
         $this->view = GeneralUtility::makeInstance(StandaloneView::class);
         $this->view->setTemplatePathAndFilename(
             GeneralUtility::getFileAbsFileName(
-                'EXT:fal_dropbox/Resources/Private/Templates/GetAccessToken.html'
+                'EXT:dropbox/Resources/Private/Templates/GetAccessToken.html'
             )
         );
     }

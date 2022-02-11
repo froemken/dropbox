@@ -8,7 +8,7 @@
 		"TYPO3 CMS",
 		"dropbox",
 		"fal",
-		"fal_dropbox"
+		"dropbox"
 	],
 	"homepage": "http://www.typo3lexikon.de",
 	"authors": [
@@ -20,8 +20,8 @@
 	],
 	"support": {
 		"email": "froemken@gmail.com",
-		"issues": "https://github.com/froemken/fal_dropbox/issues",
-		"source": "https://github.com/froemken/fal_dropbox"
+		"issues": "https://github.com/froemken/dropbox/issues",
+		"source": "https://github.com/froemken/dropbox"
 	},
 	"require": {
 		"php": "^7.4 || ^8.0",
@@ -49,7 +49,7 @@
 	},
 	"extra": {
 		"typo3/cms": {
-			"extension-key": "fal_dropbox",
+			"extension-key": "dropbox",
 			"app-dir": ".build",
 			"web-dir": ".build/public"
 		}
@@ -60,7 +60,7 @@
 		"ci:php:fixer": ".build/vendor/bin/php-cs-fixer --config=Build/.php_cs.php fix --dry-run -v --show-progress=dots --diff Classes",
 		"link-extension": [
 			"@php -r 'is_dir($extFolder=__DIR__.\"/.build/public/typo3conf/ext/\") || mkdir($extFolder, 0777, true);'",
-			"@php -r 'file_exists($extFolder=__DIR__.\"/.build/public/typo3conf/ext/fal_dropbox\") || symlink(__DIR__,$extFolder);'"
+			"@php -r 'file_exists($extFolder=__DIR__.\"/.build/public/typo3conf/ext/dropbox\") || symlink(__DIR__,$extFolder);'"
 		],
 		"post-autoload-dump": [
 			"@link-extension"

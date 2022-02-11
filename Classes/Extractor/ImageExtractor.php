@@ -35,7 +35,7 @@ class ImageExtractor implements ExtractorInterface
      */
     public function getDriverRestrictions(): array
     {
-        return ['fal_dropbox'];
+        return ['dropbox'];
     }
 
     /**

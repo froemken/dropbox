@@ -50,7 +50,7 @@ class DropboxDriver extends AbstractDriver
     public function initialize(): void
     {
         $this->cache = GeneralUtility::makeInstance(CacheManager::class)
-            ->getCache('fal_dropbox');
+            ->getCache('dropbox');
 
         if (!empty($this->configuration['accessToken'])) {
             $this->dropbox = new Dropbox(
@@ -222,7 +222,7 @@ class DropboxDriver extends AbstractDriver
         );
 
         // Dropbox can not create files. So we have to create an empty file locally and upload it to Dropbox
-        $localFilePath = GeneralUtility::tempnam('fal_dropbox');
+        $localFilePath = GeneralUtility::tempnam('dropbox');
         $this->dropbox->upload($localFilePath, $fileIdentifier);
 
         unlink($localFilePath);
@@ -361,7 +361,7 @@ class DropboxDriver extends AbstractDriver
 
     public function setFileContents($fileIdentifier, $contents): int
     {
-        $localFilePath = GeneralUtility::tempnam('fal_dropbox');
+        $localFilePath = GeneralUtility::tempnam('dropbox');
         $bytes = file_put_contents($localFilePath, $contents);
 
         $this->dropbox->upload(

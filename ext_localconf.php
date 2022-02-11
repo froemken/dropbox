@@ -4,15 +4,15 @@ if (!defined('TYPO3')) {
 }
 
 call_user_func(static function (): void {
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['fal_dropbox'] = [
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['dropbox'] = [
         'class' => \StefanFroemken\Dropbox\Driver\DropboxDriver::class,
         'shortName' => 'Dropbox',
-        'flexFormDS' => 'FILE:EXT:fal_dropbox/Configuration/FlexForms/Dropbox.xml',
+        'flexFormDS' => 'FILE:EXT:dropbox/Configuration/FlexForms/Dropbox.xml',
         'label' => 'Dropbox'
     ];
 
     // create a temporary cache
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['fal_dropbox']['backend']
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['dropbox']['backend']
         = \TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend::class;
 
     // Add wizard/control to access_token in XML structure
