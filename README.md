@@ -14,7 +14,7 @@ The recommended way to install the extension is using Composer.
 Run the following command within your Composer based TYPO3 project:
 
 ```
-composer require sfroemken/fal_dropbox
+composer require stefanfroemken/dropbox
 ```
 
 ### Installation as extension from TER

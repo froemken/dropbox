@@ -43,7 +43,7 @@ The extension needs to be installed like any other extension of TYPO3 CMS:
            "name": "my-vendor/my-typo3-cms-distribution",
            "require": {
              "typo3/cms": "7.6.*",
-             "sfroemken/fal_dropbox": "0.2.*"
+             "stefanfroemken/dropbox": "0.2.*"
            },
            "extra": {
              "typo3/cms": {

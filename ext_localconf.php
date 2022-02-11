@@ -5,7 +5,7 @@ if (!defined('TYPO3')) {
 
 call_user_func(static function (): void {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers']['fal_dropbox'] = [
-        'class' => \SFroemken\FalDropbox\Driver\DropboxDriver::class,
+        'class' => \StefanFroemken\Dropbox\Driver\DropboxDriver::class,
         'shortName' => 'Dropbox',
         'flexFormDS' => 'FILE:EXT:fal_dropbox/Configuration/FlexForms/Dropbox.xml',
         'label' => 'Dropbox'
@@ -19,16 +19,16 @@ call_user_func(static function (): void {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1552228283] = [
         'nodeName' => 'accessToken',
         'priority' => '70',
-        'class' => \SFroemken\FalDropbox\Form\Element\AccessTokenElement::class
+        'class' => \StefanFroemken\Dropbox\Form\Element\AccessTokenElement::class
     ];
     // Show dropbox status in file storage
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1589660489] = [
         'nodeName' => 'dropboxStatus',
         'priority' => '70',
-        'class' => \SFroemken\FalDropbox\Form\Element\DropboxStatusElement::class
+        'class' => \StefanFroemken\Dropbox\Form\Element\DropboxStatusElement::class
     ];
 
     \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
         \TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::class
-    )->registerExtractionService(\SFroemken\FalDropbox\Extractor\ImageExtractor::class);
+    )->registerExtractionService(\StefanFroemken\Dropbox\Extractor\ImageExtractor::class);
 });

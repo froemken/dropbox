@@ -4,5 +4,5 @@ services:
     autoconfigure: true
     public: false
 
-  SFroemken\FalDropbox\:
+  StefanFroemken\Dropbox\:
     resource: '../Classes/*'
