@@ -6,6 +6,8 @@ use stdClass;
 use Countable;
 use Exception;
 use ArrayAccess;
+use Tightenco\Collect\Support\Arr;
+use Tightenco\Collect\Support\HigherOrderCollectionProxy;
 use Traversable;
 use ArrayIterator;
 use CachingIterator;
@@ -1315,8 +1317,8 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
         $partitions = [new static, new static];
 
         $callback = func_num_args() === 1
-                ? $this->valueRetriever($key)
-                : $this->operatorForWhere(...func_get_args());
+            ? $this->valueRetriever($key)
+            : $this->operatorForWhere(...func_get_args());
 
         foreach ($this->items as $key => $item) {
             $partitions[(int) ! $callback($item, $key)][$key] = $item;
@@ -1863,7 +1865,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return array_map(function ($value) {
             if ($value instanceof JsonSerializable) {
@@ -1894,7 +1896,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      *
      * @return \ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new ArrayIterator($this->items);
     }
@@ -1915,7 +1917,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->items);
     }
@@ -1968,7 +1970,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * @param  mixed  $key
      * @return bool
      */
-    public function offsetExists($key)
+    public function offsetExists($key): bool
     {
         return array_key_exists($key, $this->items);
     }
@@ -1979,7 +1981,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * @param  mixed  $key
      * @return mixed
      */
-    public function offsetGet($key)
+    public function offsetGet($key): mixed
     {
         return $this->items[$key];
     }
@@ -1991,7 +1993,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * @param  mixed  $value
      * @return void
      */
-    public function offsetSet($key, $value)
+    public function offsetSet($key, $value): void
     {
         if (is_null($key)) {
             $this->items[] = $value;
@@ -2006,7 +2008,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * @param  string  $key
      * @return void
      */
-    public function offsetUnset($key)
+    public function offsetUnset($key): void
     {
         unset($this->items[$key]);
     }
@@ -2016,7 +2018,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toJson();
     }

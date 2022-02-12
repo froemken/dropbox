@@ -25,8 +25,7 @@
 	},
 	"require": {
 		"php": "^7.4 || ^8.0",
-		"typo3/cms-core": "^10.4.19 || ^11.5",
-		"kunalvarma05/dropbox-php-sdk": "^0.2"
+		"typo3/cms-core": "^10.4.19 || ^11.5"
 	},
 	"require-dev": {
 		"roave/security-advisories": "dev-latest",
@@ -34,9 +33,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"StefanFroemken\\Dropbox\\": "Classes",
-			"Kunnu\\Dropbox\\": "vendor/kunalvarma05/dropbox-php-sdk/src/Dropbox",
-			"Tightenco\\Collect\\": "vendor/tightenco/collect/src/Collect"
+			"StefanFroemken\\Dropbox\\": "Classes"
 		}
 	},
 	"autoload-dev": {
