@@ -14,6 +14,7 @@ namespace StefanFroemken\Dropbox\Form\Element;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -44,42 +45,16 @@ class AccessTokenElement extends AbstractFormElement
 
     /**
      * @return array
-     * @throws RouteNotFoundException
      */
     public function render(): array
     {
-        $options = $this->data['renderData']['fieldControlOptions'];
+        $resultArray = $this->initializeResultArray();
+        $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS(
+            'TYPO3/CMS/Dropbox/AccessTokenModule'
+        )->invoke('initialize');
+
         $parameterArray = $this->data['parameterArray'];
         $itemName = $parameterArray['itemFormElName'];
-        $windowOpenParameters = $options['windowOpenParameters'] ?? 'height=800,width=600,status=0,menubar=0,scrollbars=1';
-
-        $urlParameters = [
-            'P' => [
-                'table' => $this->data['tableName'],
-                'uid' => $this->data['databaseRow']['uid'],
-                'pid' => $this->data['databaseRow']['pid'],
-                'field' => $this->data['fieldName'],
-                'formName' => 'editform',
-                'itemName' => $itemName,
-                'hmac' => GeneralUtility::hmac('editform' . $itemName, 'wizard_js'),
-                'fieldChangeFunc' => $parameterArray['fieldChangeFunc'],
-                'fieldChangeFuncHash' => GeneralUtility::hmac(serialize($parameterArray['fieldChangeFunc'])),
-            ],
-        ];
-
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        $url = $uriBuilder->buildUriFromRoute('access_token', $urlParameters);
-
-        $onClick = [];
-        $onClick[] = 'this.blur();';
-        $onClick[] = 'vHWin=window.open(';
-        $onClick[] =    GeneralUtility::quoteJSvalue($url);
-        $onClick[] =    ',';
-        $onClick[] =    '\'\',';
-        $onClick[] =    GeneralUtility::quoteJSvalue($windowOpenParameters);
-        $onClick[] = ');';
-        $onClick[] = 'vHWin.focus();';
-        $onClick[] = 'return false;';
 
         $fieldWizardResult = $this->renderFieldWizard();
         $fieldWizardHtml = $fieldWizardResult['html'];
@@ -96,13 +71,15 @@ class AccessTokenElement extends AbstractFormElement
         $mainFieldHtml[] =  '</div>';
         $mainFieldHtml[] = '</div>';
 
-        return [
-            'iconIdentifier' => 'actions-add',
-            'title' => 'Generate Access Token',
-            'linkAttributes' => [
-                'onClick' => implode('', $onClick)
-            ],
-            'html' => implode(LF, $mainFieldHtml)
+        $resultArray['iconIdentifier'] = 'actions-add';
+        $resultArray['title'] = 'Generate Access Token';
+        $resultArray['linkAttributes'] = [
+            'class' => 'triggerAccessToken',
+            'data-itemname' => $itemName,
+            'onClick' => 'return false;'
         ];
+        $resultArray['html'] = implode(LF, $mainFieldHtml);
+
+        return $resultArray;
     }
 }

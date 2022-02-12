@@ -13,6 +13,7 @@ namespace StefanFroemken\Dropbox\Form\Element;
 
 use Kunnu\Dropbox\Dropbox;
 use Kunnu\Dropbox\DropboxApp;
+use Kunnu\Dropbox\Exceptions\DropboxClientException;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -46,6 +47,11 @@ class DropboxStatusElement extends AbstractFormElement
      */
     public function getHtmlForConnected(string $accessToken): string
     {
+        $accessToken = trim($accessToken);
+        if ($accessToken === '') {
+            return 'Please setup access token first to see your account info here.';
+        }
+
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename(
             GeneralUtility::getFileAbsFileName(
@@ -59,8 +65,18 @@ class DropboxStatusElement extends AbstractFormElement
             $view->assign('account', $dropbox->getCurrentAccount());
             $view->assign('quota', $dropbox->getSpaceUsage());
             $content = $view->render();
-        } catch (\Exception $e) {
-            $content = 'Please setup access token first to see your account info here.';
+        } catch (DropboxClientException $dropboxClientException) {
+            try {
+                $errorResponse = \json_decode(
+                    $dropboxClientException->getMessage(),
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+                $content = 'Dropbox Client Error: ' . $errorResponse['error']['.tag'] ?? 'None given';
+            } catch (\JsonException $jsonException) {
+                $content = 'Dropbox Client Response Error';
+            }
         }
 
         return $content;

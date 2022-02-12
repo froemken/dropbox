@@ -1,22 +1,9 @@
-<f:be.container
-	pageTitle="getAccessToken"
-	includeRequireJsModules="{0: 'TYPO3/CMS/FalDropbox/AccessTokenModule'}"
->
+<f:be.container pageTitle="getAccessToken">
 	<f:render section="main" arguments="{_all}" />
 </f:be.container>
 
-
 <f:section name="main">
 	<div class="container">
-		<f:if condition="{errors}">
-			<f:for each="{errors}" as="error">
-				<div class="panel panel-danger">
-					<div class="panel-heading">Error: {error.number}</div>
-					<div class="panel-body">{error.message}</div>
-				</div>
-			</f:for>
-		</f:if>
-
 		<f:if condition="{getAuthCodeLink}">
 			<f:then>
 				<div class="panel panel-info">
@@ -42,11 +29,9 @@
 					</div>
 					<f:form.submit class="btn btn-default" value="Get AccessToken" />
 				</f:form>
-
 			</f:then>
 			<f:else>
-
-				<f:form actionUri="{formUri}" method="POST">
+				<f:form actionUri="{formUri}" class="getAuthCodeLinkForm" method="POST">
 					<f:form.hidden id="parameters" name="parameters" value="{parameters}" />
 					<div class="form-group">
 						<label for="appKey">AppKey</label>
@@ -58,7 +43,6 @@
 					</div>
 					<f:form.submit class="btn btn-default" value="Get AuthCode Link" />
 				</f:form>
-
 			</f:else>
 		</f:if>
 	</div>

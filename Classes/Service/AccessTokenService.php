@@ -56,7 +56,7 @@ class AccessTokenService
         $appKey = htmlspecialchars($formFields['appKey'] ?? '');
         $appSecret = htmlspecialchars($formFields['appSecret'] ?? '');
 
-        if (!empty($appKey)) {
+        if ($appKey !== '') {
             $dropbox = new Dropbox(new DropboxApp($appKey, $appSecret));
             $uri = $dropbox->getAuthHelper()->getAuthUrl();
             if (!empty($uri)) {
@@ -70,7 +70,6 @@ class AccessTokenService
         $this->view->assign('appKey', $appKey);
         $this->view->assign('appSecret', $appSecret);
         $this->view->assign('formUri', $formUri);
-        $this->view->assign('errors', $this->errors);
 
         $response = GeneralUtility::makeInstance(Response::class);
         $response->getBody()->write($this->view->render());
