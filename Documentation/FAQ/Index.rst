@@ -23,5 +23,6 @@ PHP 8.0/8.1 compatibility
 
 My extension `dropbox` should be compatible with PHP 8.0 and 8.1, but the used PHP SDK
 `kunalvarma05/dropbox-php-sdk` installs a complete out-dated `tightenco/collect` in version 5.2 which is not
-compatible with PHP 8.0. Interesting: This package is NOT used by dropbox-php-sdk anymore. Currently the
-community waits for this issue to be solved/merged: https://github.com/kunalvarma05/dropbox-php-sdk/pull/191
+compatible with PHP 8.0. That's why I have added the complete `tightenco/collect` package into my
+`dropbox` extension and updated the out-dated classes on my own.
+See: https://github.com/kunalvarma05/dropbox-php-sdk/pull/191
