@@ -95,11 +95,11 @@ define(["exports", "TYPO3/CMS/Backend/Enum/Severity", "TYPO3/CMS/Backend/MultiSt
 	{
 		return '<div class="form-group">' +
 			'  <label for="appKey">AppKey</label>' +
-			'  <input type="text" class="form-control" id="appKey" placeholder="App Key" />' +
+			'  <input type="text" class="form-control" id="appKey" autocomplete="off" placeholder="App Key" />' +
 			'</div>' +
 			'<div class="form-group">\n' +
 			'  <label for="appSecret">AppSecret</label>\n' +
-			'  <input type="text" class="form-control" id="appSecret" placeholder="App Secret" />' +
+			'  <input type="text" class="form-control" id="appSecret" autocomplete="off" placeholder="App Secret" />' +
 			'</div>';
 	}
 
@@ -117,7 +117,7 @@ define(["exports", "TYPO3/CMS/Backend/Enum/Severity", "TYPO3/CMS/Backend/MultiSt
 	{
 		return '<div class="form-group">' +
 			'  <label for="authCode">AuthCode</label>' +
-			'  <input type="text" class="form-control" id="authCode" placeholder="Type in the AuthCode from the link above" />' +
+			'  <input type="text" class="form-control" id="authCode" autocomplete="off" placeholder="Type in the AuthCode from the link above" />' +
 			'</div>';
 	}
 });
