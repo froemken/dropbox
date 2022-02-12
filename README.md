@@ -1,4 +1,6 @@
-# TYPO3 Extension `fal_dropbox`
+# TYPO3 Extension `dropbox`
+
+![Build Status](https://github.com/froemken/dropbox/workflows/CI/badge.svg)
 
 ## 1 What does it do?
 
@@ -22,21 +24,40 @@ composer require stefanfroemken/dropbox
 
 Download and install `dropbox` with the extension manager.
 
-## Setup
+## Create Dropbox App
 
-1. Create a new file storage record on pid 0 called "Dropbox"
-2. On Tab "Configuration" choose "Dropbox". FlexForm reloads
-   1. GoTo: https://www.dropbox.com/developers
-   2. Choose "App console" on the left
-   3. Click on button "Create app" on the upper right
-   4. Choose "Dropbox API App"
-   5. Now you can decide, if you want your app to work in its own folder. Or, if you want to have full access to all of your files
-   6. Give it a name
-   7. Save app with "Create App"
-   8. After saving, you see your newly created App. Choose it.
-   9. Click it and allow your app to connect to your dropbox account
+To give TYPO3 access to your Dropbox files, you need a Dropbox app. As long as this app is under development,
+up to 5 devices can connect to this app:
 
-3.) Have fun with FAL Dropbox
+1. GoTo: https://www.dropbox.com/developers
+2. Choose "App console" on the upper right
+3. Click the blue button "Create app"
+4. Choose the "Scoped Access"
+5. Decide, if you want your app to work within its own folder or, if you want to have full access to all of your files
+6. Give it a name
+7. Save app with "Create App"
+8. Open your newly created app
+9. On tab "settings" you will find app key and app secret
+10. Open new tab and start configuring TYPO3
+
+## Configure TYPO3
+
+1. Create a new file storage record on pid 0 and give it a name like "Dropbox"
+2. On Tab "Configuration" choose "Dropbox" (FlexForm reloads)
+3. Click the + icon right of the access token field to start the wizard
+4. Enter app key and app secret from your new Dropbox app
+5. Click the link to retrieve a Dropbox auth code
+   1. It will open a new browser tab, where you have to allow TYPO3 to access your app
+   2. After confirmation, you will see the auth code
+   3. Copy auth code over to dropbox configuration wizard
+6. Click next button in wizard
+7. In background my extension calls dropbox API to get access token
+8. On success the access token will automatically in configuration record
+9. Save the configuration record
+10. On success, you will see a green panel with some useful information
+    about your free disk space of your Dropbox account
+
+Have fun using your dropbox files in TYPO3.
 
 **ToDo:**
 
