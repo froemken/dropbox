@@ -19,4 +19,10 @@ $EM_CONF[$_EXTKEY] = [
         'suggests' => [
         ],
     ],
+    'autoload' => [
+        'psr-4' => [
+            "Kunnu\\Dropbox\\" => "vendor/kunalvarma05/dropbox-php-sdk/src/Dropbox",
+            "Tightenco\\Collect\\" => "vendor/tightenco/collect/src/Collect"
+        ]
+    ],
 ];
