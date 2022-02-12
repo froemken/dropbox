@@ -54,40 +54,44 @@ define(["exports", "TYPO3/CMS/Backend/Enum/Severity", "TYPO3/CMS/Backend/MultiSt
 				severity.info,
 				"Step 3/3",
 				function ($slide) {
-					let $modal = $slide.closest(".modal");
+					let $modal = $slide.closest('.modal');
 					let $nextButton = $modal.find(".modal-footer").find('button[name="next"]');
+					multiStep.lockPrevStep();
 					multiStep.unlockNextStep();
 					multiStep.setup.forceSelection = false;
 					$nextButton.off().on("click", function () {
 						multiStep.set("authCode", $slide.find("input#authCode").val());
-
-						$.ajax({
-							url: "https://api.dropboxapi.com/oauth2/token",
-							dataType: "json",
-							method: "POST",
-							data: {
-								code: multiStep.setup.settings["authCode"],
-								grant_type: "authorization_code",
-								client_id: multiStep.setup.settings["appKey"],
-								client_secret: multiStep.setup.settings["appSecret"]
-							},
-							success: function(response) {
-								if (response.access_token) {
-									let $accessTokenElement = $('[data-formengine-input-name="' + $getAccessTokenButton.data("itemname") + '"]');
-									$accessTokenElement.val(response.access_token);
-									$accessTokenElement.trigger("change");
-								}
-								multiStep.dismiss();
-							},
-							fail: function() {
-								console.log("Ups");
-								multiStep.dismiss();
-							}
-						});
+						multiStep.setup.$carousel.carousel("next")
 					});
 				}
 			);
-			multiStep.show();
+			multiStep.addFinalProcessingSlide(function () {
+				$.ajax({
+					url: "https://api.dropboxapi.com/oauth2/token",
+					dataType: "json",
+					method: "POST",
+					data: {
+						code: multiStep.setup.settings["authCode"],
+						grant_type: "authorization_code",
+						client_id: multiStep.setup.settings["appKey"],
+						client_secret: multiStep.setup.settings["appSecret"]
+					},
+					success: function(response) {
+						if (response.access_token) {
+							let $accessTokenElement = $('[data-formengine-input-name="' + $getAccessTokenButton.data("itemname") + '"]');
+							$accessTokenElement.val(response.access_token);
+							$accessTokenElement.trigger("change");
+						}
+						multiStep.dismiss();
+					},
+					fail: function() {
+						console.log("Ups");
+						multiStep.dismiss();
+					}
+				});
+			}).done(function () {
+				multiStep.show();
+			});
 		});
 	}
 
