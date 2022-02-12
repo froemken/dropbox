@@ -17,3 +17,4 @@ For administrators
 
    Installation/Index
    Configuration/Index
+   Update/Index
