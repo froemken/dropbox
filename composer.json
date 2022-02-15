@@ -47,11 +47,6 @@
 		"vendor-dir": ".build/vendor"
 	},
 	"extra": {
-		"patches": {
-			"tightenco/collect": {
-				"Apply PHP 8.0 patch to tightenco/collect package": "Resources/Private/PHP/Collect/add_php_8_compatibility.patch"
-			}
-		},
 		"typo3/cms": {
 			"extension-key": "dropbox",
 			"app-dir": ".build",
