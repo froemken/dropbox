@@ -60,6 +60,14 @@ diff --git a/vendor/tightenco/collect/src/Collect/Support/Collection.php b/vendo
      {
          return array_key_exists($key, $this->items);
      }
+@@ -1797,6 +1797,7 @@
+      * @param  mixed  $key
+      * @return mixed
+      */
++    #[\ReturnTypeWillChange]
+     public function offsetGet($key)
+     {
+         return $this->items[$key];
 @@ -1809,7 +1809,7 @@
       * @param  mixed  $value
       * @return void
