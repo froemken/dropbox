@@ -13,6 +13,8 @@ namespace StefanFroemken\Dropbox\Form\Element;
 
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
  * Wizard/Control next to field access_token in Dropbox XML configuration
@@ -45,10 +47,13 @@ class AccessTokenElement extends AbstractFormElement
      */
     public function render(): array
     {
+        $fieldId = StringUtility::getUniqueId('tceforms-trigger-access-token-wizard-');
         $resultArray = $this->initializeResultArray();
-        $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS(
-            'TYPO3/CMS/Dropbox/AccessTokenModule'
-        )->invoke('initialize');
+        $resultArray['requireJsModules'][] = ['TYPO3/CMS/Dropbox/AccessTokenModule' => '
+            function(AccessTokenElement) {
+                new AccessTokenElement(' . GeneralUtility::quoteJSvalue($fieldId) . ');
+            }'
+        ];
 
         $parameterArray = $this->data['parameterArray'];
         $itemName = $parameterArray['itemFormElName'];
@@ -71,7 +76,7 @@ class AccessTokenElement extends AbstractFormElement
         $resultArray['iconIdentifier'] = 'actions-add';
         $resultArray['title'] = 'Generate Access Token';
         $resultArray['linkAttributes'] = [
-            'class' => 'triggerAccessToken',
+            'class' => $fieldId,
             'data-itemname' => $itemName,
             'onClick' => 'return false;'
         ];
