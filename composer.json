@@ -29,7 +29,6 @@
 		"spatie/dropbox-api": "^1.19"
 	},
 	"require-dev": {
-		"roave/security-advisories": "dev-latest",
 		"friendsofphp/php-cs-fixer": "^3.4"
 	},
 	"autoload": {
