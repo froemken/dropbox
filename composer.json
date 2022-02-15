@@ -33,7 +33,8 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"StefanFroemken\\Dropbox\\": "Classes"
+			"StefanFroemken\\Dropbox\\": "Classes",
+			"Spatie\\Dropbox\\": "Resources/Private/PHP/spatie/dropbox-api/src"
 		}
 	},
 	"autoload-dev": {

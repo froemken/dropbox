@@ -19,9 +19,4 @@ $EM_CONF[$_EXTKEY] = [
         'suggests' => [
         ],
     ],
-    'autoload' => [
-        'psr-4' => [
-            "Spatie\\Dropbox\\" => "Resources/Private/PHP/spatie/dropbox-api/src"
-        ]
-    ],
 ];
