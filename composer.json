@@ -26,7 +26,8 @@
 	"require": {
 		"php": "^7.4 || ^8.0",
 		"typo3/cms-core": "^10.4.19 || ^11.5",
-		"kunalvarma05/dropbox-php-sdk": "^0.2"
+		"kunalvarma05/dropbox-php-sdk": "^0.2",
+		"cweagans/composer-patches": "^1.7"
 	},
 	"require-dev": {
 		"roave/security-advisories": "dev-latest",
