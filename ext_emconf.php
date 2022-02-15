@@ -8,7 +8,7 @@ $EM_CONF[$_EXTKEY] = [
     'author_email' => 'froemken@gmail.com',
     'state' => 'stable',
     'clearCacheOnLoad' => true,
-    'version' => '4.2.0',
+    'version' => '4.2.1',
     'constraints' => [
         'depends' => [
             'php' => '7.4.0-8.1.99',
@@ -21,8 +21,7 @@ $EM_CONF[$_EXTKEY] = [
     ],
     'autoload' => [
         'psr-4' => [
-            "Kunnu\\Dropbox\\" => "vendor/kunalvarma05/dropbox-php-sdk/src/Dropbox",
-            "Tightenco\\Collect\\" => "vendor/tightenco/collect/src/Collect"
+            "Spatie\\Dropbox\\" => "Resources/Private/PHP/spatie/dropbox-api/src"
         ]
     ],
 ];
