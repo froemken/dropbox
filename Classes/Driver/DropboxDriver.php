@@ -11,11 +11,6 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Driver;
 
-use Kunnu\Dropbox\Dropbox;
-use Kunnu\Dropbox\DropboxApp;
-use Kunnu\Dropbox\DropboxFile;
-use Kunnu\Dropbox\Models\FileMetadata;
-use Kunnu\Dropbox\Models\FolderMetadata;
 use Spatie\Dropbox\Client;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
