@@ -16,6 +16,7 @@ use Kunnu\Dropbox\DropboxApp;
 use Kunnu\Dropbox\DropboxFile;
 use Kunnu\Dropbox\Models\FileMetadata;
 use Kunnu\Dropbox\Models\FolderMetadata;
+use Spatie\Dropbox\Client;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
@@ -31,7 +32,7 @@ class DropboxDriver extends AbstractDriver
 {
     protected FrontendInterface $cache;
 
-    protected ?Dropbox $dropbox = null;
+    protected ?Client $dropboxClient = null;
 
     protected array $settings = [];
 
@@ -53,11 +54,9 @@ class DropboxDriver extends AbstractDriver
             ->getCache('dropbox');
 
         if (!empty($this->configuration['accessToken'])) {
-            $this->dropbox = new Dropbox(
-                new DropboxApp('', '', $this->configuration['accessToken'])
-            );
+            $this->dropboxClient = new Client((string)$this->configuration['accessToken']);
         } else {
-            $this->dropbox = null;
+            $this->dropboxClient = null;
         }
     }
 
@@ -111,7 +110,7 @@ class DropboxDriver extends AbstractDriver
     {
         $newFolderName = trim($newFolderName, '/');
         $parentFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($parentFolderIdentifier);
-        $this->dropbox->createFolder($parentFolderIdentifier . $newFolderName);
+        $this->dropboxClient->createFolder($parentFolderIdentifier . $newFolderName);
         $newIdentifier = $parentFolderIdentifier . $newFolderName . '/';
         $this->cache->flush();
 
@@ -127,7 +126,7 @@ class DropboxDriver extends AbstractDriver
         $targetIdentifier = $this->canonicalizeAndCheckFolderIdentifier($targetIdentifier);
 
         // dropbox don't like slashes at the end of identifier
-        $this->dropbox->move(rtrim($folderIdentifier, '/'), rtrim($targetIdentifier, '/'));
+        $this->dropboxClient->move(rtrim($folderIdentifier, '/'), rtrim($targetIdentifier, '/'));
 
         $this->cache->flush();
 
@@ -137,7 +136,7 @@ class DropboxDriver extends AbstractDriver
     public function deleteFolder($folderIdentifier, $deleteRecursively = false): bool
     {
         try {
-            $this->dropbox->delete($folderIdentifier === '/' ?: rtrim($folderIdentifier, '/'));
+            $this->dropboxClient->delete($folderIdentifier === '/' ?: rtrim($folderIdentifier, '/'));
         } catch (\Exception $e) {
             return false;
         }
@@ -199,10 +198,10 @@ class DropboxDriver extends AbstractDriver
         $localFilePath = $this->canonicalizeAndCheckFilePath($localFilePath);
         $newFileIdentifier = $this->canonicalizeAndCheckFolderIdentifier($targetFolderIdentifier) . $newFileName;
 
-        $this->dropbox->simpleUpload(
-            $localFilePath,
+        $this->dropboxClient->upload(
             $newFileIdentifier,
-            ['mode' => 'overwrite']
+            file_get_contents($localFilePath),
+            'overwrite'
         );
 
         if ($removeOriginal) {
@@ -221,11 +220,10 @@ class DropboxDriver extends AbstractDriver
             $parentFolderIdentifier . $this->sanitizeFileName(ltrim($fileName, '/'))
         );
 
-        // Dropbox can not create files. So we have to create an empty file locally and upload it to Dropbox
-        $localFilePath = GeneralUtility::tempnam('dropbox');
-        $this->dropbox->upload($localFilePath, $fileIdentifier);
-
-        unlink($localFilePath);
+        $this->dropboxClient->upload(
+            $fileIdentifier,
+            ''
+        );
 
         $this->cache->flush();
 
@@ -238,7 +236,7 @@ class DropboxDriver extends AbstractDriver
         $targetFileIdentifier = $this->canonicalizeAndCheckFileIdentifier($targetFolderIdentifier . '/' . $fileName);
 
         // dropbox don't like slashes at the end of identifier
-        $this->dropbox->copy($fileIdentifier, $targetFileIdentifier);
+        $this->dropboxClient->copy($fileIdentifier, $targetFileIdentifier);
         $this->cache->flush();
 
         return $targetFileIdentifier;
@@ -252,7 +250,7 @@ class DropboxDriver extends AbstractDriver
         $targetIdentifier = PathUtility::dirname($fileIdentifier) . '/' . $newName;
         $targetIdentifier = $this->canonicalizeAndCheckFileIdentifier($targetIdentifier);
 
-        $this->dropbox->move($fileIdentifier, $targetIdentifier);
+        $this->dropboxClient->move($fileIdentifier, $targetIdentifier);
 
         $this->cache->flush();
 
@@ -283,7 +281,7 @@ class DropboxDriver extends AbstractDriver
     public function deleteFile($fileIdentifier): bool
     {
         try {
-            $this->dropbox->delete($fileIdentifier);
+            $this->dropboxClient->delete($fileIdentifier);
             return true;
         } catch (\Exception $e) {
         }
@@ -317,7 +315,7 @@ class DropboxDriver extends AbstractDriver
         $targetFileIdentifier = $this->canonicalizeAndCheckFileIdentifier($targetFolderIdentifier . '/' . $newFileName);
 
         // dropbox don't like slashes at the end of identifier
-        $this->dropbox->move($fileIdentifier, $targetFileIdentifier);
+        $this->dropboxClient->move($fileIdentifier, $targetFileIdentifier);
 
         $this->cache->flush();
 
@@ -330,7 +328,7 @@ class DropboxDriver extends AbstractDriver
         $targetFolderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($targetFolderIdentifier . '/' . $newFolderName);
 
         // dropbox don't like slashes at the end of identifier
-        $this->dropbox->move(rtrim($sourceFolderIdentifier, '/'), rtrim($targetFolderIdentifier, '/'));
+        $this->dropboxClient->move(rtrim($sourceFolderIdentifier, '/'), rtrim($targetFolderIdentifier, '/'));
 
         $this->cache->flush();
 
@@ -347,7 +345,7 @@ class DropboxDriver extends AbstractDriver
         }
 
         // dropbox don't like slashes at the end of identifier
-        $this->dropbox->copy(rtrim($sourceFolderIdentifier, '/'), rtrim($targetFolderIdentifier, '/'));
+        $this->dropboxClient->copy(rtrim($sourceFolderIdentifier, '/'), rtrim($targetFolderIdentifier, '/'));
 
         $this->cache->flush();
 
@@ -356,25 +354,20 @@ class DropboxDriver extends AbstractDriver
 
     public function getFileContents($fileIdentifier): string
     {
-        return $this->dropbox->download($fileIdentifier)->getContents();
+        return stream_get_contents($this->dropboxClient->download($fileIdentifier));
     }
 
     public function setFileContents($fileIdentifier, $contents): int
     {
-        $localFilePath = GeneralUtility::tempnam('dropbox');
-        $bytes = file_put_contents($localFilePath, $contents);
-
-        $this->dropbox->upload(
-            $localFilePath,
+        $response = $this->dropboxClient->upload(
             $fileIdentifier,
-            ['mode' => 'overwrite']
+            $contents,
+            'overwrite'
         );
-
-        unlink($localFilePath);
 
         $this->cache->flush();
 
-        return $bytes;
+        return (int)$response['size'];
     }
 
     public function fileExistsInFolder($fileName, $folderIdentifier): bool
@@ -411,17 +404,7 @@ class DropboxDriver extends AbstractDriver
     public function dumpFileContents($identifier): void
     {
         $handle = fopen('php://output', 'wb');
-        fwrite($handle, $this->dropbox->download($identifier)->getContents());
-
-        $this->dropbox->download(
-            $identifier,
-            DropboxFile::createByStream(
-                'php://output',
-                $handle,
-                DropboxFile::MODE_WRITE
-            )
-        );
-
+        fwrite($handle, stream_get_contents($this->dropboxClient->download($identifier)));
         fclose($handle);
     }
 
@@ -622,19 +605,18 @@ class DropboxDriver extends AbstractDriver
 
                 // get info for current path
                 if ($path !== '/') {
-                    $info = $this->dropbox->getMetadata($path)->getData();
+                    $info = $this->dropboxClient->getMetadata($path);
                 } else {
                     $info['.tag'] = 'folder';
                 }
 
                 if ($info['.tag'] === 'folder') {
-                    /** @var FileMetadata|FolderMetadata $item */
-                    foreach ($this->dropbox->listFolder($path)->getItems() as $item) {
-                        if ($item instanceof FileMetadata) {
-                            $info['files'][] = $item->getData();
-                            $this->cacheMetaData($item);
+                    foreach ($this->dropboxClient->listFolder($path)['entries'] ?? [] as $entry) {
+                        if ($entry['.tag'] === 'file') {
+                            $info['files'][] = $entry;
+                            $this->cacheMetaData($entry);
                         } else {
-                            $info['folders'][] = $item->getData();
+                            $info['folders'][] = $entry;
                         }
                     }
                 }
@@ -649,11 +631,16 @@ class DropboxDriver extends AbstractDriver
         return $info;
     }
 
-    protected function cacheMetaData(FileMetadata $metaData): void
+    protected function cacheMetaData(array $metaData): void
     {
-        $cacheIdentifier = $this->getCacheIdentifierForPath($metaData->getPathDisplay());
+        // Do not cache meta data on invalid mata data
+        if (!array_key_exists('path_display', $metaData)) {
+            return;
+        }
+
+        $cacheIdentifier = $this->getCacheIdentifierForPath((string)$metaData['path_display']);
         if (!$this->cache->has($cacheIdentifier)) {
-            $this->cache->set($cacheIdentifier, $metaData->getData());
+            $this->cache->set($cacheIdentifier, $metaData);
         }
     }
 
@@ -683,7 +670,7 @@ class DropboxDriver extends AbstractDriver
     protected function copyFileToTemporaryPath(string $fileIdentifier): string
     {
         $temporaryPath = $this->getTemporaryPathForFile($fileIdentifier);
-        file_put_contents($temporaryPath, $this->dropbox->download($fileIdentifier)->getContents());
+        file_put_contents($temporaryPath, stream_get_contents($this->dropboxClient->download($fileIdentifier)));
 
         return $temporaryPath;
     }
