@@ -4,11 +4,17 @@
 	<tbody>
 	<tr>
 		<td>Type</td>
-		<td>{account.accountType}</td>
+		<td>
+			<f:for each="{account.account_type}" as="type" key="tag">
+				<f:if condition="{tag} == '.tag'">
+					{type}
+				</f:if>
+			</f:for>
+		</td>
 	</tr>
 	<tr>
 		<td>Name</td>
-		<td><f:link.external uri="{account.referralLink}" target="_blank">{account.displayName}</f:link.external></td>
+		<td><f:link.external uri="{account.referral_link}" target="_blank">{account.name.display_name}</f:link.external></td>
 	</tr>
 	<tr>
 		<td>E-Mail</td>

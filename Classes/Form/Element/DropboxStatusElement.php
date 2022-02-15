@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Form\Element;
 
-use Kunnu\Dropbox\Dropbox;
-use Kunnu\Dropbox\DropboxApp;
-use Kunnu\Dropbox\Exceptions\DropboxClientException;
+use GuzzleHttp\Exception\ClientException;
+use Spatie\Dropbox\Client;
+use Spatie\Dropbox\Exceptions\BadRequest;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -60,23 +60,14 @@ class DropboxStatusElement extends AbstractFormElement
         );
 
         try {
-            $dropboxApp = GeneralUtility::makeInstance(DropboxApp::class, '', '', $accessToken);
-            $dropbox = GeneralUtility::makeInstance(Dropbox::class, $dropboxApp);
-            $view->assign('account', $dropbox->getCurrentAccount());
-            $view->assign('quota', $dropbox->getSpaceUsage());
+            $dropboxClient = GeneralUtility::makeInstance(Client::class, $accessToken);
+            $view->assign('account', $dropboxClient->getAccountInfo());
+            $view->assign('quota', $dropboxClient->rpcEndpointRequest('users/get_space_usage'));
             $content = $view->render();
-        } catch (DropboxClientException $dropboxClientException) {
-            try {
-                $errorResponse = \json_decode(
-                    $dropboxClientException->getMessage(),
-                    true,
-                    512,
-                    JSON_THROW_ON_ERROR
-                );
-                $content = 'Dropbox Client Error: ' . $errorResponse['error']['.tag'] ?? 'None given';
-            } catch (\JsonException $jsonException) {
-                $content = 'Dropbox Client Response Error';
-            }
+        } catch (ClientException $clientException) {
+            $content = $clientException->getMessage();
+        } catch (BadRequest $badRequest) {
+            $content = 'Bad request to Dropbox Client: ' . $badRequest->getMessage();
         }
 
         return $content;
