@@ -12,8 +12,13 @@ declare(strict_types=1);
 namespace StefanFroemken\Dropbox\Driver;
 
 use Spatie\Dropbox\Client;
+use Spatie\Dropbox\Exceptions\BadRequest;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
 use TYPO3\CMS\Core\Resource\Exception\InvalidPathException;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
@@ -28,6 +33,8 @@ class DropboxDriver extends AbstractDriver
     protected FrontendInterface $cache;
 
     protected ?Client $dropboxClient = null;
+
+    protected FlashMessageService $flashMessageService;
 
     protected array $settings = [];
 
@@ -53,6 +60,8 @@ class DropboxDriver extends AbstractDriver
         } else {
             $this->dropboxClient = null;
         }
+
+        $this->flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
     }
 
     public function getCapabilities(): int
@@ -659,14 +668,43 @@ class DropboxDriver extends AbstractDriver
         return is_array($info) && $info !== [];
     }
 
-    /**
+    /*
      * Copies a file to a temporary path and returns that path.
      */
     protected function copyFileToTemporaryPath(string $fileIdentifier): string
     {
         $temporaryPath = $this->getTemporaryPathForFile($fileIdentifier);
-        file_put_contents($temporaryPath, stream_get_contents($this->dropboxClient->download($fileIdentifier)));
+        try {
+            file_put_contents($temporaryPath, stream_get_contents($this->dropboxClient->download($fileIdentifier)));
+        } catch (BadRequest $badRequest) {
+            $this->addFlashMessage(
+                'The file meta extraction has been interrupted, because file has been removed in the meanwhile.',
+                'File Meta Extraction aborted',
+                AbstractMessage::INFO
+            );
+
+            return '';
+        }
 
         return $temporaryPath;
+    }
+
+    public function addFlashMessage(string $message, string $title = '', int $severity = AbstractMessage::OK): void
+    {
+        // We activate storeInSession, so that messages can be displayed when click on Save&Close button.
+        $flashMessage = GeneralUtility::makeInstance(
+            FlashMessage::class,
+            $message,
+            $title,
+            $severity,
+            true
+        );
+
+        $this->getFlashMessageQueue()->enqueue($flashMessage);
+    }
+
+    protected function getFlashMessageQueue(): FlashMessageQueue
+    {
+        return $this->flashMessageService->getMessageQueueByIdentifier();
     }
 }

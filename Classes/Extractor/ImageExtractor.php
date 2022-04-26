@@ -70,6 +70,10 @@ class ImageExtractor implements ExtractorInterface
     {
         // Currently, Dropbox does not transfer width/height
         $localPath = $file->getForLocalProcessing();
+        if ($localPath === '') {
+            return [];
+        }
+
         [$width, $height] = @getimagesize($localPath);
 
         // Remove file to prevent exceeding hdd quota
