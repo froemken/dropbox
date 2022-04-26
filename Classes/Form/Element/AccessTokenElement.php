@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace StefanFroemken\Dropbox\Form\Element;
 
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
-use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
 
@@ -42,9 +41,6 @@ class AccessTokenElement extends AbstractFormElement
         ],
     ];
 
-    /**
-     * @return array
-     */
     public function render(): array
     {
         $fieldId = StringUtility::getUniqueId('tceforms-trigger-access-token-wizard-');
