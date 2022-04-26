@@ -15,6 +15,7 @@ Create File Storage
 * On tab ``General`` choose a name like ``Dropbox``
 * On tab ``Configuration`` you have to choose the ``Dropbox`` driver
 
+
 Driver Configuration
 ====================
 
@@ -26,50 +27,59 @@ To communicate over the Dropbox-API you need an Access Token.
    or you can create an access token with help of the wizard you can reach over ``GetAccessToken``
 #. Save the record
 
+
 Create API at dropbox.com
 -------------------------
 
-* Go to Developer area of dropbox.com
+.. rst-class:: bignums
 
-.. figure:: ../../Images/AdministratorManual/dropbox_link_developer_area.jpg
-   :width: 500px
-   :align: left
-   :alt: Find Dropbox Link for Developer area
+1. Go to Developer area of dropbox.com
 
-* Create new Dropbox App
+   Simply visit: https://www.dropbox.com/developers
 
-.. figure:: ../../Images/AdministratorManual/dropbox_create_app.jpg
-   :width: 500px
-   :align: left
-   :alt: Create Dropbox App
+   If this link is not valid anymore go to https://www.dropbox.com/, click the upper left menu icon with the 9 dots.
+   Choose the App Center. In the left menu of the `App Center` you will find a link to `Develop Apps`. Now
+   you should be in the developer corner of Dropbox.
 
-* **Step 1: Choose API** Choose ``Dropbox Api``
+2. Create new Dropbox App
 
-.. figure:: ../../Images/AdministratorManual/dropbox_choose_api.jpg
-   :width: 500px
-   :align: left
-   :alt: Choose Dropbox API
+   Click the `App Console` button in the upper right corner. Now you see all your apps (if you have created some).
+   Click the `Create app` button.
 
-* **Step 2: Choose App type** I prefer to choose ``App folder``, so in case of a security
-  break no one can access files outside of your App folder.
+3. Choose API
 
-* **Step 3: Give it a name** There are some rules regarding the name.
-  For example the word ``Dropbox`` can not be part of the name.
+   With a free or simple Dropbox account you only have the possibility to choose the API with `Scoped access`.
+   The TYPO3 Dropbox extension can only work with this API. Do not choose any other API.
 
-.. figure:: ../../Images/AdministratorManual/dropbox_choose_type.jpg
-   :width: 500px
-   :align: left
-   :alt: Choose type
+4. Choose App type
 
-* Click on ``Create App``
+   For security reasons I prefer to choose `App folder`. But if you`re sure, you also can give your app
+   full access to all of your Dropbox files.
 
-* Copy ``App key`` and ``App secret`` and insert them into the wizard
-  of the TYPO3 driver configuration.
+5. Give it a name
 
-.. figure:: ../../Images/AdministratorManual/dropbox_get_app_secret.jpg
-   :width: 500px
-   :align: left
-   :alt: Get App key and App secret
+   Assign a Dropbox global unique name to your new app. Please consider, that words like `dropbox` are not allowed
+   as part of the name.
+
+   Confirm your settings with button `Create App`. You will be redirected to detail view of your app.
+
+7. Configure your new app
+
+   Switch over to tab `Permissions` and activate following permissions:
+
+   * `files.metadata.read`
+   * `files.content.write`
+   * `files.content.read`
+
+8. Locate `App key` and `App secret`
+
+   For next section you will need to copy `App key` and `App secret`. from tab `Settings`.
+
+9. Optional: Generate Access Token
+
+   If you don`t want to use the Wizard, you can click the `Generate` button on tab `Settings`. This will generate
+   an access token which you can copy&paste directly into the FAL storage record.
+
 
 Start Driver Wizard
 -------------------
