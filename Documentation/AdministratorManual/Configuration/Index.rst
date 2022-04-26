@@ -63,7 +63,7 @@ Create API at dropbox.com
 
    Confirm your settings with button `Create App`. You will be redirected to detail view of your app.
 
-7. Configure your new app
+6. Configure your new app
 
    Switch over to tab `Permissions` and activate following permissions:
 
@@ -71,11 +71,11 @@ Create API at dropbox.com
    * `files.content.write`
    * `files.content.read`
 
-8. Locate `App key` and `App secret`
+7. Locate `App key` and `App secret`
 
    For next section you will need to copy `App key` and `App secret`. from tab `Settings`.
 
-9. Optional: Generate Access Token
+8. Optional: Generate Access Token
 
    If you don`t want to use the Wizard, you can click the `Generate` button on tab `Settings`. This will generate
    an access token which you can copy&paste directly into the FAL storage record.
