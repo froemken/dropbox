@@ -10,7 +10,7 @@ Installation Type
 =================
 
 Composer
-""""""""
+--------
 
 You can install `dropbox` with following shell command:
 
@@ -18,8 +18,9 @@ You can install `dropbox` with following shell command:
 
    composer req stefanfroemken/dropbox
 
+
 Extensionmanager
-""""""""""""""""
+----------------
 
 If you want to install `dropbox` traditionally with Extensionmanager, follow these steps:
 
@@ -31,8 +32,9 @@ If you want to install `dropbox` traditionally with Extensionmanager, follow the
 
 #. Install extension
 
+
 DEV Version (GIT)
-"""""""""""""""""
+-----------------
 
 You can install the latest DEV Version with following GIT command:
 

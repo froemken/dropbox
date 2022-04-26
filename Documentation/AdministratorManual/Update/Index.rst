@@ -6,6 +6,7 @@ Updating
 
 If you update `dropbox` to a newer version, please read this section carefully!
 
+
 Update to Version 4.2.0
 =======================
 
@@ -14,6 +15,7 @@ I took the chance and renamed all paths, PHP classes, names and repos to the new
 
 Please execute the `Rename Extension Key Upgrade" wizard from install tool to rename the driver identifier
 in all sys_file_storage records of existing Dropbox storages.
+
 
 Update to Version 4.1.0
 =======================
