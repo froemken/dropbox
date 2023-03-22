@@ -53,6 +53,7 @@ class AccessTokenElement extends AbstractFormElement
 
         $parameterArray = $this->data['parameterArray'];
         $itemName = $parameterArray['itemFormElName'];
+        $appKeyFieldName = str_replace($this->data['flexFormFieldName'], $parameterArray['fieldConf']['config']['fieldControl']['accessToken']['appKeyFieldName'], $parameterArray['itemFormElName']);
 
         $fieldWizardResult = $this->renderFieldWizard();
         $fieldWizardHtml = $fieldWizardResult['html'];
@@ -74,6 +75,7 @@ class AccessTokenElement extends AbstractFormElement
         $resultArray['linkAttributes'] = [
             'class' => $fieldId,
             'data-itemname' => $itemName,
+            'data-appkeyfieldname' => $appKeyFieldName,
             'onClick' => 'return false;'
         ];
         $resultArray['html'] = implode(LF, $mainFieldHtml);

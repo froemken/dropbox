@@ -6,9 +6,19 @@
 	<ROOT>
 		<type>array</type>
 		<el>
-			<accessToken>
+			<appKey>
 				<TCEforms>
-					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessToken</label>
+					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:appKey</label>
+					<config>
+						<type>input</type>
+						<eval>trim</eval>
+						<size>30</size>
+					</config>
+				</TCEforms>
+			</appKey>
+			<refreshToken>
+				<TCEforms>
+					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:refreshToken</label>
 					<config>
 						<type>input</type>
 						<eval>trim</eval>
@@ -16,11 +26,12 @@
 						<fieldControl>
 							<accessToken>
 								<renderType>accessToken</renderType>
+								<appKeyFieldName>appKey</appKeyFieldName>
 							</accessToken>
 						</fieldControl>
 					</config>
 				</TCEforms>
-			</accessToken>
+			</refreshToken>
 			<accessType>
 				<TCEforms>
 					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType</label>
