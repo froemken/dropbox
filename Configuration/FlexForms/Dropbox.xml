@@ -25,7 +25,7 @@
 						<size>30</size>
 						<fieldControl>
 							<accessToken>
-								<renderType>accessToken</renderType>
+								<renderType>refreshToken</renderType>
 								<appKeyFieldName>appKey</appKeyFieldName>
 							</accessToken>
 						</fieldControl>

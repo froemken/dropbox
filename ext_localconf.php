@@ -17,9 +17,9 @@ call_user_func(static function (): void {
 
     // Add wizard/control to access_token in XML structure
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1552228283] = [
-        'nodeName' => 'accessToken',
+        'nodeName' => 'refreshToken',
         'priority' => '70',
-        'class' => \StefanFroemken\Dropbox\Form\Element\AccessTokenElement::class,
+        'class' => \StefanFroemken\Dropbox\Form\Element\RefreshTokenElement::class,
     ];
     // Show dropbox status in file storage
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1589660489] = [
