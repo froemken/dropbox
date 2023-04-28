@@ -15,6 +15,7 @@ define(["exports", "TYPO3/CMS/Backend/Enum/Severity", "TYPO3/CMS/Backend/MultiSt
 		constructor(triggerAccessTokenWizardButtonClass) {
 			$("." + triggerAccessTokenWizardButtonClass).on("click", function () {
 				let $getAccessTokenButton = $(this);
+				const codeVerifier = generateCodeVerifier();
 				multiStep.addSlide(
 					"AppKeySecretForm",
 					"Set Dropbox App key and secret",
@@ -24,10 +25,11 @@ define(["exports", "TYPO3/CMS/Backend/Enum/Severity", "TYPO3/CMS/Backend/MultiSt
 					function ($slide) {
 						let $modal = $slide.closest('.modal');
 						let $nextButton = $modal.find(".modal-footer").find('button[name="next"]');
+						let $appKeyElement = $('[data-formengine-input-name="' + $getAccessTokenButton.data("appkeyfieldname") + '"]');
+						$slide.find("input#appKey").val($appKeyElement.val());
 						multiStep.lockPrevStep();
 						$nextButton.off().on("click", function () {
 							multiStep.set("appKey", $slide.find("input#appKey").val());
-							multiStep.set("appSecret", $slide.find("input#appSecret").val());
 							multiStep.setup.$carousel.carousel("next")
 						});
 					}
@@ -44,7 +46,7 @@ define(["exports", "TYPO3/CMS/Backend/Enum/Severity", "TYPO3/CMS/Backend/MultiSt
 							multiStep.setup.$carousel.carousel("next")
 						}).attr(
 							"href",
-							"https://www.dropbox.com/oauth2/authorize?client_id=" + settings.appKey + "&response_type=code"
+							"https://www.dropbox.com/oauth2/authorize?client_id=" + settings.appKey + "&response_type=code&code_challenge=" + codeVerifier + "&code_challenge_method=plain&token_access_type=offline"
 						);
 					}
 				);
@@ -75,10 +77,16 @@ define(["exports", "TYPO3/CMS/Backend/Enum/Severity", "TYPO3/CMS/Backend/MultiSt
 							code: multiStep.setup.settings["authCode"],
 							grant_type: "authorization_code",
 							client_id: multiStep.setup.settings["appKey"],
-							client_secret: multiStep.setup.settings["appSecret"]
+							code_verifier: codeVerifier
 						},
 						success: function(response) {
-							if (response.access_token) {
+							let $appKeyElement = $('[data-formengine-input-name="' + $getAccessTokenButton.data("appkeyfieldname") + '"]');
+							$appKeyElement.val(multiStep.setup.settings["appKey"]);
+							if (response.refresh_token) {
+								let $accessTokenElement = $('[data-formengine-input-name="' + $getAccessTokenButton.data("itemname") + '"]');
+								$accessTokenElement.val(response.refresh_token);
+								$accessTokenElement.trigger("change");
+							} else if (response.access_token) {
 								let $accessTokenElement = $('[data-formengine-input-name="' + $getAccessTokenButton.data("itemname") + '"]');
 								$accessTokenElement.val(response.access_token);
 								$accessTokenElement.trigger("change");
@@ -104,10 +112,6 @@ define(["exports", "TYPO3/CMS/Backend/Enum/Severity", "TYPO3/CMS/Backend/MultiSt
 		return '<div class="form-group">' +
 			'  <label for="appKey">AppKey</label>' +
 			'  <input type="text" class="form-control" id="appKey" autocomplete="off" placeholder="App Key" />' +
-			'</div>' +
-			'<div class="form-group">\n' +
-			'  <label for="appSecret">AppSecret</label>\n' +
-			'  <input type="text" class="form-control" id="appSecret" autocomplete="off" placeholder="App Secret" />' +
 			'</div>';
 	}
 
@@ -127,5 +131,13 @@ define(["exports", "TYPO3/CMS/Backend/Enum/Severity", "TYPO3/CMS/Backend/MultiSt
 			'  <label for="authCode">AuthCode</label>' +
 			'  <input type="text" class="form-control" id="authCode" autocomplete="off" placeholder="Type in the AuthCode from the link above" />' +
 			'</div>';
+	}
+
+	function generateCodeVerifier(len) {
+		const uint8Array = new Uint8Array((len || 128) / 2);
+		const arrayBuffer = window.crypto.getRandomValues(uint8Array);
+		return Array.from(new Uint8Array(arrayBuffer))
+			.map((item) => item.toString(16).padStart(2, "0"))
+			.join("");
 	}
 });
