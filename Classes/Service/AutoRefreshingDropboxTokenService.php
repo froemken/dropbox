@@ -12,20 +12,16 @@ declare(strict_types=1);
 namespace StefanFroemken\Dropbox\Service;
 
 use GuzzleHttp\Exception\ClientException;
-use Spatie\Dropbox\TokenProvider;
+use Spatie\Dropbox\RefreshableTokenProvider;
+use StefanFroemken\Dropbox\Response\AccessTokenResponse;
 use TYPO3\CMS\Core\Http\RequestFactory;
+use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class AutoRefreshingDropboxTokenService implements TokenProvider
+class AutoRefreshingDropboxTokenService implements RefreshableTokenProvider
 {
-    /**
-     * @var string
-     */
     protected string $refreshToken;
 
-    /**
-     * @var string
-     */
     protected string $appKey;
 
     public function __construct(string $refreshToken, string $appKey)
@@ -34,11 +30,21 @@ class AutoRefreshingDropboxTokenService implements TokenProvider
         $this->appKey = $appKey;
     }
 
-    public function getToken(): string
+    /**
+     * If refresh() was called, the Dropbox Client fails to process the request,
+     * which results in an exception you can access here from the argument $exception.
+     *
+     * @return bool Whether the token was refreshed or not.
+     */
+    public function refresh(ClientException $exception): bool
     {
+        // We only catch unauthorized exceptions to refresh the access token
+        if ($exception->getCode() !== 400) {
+            return false;
+        }
+
         try {
-            $requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
-            $response = $requestFactory->request(
+            $response = $this->getRequestFactory()->request(
                 'https://api.dropbox.com/oauth2/token',
                 'POST',
                 [
@@ -49,12 +55,55 @@ class AutoRefreshingDropboxTokenService implements TokenProvider
                     ],
                 ]
             );
+
             $responseArray = json_decode($response->getBody()->getContents(), true);
-            $accessToken = $responseArray['access_token'];
+            if (!is_array($responseArray)) {
+                return false;
+            }
+
+            // Store complete response as it also contains the max. lifetime of the access token.
+            // Useful for status output
+            $this->getRegistry()->set(
+                'ext_dropbox',
+                $this->getRegistryKey(),
+                GeneralUtility::makeInstance(AccessTokenResponse::class, $responseArray)
+            );
         } catch (ClientException $clientException) {
-            $accessToken = '';
+            return false;
         }
 
-        return $accessToken;
+        return true;
+    }
+
+    /**
+     * Do not call Spatie Dropbox Client with the result of getToken(). Of course, you can,
+     * but refresh() will never be called in that case.
+     * Call Spatie Dropbox Client with this full class. getToken() and refresh()
+     * will be called internally.
+     */
+    public function getToken(): string
+    {
+        $accessTokenResponse = $this->getRegistry()->get('ext_dropbox', $this->getRegistryKey(), []);
+
+        return $accessTokenResponse instanceof AccessTokenResponse ? $accessTokenResponse->getAccessToken() : '';
+    }
+
+    /**
+     * I don't want to store the App key in storage.
+     * Hash the App key and return the first 10 chars
+     */
+    public function getRegistryKey(): string
+    {
+        return substr(md5($this->appKey), 0, 10);
+    }
+
+    private function getRequestFactory(): RequestFactory
+    {
+        return GeneralUtility::makeInstance(RequestFactory::class);
+    }
+
+    private function getRegistry(): Registry
+    {
+        return GeneralUtility::makeInstance(Registry::class);
     }
 }

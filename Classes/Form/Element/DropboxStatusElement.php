@@ -14,8 +14,10 @@ namespace StefanFroemken\Dropbox\Form\Element;
 use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Client;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use StefanFroemken\Dropbox\Response\AccessTokenResponse;
 use StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
+use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
@@ -55,7 +57,7 @@ class DropboxStatusElement extends AbstractFormElement
         $html = [];
         $html[] = '<div class="formengine-field-item t3js-formengine-field-item">';
         $html[] =   $fieldInformationHtml;
-        $html[] =   $this->getHtmlForConnected((string)$config['refreshToken'], (string)$config['appKey']);
+        $html[] =   $this->getHtmlForConnected((string)$config['appKey'], (string)$config['refreshToken']);
         $html[] = '</div>';
 
         $resultArray['html'] = implode(LF, $html);
@@ -66,7 +68,7 @@ class DropboxStatusElement extends AbstractFormElement
     /**
      * Get HTML to show the user, that he is connected with his dropbox account
      */
-    public function getHtmlForConnected(string $refreshToken, string $appKey): string
+    public function getHtmlForConnected(string $appKey, string $refreshToken): string
     {
         $refreshToken = trim($refreshToken);
         $appKey = trim($appKey);
@@ -74,18 +76,15 @@ class DropboxStatusElement extends AbstractFormElement
             return 'Please setup refresh token first to see your account info here.';
         }
 
-        $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplatePathAndFilename(
-            GeneralUtility::getFileAbsFileName(
-                'EXT:dropbox/Resources/Private/Templates/ShowAccountInfo.html'
-            )
-        );
+        $view = $this->getView();
 
         try {
-            $tokenService = GeneralUtility::makeInstance(AutoRefreshingDropboxTokenService::class, $refreshToken, $appKey);
-            $dropboxClient = GeneralUtility::makeInstance(Client::class, $tokenService->getToken());
+            $refreshingService = $this->getRefreshingService($refreshToken, $appKey);
+            $dropboxClient = GeneralUtility::makeInstance(Client::class, $refreshingService);
+
             $view->assign('account', $dropboxClient->getAccountInfo());
             $view->assign('quota', $dropboxClient->rpcEndpointRequest('users/get_space_usage'));
+            $view->assign('lifetimeRemaining', $this->getLifetimeRemaining($refreshingService->getRegistryKey()));
             $content = $view->render();
         } catch (ClientException $clientException) {
             $content = $clientException->getMessage();
@@ -94,5 +93,38 @@ class DropboxStatusElement extends AbstractFormElement
         }
 
         return $content;
+    }
+
+    private function getLifetimeRemaining(string $registryKey): int
+    {
+        $accessTokenResponse = $this->getRegistry()->get('ext_dropbox', $registryKey, []);
+
+        return $accessTokenResponse instanceof AccessTokenResponse ? $accessTokenResponse->getLifetimeRemaining() : 0;
+    }
+
+    private function getView(): StandaloneView
+    {
+        $view = GeneralUtility::makeInstance(StandaloneView::class);
+        $view->setTemplatePathAndFilename(
+            GeneralUtility::getFileAbsFileName(
+                'EXT:dropbox/Resources/Private/Templates/ShowAccountInfo.html'
+            )
+        );
+
+        return $view;
+    }
+
+    private function getRefreshingService(string $refreshToken, string $appKey): AutoRefreshingDropboxTokenService
+    {
+        return GeneralUtility::makeInstance(
+            AutoRefreshingDropboxTokenService::class,
+            $refreshToken,
+            $appKey
+        );
+    }
+
+    private function getRegistry(): Registry
+    {
+        return GeneralUtility::makeInstance(Registry::class);
     }
 }
