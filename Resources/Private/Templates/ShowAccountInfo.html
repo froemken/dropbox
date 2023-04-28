@@ -5,7 +5,7 @@
 <div class="typo3-message message-ok alert alert-success">
     You are now connected with your dropbox account
 </div>
-
+<f:debug>{_all}</f:debug>
 <table class="t3-table table table-striped">
     <tbody>
     <tr>
@@ -20,11 +20,7 @@
     </tr>
     <tr>
         <td>Name</td>
-        <td>
-            <f:link.external uri="{account.referral_link}" target="_blank">
-                {account.name.display_name}
-            </f:link.external>
-        </td>
+        <td>{account.name.display_name}</td>
     </tr>
     <tr>
         <td>E-Mail</td>
@@ -37,12 +33,8 @@
         </tr>
     </f:if>
     <tr>
-        <td>Disabled</td>
+        <td>Account disabled</td>
         <td>{f:if(condition: account.disabled, then: 'Yes', else: 'No')}</td>
-    </tr>
-    <tr>
-        <td>Paired</td>
-        <td>{f:if(condition: account.is_paired, then: 'Yes', else: 'No')}</td>
     </tr>
     <tr>
         <td>Allocated</td>
@@ -53,6 +45,10 @@
     <tr>
         <td>Used</td>
         <td>{quota.used -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
+    </tr>
+    <tr>
+        <td>Access Token: Lifetime remaining</td>
+        <td>{lifetimeRemaining} seconds</td>
     </tr>
     </tbody>
 </table>
