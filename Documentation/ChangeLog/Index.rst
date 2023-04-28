@@ -7,6 +7,13 @@
 ChangeLog
 =========
 
+Version 4.3.0
+=============
+
+*   Use refresh token to build access tokens
+*   Remove referred link from user account
+*   Add descriptions to fields in config form
+
 Version 4.2.0
 =============
 
