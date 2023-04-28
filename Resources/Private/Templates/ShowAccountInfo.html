@@ -1,46 +1,59 @@
-<div class="typo3-message message-ok alert alert-success">You are now connected with your dropbox account</div>
+<html lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<div class="typo3-message message-ok alert alert-success">
+    You are now connected with your dropbox account
+</div>
 
 <table class="t3-table table table-striped">
-	<tbody>
-	<tr>
-		<td>Type</td>
-		<td>
-			<f:for each="{account.account_type}" as="type" key="tag">
-				<f:if condition="{tag} == '.tag'">
-					{type}
-				</f:if>
-			</f:for>
-		</td>
-	</tr>
-	<tr>
-		<td>Name</td>
-		<td><f:link.external uri="{account.referral_link}" target="_blank">{account.name.display_name}</f:link.external></td>
-	</tr>
-	<tr>
-		<td>E-Mail</td>
-		<td>{account.email}</td>
-	</tr>
-	<f:if condition="{account.profile_photo_url}">
-		<tr>
-			<td>Image</td>
-			<td>{account.profile_photo_url}</td>
-		</tr>
-	</f:if>
-	<tr>
-		<td>Disabled</td>
-		<td>{f:if(condition: account.disabled, then: 'Yes', else: 'No')}</td>
-	</tr>
-	<tr>
-		<td>Paired</td>
-		<td>{f:if(condition: account.is_paired, then: 'Yes', else: 'No')}</td>
-	</tr>
-	<tr>
-		<td>Allocated</td>
-		<td>{quota.allocation.allocated -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
-	</tr>
-	<tr>
-		<td>Used</td>
-		<td>{quota.used -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
-	</tr>
-	</tbody>
+    <tbody>
+    <tr>
+        <td>Type</td>
+        <td>
+            <f:for each="{account.account_type}" as="type" key="tag">
+                <f:if condition="{tag} == '.tag'">
+                    {type}
+                </f:if>
+            </f:for>
+        </td>
+    </tr>
+    <tr>
+        <td>Name</td>
+        <td>
+            <f:link.external uri="{account.referral_link}" target="_blank">
+                {account.name.display_name}
+            </f:link.external>
+        </td>
+    </tr>
+    <tr>
+        <td>E-Mail</td>
+        <td>{account.email}</td>
+    </tr>
+    <f:if condition="{account.profile_photo_url}">
+        <tr>
+            <td>Image</td>
+            <td>{account.profile_photo_url}</td>
+        </tr>
+    </f:if>
+    <tr>
+        <td>Disabled</td>
+        <td>{f:if(condition: account.disabled, then: 'Yes', else: 'No')}</td>
+    </tr>
+    <tr>
+        <td>Paired</td>
+        <td>{f:if(condition: account.is_paired, then: 'Yes', else: 'No')}</td>
+    </tr>
+    <tr>
+        <td>Allocated</td>
+        <td>
+            {quota.allocation.allocated -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}
+        </td>
+    </tr>
+    <tr>
+        <td>Used</td>
+        <td>{quota.used -> f:format.bytes(decimals: 2, decimalSeparator: ',', thousandsSeparator: ',')}</td>
+    </tr>
+    </tbody>
 </table>
+</html>
