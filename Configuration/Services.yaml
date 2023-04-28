@@ -6,3 +6,14 @@ services:
 
   StefanFroemken\Dropbox\:
     resource: '../Classes/*'
+
+  # Will be called by GeneralUtility::makeInstance in DropboxDriver and DropboxStatusElement
+  StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService:
+    autowire: false
+    autoconfigure: false
+    public: true
+
+  StefanFroemken\Dropbox\Response\AccessTokenResponse:
+    autowire: false
+    autoconfigure: false
+    public: true

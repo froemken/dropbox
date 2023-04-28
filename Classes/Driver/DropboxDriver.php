@@ -57,8 +57,13 @@ class DropboxDriver extends AbstractDriver
             ->getCache('dropbox');
 
         if (!empty($this->configuration['refreshToken']) && !empty($this->configuration['appKey'])) {
-            $tokenService = GeneralUtility::makeInstance(AutoRefreshingDropboxTokenService::class, $this->configuration['refreshToken'], $this->configuration['appKey']);
-            $this->dropboxClient = new Client($tokenService->getToken());
+            $this->dropboxClient = new Client(
+                GeneralUtility::makeInstance(
+                    AutoRefreshingDropboxTokenService::class,
+                    $this->configuration['refreshToken'],
+                    $this->configuration['appKey']
+                )
+            );
         } else {
             $this->dropboxClient = null;
         }
