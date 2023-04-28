@@ -2,14 +2,56 @@ CHANGE LOG
 ==========
 
 
-## V3.0.4 (02/05/2020)
+## V5.0.3 (21/11/2021)
+
+* Updated package metadata
+
+
+## V5.0.2 (17/10/2021)
+
+* Corrected docs
+
+
+## V5.0.1 (17/10/2021)
+
+* Provisional PHP 8.1 support
+
+
+## V5.0 (24/01/2021)
+
+* Support customising the number of retries
+
+
+## V4.2 (21/10/2020)
+
+* Expose a way to create the inner handler
+
+
+## V4.1 (10/10/2020)
+
+* Full PHP 8.0 support
+* Raise response body truncation in error messages from 100 to 250 characters
+
+
+## V4.0.3 (22/07/2020)
+
+* Minimum Guzzle version 7.0.1
+
+
+## V4.0.2 (02/05/2020)
 
 * Provisional PHP 8.0 support
 
 
-## V3.0.3 (13/04/2020)
+## V4.0.1 (13/04/2020)
 
 * Updated funding information
+
+
+## V4.0 (25/01/2020)
+
+* Support PHP 7.2 - 7.4 only
+* Switch to Guzzle 7
 
 
 ## V3.0.2 (23/08/2019)

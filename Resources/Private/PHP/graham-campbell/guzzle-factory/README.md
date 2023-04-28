@@ -6,23 +6,22 @@ Guzzle Factory was created by, and is maintained by [Graham Campbell](https://gi
 ![Banner](https://user-images.githubusercontent.com/2829600/71477092-0f3c7780-27e0-11ea-95cb-22c5ff39ab29.png)
 
 <p align="center">
+<a href="https://github.com/GrahamCampbell/Guzzle-Factory/actions?query=workflow%3ATests"><img src="https://img.shields.io/github/workflow/status/GrahamCampbell/Guzzle-Factory/Tests?label=Tests&style=flat-square" alt="Build Status"></img></a>
 <a href="https://github.styleci.io/repos/88412277"><img src="https://github.styleci.io/repos/88412277/shield" alt="StyleCI Status"></img></a>
-<a href="https://github.com/GrahamCampbell/Guzzle-Factory/actions?query=workflow%3ATests"><img src="https://img.shields.io/github/workflow/status/GrahamCampbell/Guzzle-Factory/Tests?style=flat-square" alt="Build Status"></img></a>
-<a href="https://scrutinizer-ci.com/g/GrahamCampbell/Guzzle-Factory/code-structure"><img src="https://img.shields.io/scrutinizer/coverage/g/GrahamCampbell/Guzzle-Factory?style=flat-square" alt="Coverage Status"></img></a>
-<a href="https://scrutinizer-ci.com/g/GrahamCampbell/Guzzle-Factory"><img src="https://img.shields.io/scrutinizer/g/GrahamCampbell/Guzzle-Factory?style=flat-square" alt="Quality Score"></img></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-brightgreen?style=flat-square" alt="Software License"></img></a>
+<a href="https://packagist.org/packages/graham-campbell/guzzle-factory"><img src="https://img.shields.io/packagist/dt/graham-campbell/guzzle-factory?style=flat-square" alt="Packagist Downloads"></img></a>
 <a href="https://github.com/GrahamCampbell/Guzzle-Factory/releases"><img src="https://img.shields.io/github/release/GrahamCampbell/Guzzle-Factory?style=flat-square" alt="Latest Version"></img></a>
 </p>
 
 
 ## Installation
 
-Guzzle Factory requires [PHP](https://php.net) 7.0-8.0.
+Guzzle Factory requires [PHP](https://php.net) 7.2-8.1.
 
 To get the latest version, simply require the project using [Composer](https://getcomposer.org):
 
 ```bash
-$ composer require graham-campbell/guzzle-factory
+$ composer require "graham-campbell/guzzle-factory:^5.0"
 ```
 
 
@@ -39,7 +38,7 @@ $client = GuzzleFactory::make(['base_uri' => 'https://example.com']);
 
 ## Security
 
-If you discover a security vulnerability within this package, please send an email to Graham Campbell at graham@alt-three.com. All security vulnerabilities will be promptly addressed. You may view our full security policy [here](https://github.com/GrahamCampbell/Guzzle-Factory/security/policy).
+If you discover a security vulnerability within this package, please send an email to security@tidelift.com. All security vulnerabilities will be promptly addressed. You may view our full security policy [here](https://github.com/GrahamCampbell/Guzzle-Factory/security/policy).
 
 
 ## License
