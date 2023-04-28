@@ -16,7 +16,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
- * Wizard/Control next to field access_token in Dropbox XML configuration
+ * Wizard/Control next to field refresh_token in Dropbox XML configuration
  */
 class RefreshTokenElement extends AbstractFormElement
 {
