@@ -25,6 +25,17 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class DropboxStatusElement extends AbstractFormElement
 {
+    /**
+     * Default field information enabled for this element.
+     *
+     * @var array
+     */
+    protected $defaultFieldInformation = [
+        'tcaDescription' => [
+            'renderType' => 'tcaDescription',
+        ],
+    ];
+
     public function render(): array
     {
         $resultArray = $this->initializeResultArray();
@@ -38,7 +49,16 @@ class DropboxStatusElement extends AbstractFormElement
             }
         }
 
-        $resultArray['html'] = $this->getHtmlForConnected((string)$config['refreshToken'], (string)$config['appKey']);
+        $fieldInformationResult = $this->renderFieldInformation();
+        $fieldInformationHtml = $fieldInformationResult['html'];
+
+        $html = [];
+        $html[] = '<div class="formengine-field-item t3js-formengine-field-item">';
+        $html[] =   $fieldInformationHtml;
+        $html[] =   $this->getHtmlForConnected((string)$config['refreshToken'], (string)$config['appKey']);
+        $html[] = '</div>';
+
+        $resultArray['html'] = implode(LF, $html);
 
         return $resultArray;
     }
