@@ -4,13 +4,22 @@
 		<header/>
 		<body>
 			<trans-unit id="appKey">
-				<source>Dropbox app_key.</source>
+				<source>Dropbox App key</source>
+			</trans-unit>
+			<trans-unit id="appKey.description">
+				<source>Visit the Dropbox Developers App Console and choose your App. On the Apps Settings tab you will find the App key.</source>
 			</trans-unit>
 			<trans-unit id="refreshToken">
-				<source>Create a Dropbox refresh_token with help of the wizard.</source>
+				<source>Dropbox Refresh Token</source>
+			</trans-unit>
+			<trans-unit id="refreshToken.description">
+				<source>With the help of a refresh token, access tokens can be created that allow access to the Dropbox and are roughly valid for one hour. After this time, EXT:dropbox automatically creates a new Access Token.</source>
 			</trans-unit>
 			<trans-unit id="accessType">
-				<source>Access Type</source>
+				<source>Dropbox Access Type</source>
+			</trans-unit>
+			<trans-unit id="accessType.description">
+				<source>When you create a Dropbox app, you must decide whether the app has full access or can only access a specific folder. Select here which access type you have chosen.</source>
 			</trans-unit>
 			<trans-unit id="accessType.appFolder">
 				<source>App Folder</source>
@@ -19,7 +28,12 @@
 				<source>Full Dropbox</source>
 			</trans-unit>
 			<trans-unit id="dropboxStatus">
-				<source>Connect TYPO3 with your Dropbox / Dropbox status</source>
+				<source>Dropbox Status</source>
+				<target>Dropbox Status</target>
+			</trans-unit>
+			<trans-unit id="dropboxStatus.description">
+				<source>After you have established access to your Dropbox account and saved it, a brief Dropbox status will appear here.</source>
+				<target>Nachdem Ihr den Zugriff zu Eurem Dropbox Account hergestellt und gespeichert habt, erscheint hier ein kurzer Dropbox Status.</target>
 			</trans-unit>
 		</body>
 	</file>

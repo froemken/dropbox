@@ -9,6 +9,7 @@
 			<appKey>
 				<TCEforms>
 					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:appKey</label>
+					<description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:appKey.description</description>
 					<config>
 						<type>input</type>
 						<eval>trim</eval>
@@ -19,6 +20,7 @@
 			<refreshToken>
 				<TCEforms>
 					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:refreshToken</label>
+					<description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:refreshToken.description</description>
 					<config>
 						<type>input</type>
 						<eval>trim</eval>
@@ -35,6 +37,7 @@
 			<accessType>
 				<TCEforms>
 					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType</label>
+					<description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.description</description>
 					<config>
 						<type>select</type>
 						<renderType>selectSingle</renderType>
@@ -56,7 +59,8 @@
 			</accessType>
 			<requestToken>
 				<TCEforms>
-					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.dropboxStatus</label>
+					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:dropboxStatus</label>
+					<description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:dropboxStatus.description</description>
 					<config>
 						<type>user</type>
 						<renderType>dropboxStatus</renderType>

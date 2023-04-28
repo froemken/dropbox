@@ -4,12 +4,28 @@
 		<header/>
 		<body>
 			<trans-unit id="appKey">
-				<source>Dropbox app_key.</source>
-				<target>Dropbox app_key.</target>
+				<source>Dropbox App key</source>
+				<target>Dropbox App key</target>
+			</trans-unit>
+			<trans-unit id="appKey.description">
+				<source>Visit the Dropbox Developers App Console and choose your App. On the Apps Settings tab you will find the App key.</source>
+				<target>Besuche die Dropbox Developers App Console und wähle Deine App. Auf dem Apps Settings Tab findest Du den App key.</target>
 			</trans-unit>
 			<trans-unit id="refreshToken">
-				<source>Create a Dropbox refresh_token with help of the wizard.</source>
-				<target>Erstellen Sie einen Dropbox refresh_token über den Wizard.</target>
+				<source>Dropbox Refresh Token</source>
+				<target>Dropbox Refresh Token</target>
+			</trans-unit>
+			<trans-unit id="refreshToken.description">
+				<source>With the help of a refresh token, access tokens can be created that allow access to the Dropbox and are roughly valid for one hour. After this time, EXT:dropbox automatically creates a new Access Token.</source>
+				<target>Mit Hilfe eines Refresh Tokens können Access Tokens erstellt werden, die Zugriff auf die Dropbox erlauben und grob eine Stunde gültig sind. Nach Ablauf dieser Zeit erzeugt EXT:dropbox automatisch einen neuen Access Token.</target>
+			</trans-unit>
+			<trans-unit id="accessType">
+				<source>Dropbox Access Type</source>
+				<target>Dropbox Access Type</target>
+			</trans-unit>
+			<trans-unit id="accessType.description">
+				<source>When you create a Dropbox app, you must decide whether the app has full access or can only access a specific folder. Select here which access type you have chosen.</source>
+				<target>Beim Erstellen einer Dropbox App müsst Ihr entscheiden, ob die App Vollzugriff hat oder nur auf einen bestimmten Ordner zugreifen darf. Wählt hier aus, für welchen Zugriffstypen Ihr Euch entschieden habt.</target>
 			</trans-unit>
 			<trans-unit id="accessType.appFolder">
 				<source>App Folder</source>
@@ -20,8 +36,12 @@
 				<target>Zugriff auf alle Dropbox Inhalte</target>
 			</trans-unit>
 			<trans-unit id="dropboxStatus">
-				<source>Connect TYPO3 with your Dropbox / Dropbox status</source>
-				<target>Verknüpft TYPO3 mit Deiner Dropbox / Dropbox Status</target>
+				<source>Dropbox Status</source>
+				<target>Dropbox Status</target>
+			</trans-unit>
+			<trans-unit id="dropboxStatus.description">
+				<source>After you have established access to your Dropbox account and saved it, a brief Dropbox status will appear here.</source>
+				<target>Nachdem Ihr den Zugriff zu Eurem Dropbox Account hergestellt und gespeichert habt, erscheint hier ein kurzer Dropbox Status.</target>
 			</trans-unit>
 		</body>
 	</file>
