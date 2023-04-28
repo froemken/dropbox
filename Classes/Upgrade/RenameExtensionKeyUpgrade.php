@@ -58,8 +58,6 @@ class RenameExtensionKeyUpgrade implements UpgradeWizardInterface
 
     /**
      * Performs the accordant updates.
-     *
-     * @return bool Whether everything went smoothly or not
      */
     public function executeUpdate(): bool
     {
@@ -74,10 +72,10 @@ class RenameExtensionKeyUpgrade implements UpgradeWizardInterface
             $connection->update(
                 'sys_file_storage',
                 [
-                    'driver' => 'dropbox'
+                    'driver' => 'dropbox',
                 ],
                 [
-                    'uid' => (int)$sysFileStorageRecord['uid']
+                    'uid' => (int)$sysFileStorageRecord['uid'],
                 ]
             );
         }
@@ -107,7 +105,7 @@ class RenameExtensionKeyUpgrade implements UpgradeWizardInterface
     public function getPrerequisites(): array
     {
         return [
-            DatabaseUpdatedPrerequisite::class
+            DatabaseUpdatedPrerequisite::class,
         ];
     }
 

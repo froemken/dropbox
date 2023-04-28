@@ -397,11 +397,11 @@ class DropboxDriver extends AbstractDriver
 
     public function getPermissions($identifier): array
     {
-        // we are authenticated as a valid dropbox user
+        // We are authenticated as a valid dropbox user
         // so all files are readable and writeable
         return [
             'r' => true,
-            'w' => true
+            'w' => true,
         ];
     }
 
@@ -420,7 +420,7 @@ class DropboxDriver extends AbstractDriver
             return true;
         }
 
-        // File identifier canonicalization will not modify a single slash so
+        // File identifier canonicalization will not modify a single slash, so
         // we must not append another slash in that case.
         if ($folderIdentifier !== '/') {
             $folderIdentifier .= '/';
@@ -436,7 +436,7 @@ class DropboxDriver extends AbstractDriver
         if (empty($propertiesToExtract)) {
             $propertiesToExtract = [
                 'size', 'atime', 'atime', 'mtime', 'ctime', 'mimetype', 'name',
-                'identifier', 'identifier_hash', 'storage', 'folder_hash'
+                'identifier', 'identifier_hash', 'storage', 'folder_hash',
             ];
         }
 
@@ -488,7 +488,7 @@ class DropboxDriver extends AbstractDriver
         return [
             'identifier' => $folderIdentifier,
             'name' => PathUtility::basename($folderIdentifier),
-            'storage' => $this->storageUid
+            'storage' => $this->storageUid,
         ];
     }
 
@@ -663,9 +663,7 @@ class DropboxDriver extends AbstractDriver
         }
 
         $identifier = $identifier === '/' ? $identifier : rtrim($identifier, '/');
-        $info = $this->getMetaData($identifier);
-
-        return is_array($info) && $info !== [];
+        return $this->getMetaData($identifier) !== [];
     }
 
     /*

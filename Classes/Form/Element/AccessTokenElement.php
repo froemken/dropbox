@@ -30,7 +30,7 @@ class AccessTokenElement extends AbstractFormElement
         'otherLanguageContent' => [
             'renderType' => 'otherLanguageContent',
             'after' => [
-                'localizationStateSelector'
+                'localizationStateSelector',
             ],
         ],
         'defaultLanguageDifferences' => [
@@ -48,7 +48,7 @@ class AccessTokenElement extends AbstractFormElement
         $resultArray['requireJsModules'][] = ['TYPO3/CMS/Dropbox/AccessTokenModule' => '
             function(AccessTokenElement) {
                 new AccessTokenElement(' . GeneralUtility::quoteJSvalue($fieldId) . ');
-            }'
+            }',
         ];
 
         $parameterArray = $this->data['parameterArray'];
@@ -74,7 +74,7 @@ class AccessTokenElement extends AbstractFormElement
         $resultArray['linkAttributes'] = [
             'class' => $fieldId,
             'data-itemname' => $itemName,
-            'onClick' => 'return false;'
+            'onClick' => 'return false;',
         ];
         $resultArray['html'] = implode(LF, $mainFieldHtml);
 
