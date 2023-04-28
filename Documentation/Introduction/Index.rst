@@ -1,7 +1,7 @@
-﻿.. include:: ../Includes.txt
+﻿..  include:: ../Includes.txt
 
 
-.. _introduction:
+..  _introduction:
 
 ================
 What does it do?
@@ -14,7 +14,7 @@ from your Dropbox account.
 Screenshot
 ==========
 
-.. figure:: ../Images/dropbox_fileadmin.jpg
-   :width: 500px
-   :align: left
-   :alt: FAL Dropbox fileadmin
+..  figure:: ../Images/dropbox_fileadmin.jpg
+    :width: 500px
+    :align: left
+    :alt: FAL Dropbox fileadmin

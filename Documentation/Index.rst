@@ -1,33 +1,33 @@
-.. every .rst file should include Includes.txt
-.. use correct path!
+..  every .rst file should include Includes.txt
+..  use correct path!
 
-.. include:: Includes.txt
+..  include:: Includes.txt
 
-.. Every manual should have a start label for cross-referencing to
-.. start page. Do not remove this!
+..  Every manual should have a start label for cross-referencing to
+..  start page. Do not remove this!
 
-.. _start:
+..  _start:
 
 ==================
 Dropbox FAL Driver
 ==================
 
 :Version:
-   |release|
+    |release|
 
 :Language:
-   en
+    en
 
 :Authors:
-   Stefan Froemken
+    Stefan Froemken
 
 :Email:
-   froemken@gmail.com
+    froemken@gmail.com
 
 :License:
-   This extension documentation is published under the
-   `CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>`__ (Creative Commons)
-   license
+    This extension documentation is published under the
+    `CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>`__ (Creative Commons)
+    license
 
 Add a FAL driver for Dropbox to TYPO3
 
@@ -54,12 +54,12 @@ This documentation is for the TYPO3 extension <extkey>.
 You are welcome to help improve this guide.
 Just click on "Edit me on GitHub" on the top right to submit your change request.
 
-.. toctree::
-   :maxdepth: 3
+..  toctree::
+    :maxdepth: 3
 
-   Introduction/Index
-   Installation/Index
-   Configuration/Index
-   AdministratorManual/Index
-   FAQ/Index
-   ChangeLog/Index
+    Introduction/Index
+    Installation/Index
+    Configuration/Index
+    AdministratorManual/Index
+    FAQ/Index
+    ChangeLog/Index

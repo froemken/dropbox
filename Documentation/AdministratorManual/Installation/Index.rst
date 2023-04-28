@@ -1,6 +1,6 @@
-﻿.. include:: ../Includes.txt
+﻿..  include:: ../Includes.txt
 
-.. _installation:
+..  _installation:
 
 ============
 Installation
@@ -14,9 +14,9 @@ Composer
 
 You can install `dropbox` with following shell command:
 
-.. code-block:: bash
+..  code-block:: bash
 
-   composer req stefanfroemken/dropbox
+    composer req stefanfroemken/dropbox
 
 
 Extensionmanager
@@ -24,13 +24,13 @@ Extensionmanager
 
 If you want to install `dropbox` traditionally with Extensionmanager, follow these steps:
 
-#. Visit ExtensionManager
+#.  Visit ExtensionManager
 
-#. Switch over to `Get Extensions`
+#.  Switch over to `Get Extensions`
 
-#. Search for `dropbox`
+#.  Search for `dropbox`
 
-#. Install extension
+#.  Install extension
 
 
 DEV Version (GIT)
@@ -38,7 +38,7 @@ DEV Version (GIT)
 
 You can install the latest DEV Version with following GIT command:
 
-.. code-block:: bash
+..  code-block:: bash
 
-   git clone https://github.com/froemken/dropbox.git
+    git clone https://github.com/froemken/dropbox.git
 
