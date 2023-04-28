@@ -14,6 +14,7 @@ namespace StefanFroemken\Dropbox\Form\Element;
 use GuzzleHttp\Exception\ClientException;
 use Spatie\Dropbox\Client;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -37,7 +38,7 @@ class DropboxStatusElement extends AbstractFormElement
             }
         }
 
-        $resultArray['html'] = $this->getHtmlForConnected((string)$config['accessToken']);
+        $resultArray['html'] = $this->getHtmlForConnected((string)$config['refreshToken'], (string)$config['appKey']);
 
         return $resultArray;
     }
@@ -45,11 +46,12 @@ class DropboxStatusElement extends AbstractFormElement
     /**
      * Get HTML to show the user, that he is connected with his dropbox account
      */
-    public function getHtmlForConnected(string $accessToken): string
+    public function getHtmlForConnected(string $refreshToken, string $appKey): string
     {
-        $accessToken = trim($accessToken);
-        if ($accessToken === '') {
-            return 'Please setup access token first to see your account info here.';
+        $refreshToken = trim($refreshToken);
+        $appKey = trim($appKey);
+        if ($refreshToken === '' || $appKey === '') {
+            return 'Please setup refresh token first to see your account info here.';
         }
 
         $view = GeneralUtility::makeInstance(StandaloneView::class);
@@ -60,7 +62,8 @@ class DropboxStatusElement extends AbstractFormElement
         );
 
         try {
-            $dropboxClient = GeneralUtility::makeInstance(Client::class, $accessToken);
+            $tokenService = GeneralUtility::makeInstance(AutoRefreshingDropboxTokenService::class, $refreshToken, $appKey);
+            $dropboxClient = GeneralUtility::makeInstance(Client::class, $tokenService->getToken());
             $view->assign('account', $dropboxClient->getAccountInfo());
             $view->assign('quota', $dropboxClient->rpcEndpointRequest('users/get_space_usage'));
             $content = $view->render();
@@ -69,6 +72,7 @@ class DropboxStatusElement extends AbstractFormElement
         } catch (BadRequest $badRequest) {
             $content = 'Bad request to Dropbox Client: ' . $badRequest->getMessage();
         }
+
 
         return $content;
     }

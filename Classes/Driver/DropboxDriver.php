@@ -13,6 +13,7 @@ namespace StefanFroemken\Dropbox\Driver;
 
 use Spatie\Dropbox\Client;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
@@ -55,8 +56,9 @@ class DropboxDriver extends AbstractDriver
         $this->cache = GeneralUtility::makeInstance(CacheManager::class)
             ->getCache('dropbox');
 
-        if (!empty($this->configuration['accessToken'])) {
-            $this->dropboxClient = new Client((string)$this->configuration['accessToken']);
+        if (!empty($this->configuration['refreshToken']) && !empty($this->configuration['appKey'])) {
+            $tokenService = GeneralUtility::makeInstance(AutoRefreshingDropboxTokenService::class, $this->configuration['refreshToken'], $this->configuration['appKey']);
+            $this->dropboxClient = new Client($tokenService->getToken());
         } else {
             $this->dropboxClient = null;
         }

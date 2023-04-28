@@ -3,8 +3,11 @@
 	<file source-language="en" datatype="plaintext" original="messages" date="2013-07-04T09:16:00Z" product-name="dropbox">
 		<header/>
 		<body>
-			<trans-unit id="accessToken">
-				<source>Insert the access_token of Dropbox or create one with help of the wizard.</source>
+			<trans-unit id="appKey">
+				<source>Dropbox app_key.</source>
+			</trans-unit>
+			<trans-unit id="refreshToken">
+				<source>Create a Dropbox refresh_token with help of the wizard.</source>
 			</trans-unit>
 			<trans-unit id="accessType">
 				<source>Access Type</source>
