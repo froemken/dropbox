@@ -73,7 +73,6 @@ class DropboxStatusElement extends AbstractFormElement
             $content = 'Bad request to Dropbox Client: ' . $badRequest->getMessage();
         }
 
-
         return $content;
     }
 }

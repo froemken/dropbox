@@ -1,6 +1,6 @@
 <?php
 if (!defined('TYPO3')) {
-    die ('Access denied.');
+    die('Access denied.');
 }
 
 call_user_func(static function (): void {
@@ -8,7 +8,7 @@ call_user_func(static function (): void {
         'class' => \StefanFroemken\Dropbox\Driver\DropboxDriver::class,
         'shortName' => 'Dropbox',
         'flexFormDS' => 'FILE:EXT:dropbox/Configuration/FlexForms/Dropbox.xml',
-        'label' => 'Dropbox'
+        'label' => 'Dropbox',
     ];
 
     // create a temporary cache
@@ -19,13 +19,13 @@ call_user_func(static function (): void {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1552228283] = [
         'nodeName' => 'accessToken',
         'priority' => '70',
-        'class' => \StefanFroemken\Dropbox\Form\Element\AccessTokenElement::class
+        'class' => \StefanFroemken\Dropbox\Form\Element\AccessTokenElement::class,
     ];
     // Show dropbox status in file storage
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1589660489] = [
         'nodeName' => 'dropboxStatus',
         'priority' => '70',
-        'class' => \StefanFroemken\Dropbox\Form\Element\DropboxStatusElement::class
+        'class' => \StefanFroemken\Dropbox\Form\Element\DropboxStatusElement::class,
     ];
 
     \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(

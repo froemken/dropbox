@@ -81,7 +81,7 @@ class ImageExtractor implements ExtractorInterface
 
         return [
             'width' => $width,
-            'height' => $height
+            'height' => $height,
         ];
     }
 }
