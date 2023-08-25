@@ -13,7 +13,6 @@ namespace StefanFroemken\Dropbox\Form\Element;
 
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
@@ -74,7 +73,7 @@ class RefreshTokenElement extends AbstractFormElement
         $resultArray['linkAttributes'] = [
             'class' => $fieldId,
             'data-itemname' => $itemName,
-            'data-appkeyfieldname' => $appKeyFieldName
+            'data-appkeyfieldname' => $appKeyFieldName,
         ];
         $resultArray['html'] = implode(LF, $mainFieldHtml);
 
