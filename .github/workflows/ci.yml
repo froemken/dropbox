@@ -10,13 +10,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        typo3: [^11.5, ^12.4]
+        typo3: ['^11.5', '^12.4']
         php: ['8.1']
         include:
           - typo3: ^11.5
             php: '7.4'
           - typo3: ^11.5
             php: '8.0'
+          - typo3: ^12.4
+            php: '8.2'
 
     steps:
       - name: Checkout
