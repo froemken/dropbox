@@ -123,5 +123,12 @@ Save the record. On success we show you some user data.
     If you keep the default, all temporary images will be transferred over
     the Dropbox-API which is very slow.
     So it would be good to move that special folder to a folder on a
-    fast ``file storage``. Set this to ``1:/_processed_/`` if your fileadmin
-    file storage has the UID 1.
+    fast ``file storage``. Set this to ``1:/_processed_/dropbox`` if your
+    fileadmin file storage has the UID 1.
+
+..  attention::
+
+    After changing the processed folder field to a local storage (f.e. 1
+    for fileadmin) you have to delete all ``sys_file_processedfile`` records
+    where column "storage" is the UID of your dropbox storage (f.e. UID: 2).
+    See: https://forge.typo3.org/issues/84069
