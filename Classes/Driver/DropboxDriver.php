@@ -496,6 +496,10 @@ class DropboxDriver extends AbstractDriver
             'identifier' => $folderIdentifier,
             'name' => PathUtility::basename($folderIdentifier),
             'storage' => $this->storageUid,
+            // Costs too much time to retrieve the real values for mtime and ctime
+            // They MUST have a value. Else Fluid redering breaks.
+            'mtime' => time(),
+            'ctime' => time(),
         ];
     }
 
