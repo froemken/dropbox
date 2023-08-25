@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace StefanFroemken\Dropbox\Form\Element;
 
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
+use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
 
@@ -45,11 +46,9 @@ class RefreshTokenElement extends AbstractFormElement
     {
         $fieldId = StringUtility::getUniqueId('tceforms-trigger-access-token-wizard-');
         $resultArray = $this->initializeResultArray();
-        $resultArray['requireJsModules'][] = ['TYPO3/CMS/Dropbox/AccessTokenModule' => '
-            function(AccessTokenElement) {
-                new AccessTokenElement(' . GeneralUtility::quoteJSvalue($fieldId) . ');
-            }',
-        ];
+        $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS(
+            'TYPO3/CMS/Dropbox/AccessTokenModule'
+        )->instance($fieldId);
 
         $parameterArray = $this->data['parameterArray'];
         $itemName = $parameterArray['itemFormElName'];
@@ -75,8 +74,7 @@ class RefreshTokenElement extends AbstractFormElement
         $resultArray['linkAttributes'] = [
             'class' => $fieldId,
             'data-itemname' => $itemName,
-            'data-appkeyfieldname' => $appKeyFieldName,
-            'onClick' => 'return false;',
+            'data-appkeyfieldname' => $appKeyFieldName
         ];
         $resultArray['html'] = implode(LF, $mainFieldHtml);
 
