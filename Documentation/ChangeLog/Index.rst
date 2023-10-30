@@ -1,4 +1,4 @@
-..  include:: ../Includes.txt
+..  include:: /Includes.rst.txt
 
 
 ..  _changelog:
@@ -6,6 +6,13 @@
 =========
 ChangeLog
 =========
+
+Version 5.0.0
+=============
+
+*   Add TYPO3 12 compatibility
+*   Remove TYPO3 10 compatibility
+*   BUGFIX: Auto refresh AccessToken
 
 Version 4.3.0
 =============

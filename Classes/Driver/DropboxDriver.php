@@ -13,16 +13,14 @@ namespace StefanFroemken\Dropbox\Driver;
 
 use Spatie\Dropbox\Client;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use StefanFroemken\Dropbox\Helper\FlashMessageHelper;
 use StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
 use TYPO3\CMS\Core\Resource\Exception\InvalidPathException;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
@@ -34,10 +32,6 @@ class DropboxDriver extends AbstractDriver
     protected FrontendInterface $cache;
 
     protected ?Client $dropboxClient = null;
-
-    protected FlashMessageService $flashMessageService;
-
-    protected array $settings = [];
 
     /**
      * A list of all supported hash algorithms, written all lower case.
@@ -53,8 +47,7 @@ class DropboxDriver extends AbstractDriver
 
     public function initialize(): void
     {
-        $this->cache = GeneralUtility::makeInstance(CacheManager::class)
-            ->getCache('dropbox');
+        $this->cache = $this->getCacheManager()->getCache('dropbox');
 
         if (!empty($this->configuration['refreshToken']) && !empty($this->configuration['appKey'])) {
             $this->dropboxClient = new Client(
@@ -67,14 +60,12 @@ class DropboxDriver extends AbstractDriver
         } else {
             $this->dropboxClient = null;
         }
-
-        $this->flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
     }
 
     public function getCapabilities(): int
     {
-        // If PUBLIC is available, each file will initiate a request to Dropbox-Api to retrieve a public share link
-        // this is extremely slow.
+        // Do not allow PUBLIC here, as each file will initiate a request to Dropbox-Api to retrieve a public share
+        // link which is extremely slow.
 
         return ResourceStorageInterface::CAPABILITY_BROWSABLE + ResourceStorageInterface::CAPABILITY_WRITABLE;
     }
@@ -674,6 +665,7 @@ class DropboxDriver extends AbstractDriver
         }
 
         $identifier = $identifier === '/' ? $identifier : rtrim($identifier, '/');
+
         return $this->getMetaData($identifier) !== [];
     }
 
@@ -686,10 +678,10 @@ class DropboxDriver extends AbstractDriver
         try {
             file_put_contents($temporaryPath, stream_get_contents($this->dropboxClient->download($fileIdentifier)));
         } catch (BadRequest $badRequest) {
-            $this->addFlashMessage(
+            $this->getFlashMessageHelper()->addFlashMessage(
                 'The file meta extraction has been interrupted, because file has been removed in the meanwhile.',
                 'File Meta Extraction aborted',
-                AbstractMessage::INFO
+                ContextualFeedbackSeverity::INFO
             );
 
             return '';
@@ -698,22 +690,21 @@ class DropboxDriver extends AbstractDriver
         return $temporaryPath;
     }
 
-    public function addFlashMessage(string $message, string $title = '', int $severity = AbstractMessage::OK): void
+    /**
+     * DropboxDriver was called with constructor arguments. So, no DI possible.
+     * We have to instantiate the CacheManager on our own.
+     */
+    private function getCacheManager(): CacheManager
     {
-        // We activate storeInSession, so that messages can be displayed when click on Save&Close button.
-        $flashMessage = GeneralUtility::makeInstance(
-            FlashMessage::class,
-            $message,
-            $title,
-            $severity,
-            true
-        );
-
-        $this->getFlashMessageQueue()->enqueue($flashMessage);
+        return GeneralUtility::makeInstance(CacheManager::class);
     }
 
-    protected function getFlashMessageQueue(): FlashMessageQueue
+    /**
+     * DropboxDriver was called with constructor arguments. So, no DI possible.
+     * We have to instantiate the FlashMessageHelper on our own.
+     */
+    private function getFlashMessageHelper(): FlashMessageHelper
     {
-        return $this->flashMessageService->getMessageQueueByIdentifier();
+        return GeneralUtility::makeInstance(FlashMessageHelper::class);
     }
 }

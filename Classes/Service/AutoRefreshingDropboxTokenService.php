@@ -32,14 +32,18 @@ class AutoRefreshingDropboxTokenService implements RefreshableTokenProvider
 
     /**
      * If refresh() was called, the Dropbox Client fails to process the request,
-     * which results in an exception you can access here from the argument $exception.
+     * which results in an exception which we will catch here and try to retrieve a fresh access token.
      *
      * @return bool Whether the token was refreshed or not.
      */
     public function refresh(ClientException $exception): bool
     {
-        // We only catch unauthorized exceptions to refresh the access token
-        if ($exception->getCode() !== 400) {
+        // We catch bad request (400) to build up first access token
+        // We catch unauthorized (401) to refresh the access token
+        if (
+            $exception->getCode() !== 400
+            && $exception->getCode() !== 401
+        ) {
             return false;
         }
 
