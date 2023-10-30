@@ -13,6 +13,7 @@ namespace StefanFroemken\Dropbox\Driver;
 
 use Spatie\Dropbox\Client;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use StefanFroemken\Dropbox\Helper\FlashMessageHelper;
 use StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
@@ -32,24 +33,12 @@ class DropboxDriver extends AbstractDriver
 
     protected ?Client $dropboxClient = null;
 
-    protected FlashMessageHelper $flashMessageHelper;
-
-    protected array $settings = [];
-
     /**
      * A list of all supported hash algorithms, written all lower case.
      *
      * @var array
      */
     protected $supportedHashAlgorithms = ['sha1', 'md5'];
-
-    /**
-     * AbstractDriver contains __construct(). So inject FlashMessageHelper with setter in DI
-     */
-    public function setFlashMessageHelper(FlashMessageHelper $flashMessageHelper): void
-    {
-        $this->flashMessageHelper = $flashMessageHelper;
-    }
 
     public function processConfiguration(): void
     {
@@ -58,8 +47,7 @@ class DropboxDriver extends AbstractDriver
 
     public function initialize(): void
     {
-        $this->cache = GeneralUtility::makeInstance(CacheManager::class)
-            ->getCache('dropbox');
+        $this->cache = $this->getCacheManager()->getCache('dropbox');
 
         if (!empty($this->configuration['refreshToken']) && !empty($this->configuration['appKey'])) {
             $this->dropboxClient = new Client(
@@ -690,7 +678,7 @@ class DropboxDriver extends AbstractDriver
         try {
             file_put_contents($temporaryPath, stream_get_contents($this->dropboxClient->download($fileIdentifier)));
         } catch (BadRequest $badRequest) {
-            $this->flashMessageHelper->addFlashMessage(
+            $this->getFlashMessageHelper()->addFlashMessage(
                 'The file meta extraction has been interrupted, because file has been removed in the meanwhile.',
                 'File Meta Extraction aborted',
                 ContextualFeedbackSeverity::INFO
@@ -700,5 +688,23 @@ class DropboxDriver extends AbstractDriver
         }
 
         return $temporaryPath;
+    }
+
+    /**
+     * DropboxDriver was called with constructor arguments. So, no DI possible.
+     * We have to instantiate the CacheManager on our own.
+     */
+    private function getCacheManager(): CacheManager
+    {
+        return GeneralUtility::makeInstance(CacheManager::class);
+    }
+
+    /**
+     * DropboxDriver was called with constructor arguments. So, no DI possible.
+     * We have to instantiate the FlashMessageHelper on our own.
+     */
+    private function getFlashMessageHelper(): FlashMessageHelper
+    {
+        return GeneralUtility::makeInstance(FlashMessageHelper::class);
     }
 }
