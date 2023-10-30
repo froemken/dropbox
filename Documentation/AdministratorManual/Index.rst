@@ -1,4 +1,4 @@
-﻿..  include:: ../Includes.txt
+﻿..  include:: /Includes.rst.txt
 
 
 ..  _admin-manual:
@@ -15,6 +15,4 @@ For administrators
     :maxdepth: 2
     :titlesonly:
 
-    Installation/Index
-    Configuration/Index
     Update/Index

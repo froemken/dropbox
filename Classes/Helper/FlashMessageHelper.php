@@ -11,12 +11,10 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Helper;
 
-use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -31,11 +29,8 @@ class FlashMessageHelper
         $this->flashMessageService = $flashMessageService;
     }
 
-    public function addFlashMessage(
-        string $message,
-        string $title = '',
-        ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::OK
-    ): void {
+    public function addFlashMessage(string $message, string $title = '', int $severity = AbstractMessage::OK): void
+    {
         // We activate storeInSession, so that messages can be displayed when click on Save&Close button.
         $flashMessage = GeneralUtility::makeInstance(
             FlashMessage::class,
@@ -45,11 +40,7 @@ class FlashMessageHelper
             true
         );
 
-        try {
-            $this->getFlashMessageQueue()->enqueue($flashMessage);
-        } catch (Exception $e) {
-            // Exception will only be thrown if $flashMessage is not instance of FlashMessage
-        }
+        $this->getFlashMessageQueue()->enqueue($flashMessage);
     }
 
     /**
@@ -70,19 +61,19 @@ class FlashMessageHelper
     }
 
     /**
-     * @param ContextualFeedbackSeverity $severity Must be one of the enum values in ContextualFeedbackSeverity class
+     * @param int $severity Must be one of the constants in AbstractMessage class
      * @return FlashMessage[]
      */
-    protected function getFlashMessagesBySeverity(ContextualFeedbackSeverity $severity): array
+    protected function getFlashMessagesBySeverity(int $severity): array
     {
         return $this->getFlashMessageQueue()->getAllMessages($severity);
     }
 
     /**
-     * @param ContextualFeedbackSeverity $severity Must be one of the enum values in ContextualFeedbackSeverity class
+     * @param int $severity Must be one of the constants in AbstractMessage class
      * @return FlashMessage[]
      */
-    public function getFlashMessagesBySeverityAndFlush(ContextualFeedbackSeverity $severity): array
+    public function getFlashMessagesBySeverityAndFlush(int $severity): array
     {
         return $this->getFlashMessageQueue()->getAllMessagesAndFlush($severity);
     }
@@ -98,10 +89,10 @@ class FlashMessageHelper
     public function getErrorMessages(bool $flush = true): array
     {
         if ($flush) {
-            return $this->getFlashMessagesBySeverityAndFlush(ContextualFeedbackSeverity::ERROR);
+            return $this->getFlashMessagesBySeverityAndFlush(AbstractMessage::ERROR);
         }
 
-        return $this->getFlashMessagesBySeverity(ContextualFeedbackSeverity::ERROR);
+        return $this->getFlashMessagesBySeverity(AbstractMessage::ERROR);
     }
 
     public function hasWarningMessages(): bool
@@ -115,10 +106,10 @@ class FlashMessageHelper
     public function getWarningMessages(bool $flush = true): array
     {
         if ($flush) {
-            return $this->getFlashMessagesBySeverityAndFlush(ContextualFeedbackSeverity::WARNING);
+            return $this->getFlashMessagesBySeverityAndFlush(AbstractMessage::WARNING);
         }
 
-        return $this->getFlashMessagesBySeverity(ContextualFeedbackSeverity::WARNING);
+        return $this->getFlashMessagesBySeverity(AbstractMessage::WARNING);
     }
 
     public function hasOkMessages(): bool
@@ -132,10 +123,10 @@ class FlashMessageHelper
     public function getOkMessages(bool $flush = true): array
     {
         if ($flush) {
-            return $this->getFlashMessagesBySeverityAndFlush(ContextualFeedbackSeverity::OK);
+            return $this->getFlashMessagesBySeverityAndFlush(AbstractMessage::OK);
         }
 
-        return $this->getFlashMessagesBySeverity(ContextualFeedbackSeverity::OK);
+        return $this->getFlashMessagesBySeverity(AbstractMessage::OK);
     }
 
     public function hasInfoMessages(): bool
@@ -149,10 +140,10 @@ class FlashMessageHelper
     public function getInfoMessages(bool $flush = true): array
     {
         if ($flush) {
-            return $this->getFlashMessagesBySeverityAndFlush(ContextualFeedbackSeverity::INFO);
+            return $this->getFlashMessagesBySeverityAndFlush(AbstractMessage::INFO);
         }
 
-        return $this->getFlashMessagesBySeverity(ContextualFeedbackSeverity::INFO);
+        return $this->getFlashMessagesBySeverity(AbstractMessage::INFO);
     }
 
     public function hasNoticeMessages(): bool
@@ -166,10 +157,10 @@ class FlashMessageHelper
     public function getNoticeMessages(bool $flush = true): array
     {
         if ($flush) {
-            return $this->getFlashMessagesBySeverityAndFlush(ContextualFeedbackSeverity::NOTICE);
+            return $this->getFlashMessagesBySeverityAndFlush(AbstractMessage::NOTICE);
         }
 
-        return $this->getFlashMessagesBySeverity(ContextualFeedbackSeverity::NOTICE);
+        return $this->getFlashMessagesBySeverity(AbstractMessage::NOTICE);
     }
 
     protected function getFlashMessageQueue(): FlashMessageQueue

@@ -64,8 +64,8 @@ class DropboxDriver extends AbstractDriver
 
     public function getCapabilities(): int
     {
-        // If PUBLIC is available, each file will initiate a request to Dropbox-Api to retrieve a public share link
-        // this is extremely slow.
+        // Do not allow PUBLIC here, as each file will initiate a request to Dropbox-Api to retrieve a public share
+        // link which is extremely slow.
 
         return ResourceStorageInterface::CAPABILITY_BROWSABLE + ResourceStorageInterface::CAPABILITY_WRITABLE;
     }

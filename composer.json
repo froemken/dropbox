@@ -25,7 +25,7 @@
 	},
 	"require": {
 		"php": "^7.4 || ^8.0",
-		"typo3/cms-core": "^11.5.23 || ^12.4",
+		"typo3/cms-core": "^11.5.30 || ^12.4.4",
 		"spatie/dropbox-api": "^1.21.1"
 	},
 	"require-dev": {
