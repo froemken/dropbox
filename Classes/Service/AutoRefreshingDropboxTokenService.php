@@ -38,8 +38,12 @@ class AutoRefreshingDropboxTokenService implements RefreshableTokenProvider
      */
     public function refresh(ClientException $exception): bool
     {
-        // We only catch unauthorized exceptions to refresh the access token
-        if ($exception->getCode() !== 401) {
+        // We catch bad request (400) to build up first access token
+        // We catch unauthorized (401) to refresh the access token
+        if (
+            $exception->getCode() !== 400
+            && $exception->getCode() !== 401
+        ) {
             return false;
         }
 
