@@ -1,10 +1,5 @@
-..  every .rst file should include Includes.txt
-..  use correct path!
+..  include:: /Includes.rst.txt
 
-..  include:: Includes.txt
-
-..  Every manual should have a start label for cross-referencing to
-..  start page. Do not remove this!
 
 ..  _start:
 
@@ -63,3 +58,11 @@ Just click on "Edit me on GitHub" on the top right to submit your change request
     Configuration/Index
     FAQ/Index
     ChangeLog/Index
+
+..  Meta Menu
+
+..  toctree::
+    :hidden:
+
+    Sitemap
+    genindex

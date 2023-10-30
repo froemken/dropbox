@@ -29,7 +29,7 @@ A big thank you goes to Georg Ringer, who kindly gave me the extension
 key "dropbox". I took the chance and renamed all paths, PHP classes, names and
 repos to the new extension key "dropbox".
 
-Please execute the `Rename Extension Key Upgrade" wizard from install tool to
+Please execute the ``Rename Extension Key Upgrade`` wizard from install tool to
 rename the driver identifier in all sys_file_storage records of existing
 Dropbox storages.
 
