@@ -16,13 +16,10 @@ use Spatie\Dropbox\Exceptions\BadRequest;
 use StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
 use TYPO3\CMS\Core\Resource\Exception\InvalidPathException;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
@@ -35,7 +32,7 @@ class DropboxDriver extends AbstractDriver
 
     protected ?Client $dropboxClient = null;
 
-    protected FlashMessageService $flashMessageService;
+    protected FlashMessageHelper $flashMessageHelper;
 
     protected array $settings = [];
 
@@ -45,6 +42,14 @@ class DropboxDriver extends AbstractDriver
      * @var array
      */
     protected $supportedHashAlgorithms = ['sha1', 'md5'];
+
+    /**
+     * AbstractDriver contains __construct(). So inject FlashMessageHelper with setter in DI
+     */
+    public function setFlashMessageHelper(FlashMessageHelper $flashMessageHelper): void
+    {
+        $this->flashMessageHelper = $flashMessageHelper;
+    }
 
     public function processConfiguration(): void
     {
@@ -67,8 +72,6 @@ class DropboxDriver extends AbstractDriver
         } else {
             $this->dropboxClient = null;
         }
-
-        $this->flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
     }
 
     public function getCapabilities(): int
@@ -674,6 +677,7 @@ class DropboxDriver extends AbstractDriver
         }
 
         $identifier = $identifier === '/' ? $identifier : rtrim($identifier, '/');
+
         return $this->getMetaData($identifier) !== [];
     }
 
@@ -686,34 +690,15 @@ class DropboxDriver extends AbstractDriver
         try {
             file_put_contents($temporaryPath, stream_get_contents($this->dropboxClient->download($fileIdentifier)));
         } catch (BadRequest $badRequest) {
-            $this->addFlashMessage(
+            $this->flashMessageHelper->addFlashMessage(
                 'The file meta extraction has been interrupted, because file has been removed in the meanwhile.',
                 'File Meta Extraction aborted',
-                AbstractMessage::INFO
+                ContextualFeedbackSeverity::INFO
             );
 
             return '';
         }
 
         return $temporaryPath;
-    }
-
-    public function addFlashMessage(string $message, string $title = '', int $severity = AbstractMessage::OK): void
-    {
-        // We activate storeInSession, so that messages can be displayed when click on Save&Close button.
-        $flashMessage = GeneralUtility::makeInstance(
-            FlashMessage::class,
-            $message,
-            $title,
-            $severity,
-            true
-        );
-
-        $this->getFlashMessageQueue()->enqueue($flashMessage);
-    }
-
-    protected function getFlashMessageQueue(): FlashMessageQueue
-    {
-        return $this->flashMessageService->getMessageQueueByIdentifier();
     }
 }

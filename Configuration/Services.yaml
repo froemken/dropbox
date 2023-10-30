@@ -7,6 +7,12 @@ services:
   StefanFroemken\Dropbox\:
     resource: '../Classes/*'
 
+  # Will be called by GeneralUtility::makeInstance in TYPO3 StorageRepository
+  StefanFroemken\Dropbox\Driver\DropboxDriver:
+    public: true
+    calls:
+      - setFlashMessageHelper: ['StefanFroemken\Dropbox\Helper\FlashMessageHelper']
+
   # Will be called by GeneralUtility::makeInstance in DropboxDriver and DropboxStatusElement
   StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService:
     autowire: false
@@ -17,3 +23,4 @@ services:
     autowire: false
     autoconfigure: false
     public: true
+
