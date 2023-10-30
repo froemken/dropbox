@@ -88,7 +88,7 @@ While editing the ``File storage`` click on ``GetAccessToken`` to start the wiza
 Paste in the ``App Key`` and ``App Secret`` from Dropbox App explained above.
 Click on ``Get AuthCode Link``
 
-..  figure:: ../../Images/AdministratorManual/dropbox_insert_app_secret.jpg
+..  figure:: ../Images/AdministratorManual/dropbox_insert_app_secret.jpg
     :width: 500px
     :align: left
     :alt: Insert app key and app secret
@@ -98,7 +98,7 @@ where you have to give access to your Dropbox App.
 
 Copy the AuthCode from Dropbox page into the AuthCode field of the Wizard.
 
-..  figure:: ../../Images/AdministratorManual/dropbox_wizard_access_token.jpg
+..  figure:: ../Images/AdministratorManual/dropbox_wizard_access_token.jpg
     :width: 500px
     :align: left
     :alt: Get Access Toekn from Dropbox
@@ -109,7 +109,7 @@ the wizard will close.
 
 Save the record. On success we show you some user data.
 
-..  figure:: ../../Images/AdministratorManual/dropbox_connect_success.jpg
+..  figure:: ../Images/AdministratorManual/dropbox_connect_success.jpg
     :width: 500px
     :align: left
     :alt: Connection successfully
