@@ -88,7 +88,7 @@ class ImageExtractor implements ExtractorInterface
     {
         try {
             return ArrayUtility::getValueByPath($metaData, 'media_info/metadata/dimensions');
-        } catch (\RuntimeException | MissingArrayPathException) {
+        } catch (\RuntimeException | MissingArrayPathException $exception) {
             return [
                 'width' => 0,
                 'height' => 0,
