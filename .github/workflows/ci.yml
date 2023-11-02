@@ -49,8 +49,8 @@ jobs:
           composer require typo3/cms-core:${{ matrix.typo3 }} --no-progress
           git checkout composer.json
 
-      - name: php-cs-fixer
-        run: composer ci:php:fixer
-
       - name: Lint PHP
         run: composer ci:php:lint
+
+      - name: php-cs-fixer
+        run: composer ci:php:fixer
