@@ -1,72 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <T3DataStructure>
-	<meta>
-		<langDisable>1</langDisable>
-	</meta>
-	<ROOT>
-		<type>array</type>
-		<el>
-			<appKey>
-				<TCEforms>
-					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:appKey</label>
-					<description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:appKey.description</description>
-					<config>
-						<type>input</type>
-						<eval>trim</eval>
-						<size>30</size>
-					</config>
-				</TCEforms>
-			</appKey>
-			<refreshToken>
-				<TCEforms>
-					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:refreshToken</label>
-					<description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:refreshToken.description</description>
-					<config>
-						<type>input</type>
-						<eval>trim</eval>
-						<size>30</size>
-						<fieldControl>
-							<accessToken>
-								<renderType>refreshToken</renderType>
-								<appKeyFieldName>appKey</appKeyFieldName>
-							</accessToken>
-						</fieldControl>
-					</config>
-				</TCEforms>
-			</refreshToken>
-			<accessType>
-				<TCEforms>
-					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType</label>
-					<description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.description</description>
-					<config>
-						<type>select</type>
-						<renderType>selectSingle</renderType>
-						<items type="array">
-							<numIndex index="0" type="array">
-								<numIndex index="0">LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.appFolder</numIndex>
-								<numIndex index="1">AppFolder</numIndex>
-							</numIndex>
-							<numIndex index="1" type="array">
-								<numIndex index="0">LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.fullDropbox</numIndex>
-								<numIndex index="1">FullDropbox</numIndex>
-							</numIndex>
-						</items>
-						<maxitems>1</maxitems>
-						<size>1</size>
-						<selectedListStyle>width:150px</selectedListStyle>
-					</config>
-				</TCEforms>
-			</accessType>
-			<requestToken>
-				<TCEforms>
-					<label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:dropboxStatus</label>
-					<description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:dropboxStatus.description</description>
-					<config>
-						<type>user</type>
-						<renderType>dropboxStatus</renderType>
-					</config>
-				</TCEforms>
-			</requestToken>
-		</el>
-	</ROOT>
+    <meta>
+        <langDisable>1</langDisable>
+    </meta>
+    <ROOT>
+        <type>array</type>
+        <el>
+            <appKey>
+                <TCEforms>
+                    <label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:appKey</label>
+                    <description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:appKey.description</description>
+                    <config>
+                        <type>input</type>
+                        <eval>trim</eval>
+                        <size>30</size>
+                    </config>
+                </TCEforms>
+            </appKey>
+            <refreshToken>
+                <TCEforms>
+                    <label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:refreshToken</label>
+                    <description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:refreshToken.description</description>
+                    <config>
+                        <type>input</type>
+                        <eval>trim</eval>
+                        <size>30</size>
+                        <fieldControl>
+                            <accessToken>
+                                <renderType>refreshToken</renderType>
+                                <appKeyFieldName>appKey</appKeyFieldName>
+                            </accessToken>
+                        </fieldControl>
+                    </config>
+                </TCEforms>
+            </refreshToken>
+            <accessType>
+                <TCEforms>
+                    <label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType</label>
+                    <description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.description</description>
+                    <config>
+                        <type>select</type>
+                        <renderType>selectSingle</renderType>
+                        <items type="array">
+                            <numIndex index="0" type="array">
+                                <numIndex index="0">LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.appFolder</numIndex>
+                                <numIndex index="1">AppFolder</numIndex>
+                            </numIndex>
+                            <numIndex index="1" type="array">
+                                <numIndex index="0">LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:accessType.fullDropbox</numIndex>
+                                <numIndex index="1">FullDropbox</numIndex>
+                            </numIndex>
+                        </items>
+                        <maxitems>1</maxitems>
+                        <size>1</size>
+                        <selectedListStyle>width:150px</selectedListStyle>
+                    </config>
+                </TCEforms>
+            </accessType>
+            <requestToken>
+                <TCEforms>
+                    <label>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:dropboxStatus</label>
+                    <description>LLL:EXT:dropbox/Resources/Private/Language/FlexForm.xlf:dropboxStatus.description</description>
+                    <config>
+                        <type>user</type>
+                        <renderType>dropboxStatus</renderType>
+                    </config>
+                </TCEforms>
+            </requestToken>
+        </el>
+    </ROOT>
 </T3DataStructure>

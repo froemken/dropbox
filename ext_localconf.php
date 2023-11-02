@@ -32,6 +32,19 @@ call_user_func(static function (): void {
         \TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::class
     )->registerExtractionService(\StefanFroemken\Dropbox\Extractor\ImageExtractor::class);
 
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['dropboxRenameExtensionKey']
+    // Register processor to resize images directly in dropbox and download just the thumbnail
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['processors']['dropboxImagePreviewProcessor'] = [
+        'className' => \StefanFroemken\Dropbox\Resource\Processing\ImageProcessing::class,
+        'after' => [
+            'SvgImageProcessor',
+        ],
+        'before' => [
+            'LocalImageProcessor',
+            'OnlineMediaPreviewProcessor',
+            'DeferredBackendImageProcessor',
+        ],
+    ];
+
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['DropboxRenameExtensionKey']
         = \StefanFroemken\Dropbox\Upgrade\RenameExtensionKeyUpgrade::class;
 });
