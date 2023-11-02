@@ -794,7 +794,7 @@ class DropboxDriver extends AbstractDriver
     {
         // Prevent calling GU::makeINstance multiple times
         // Change, if DI can be used for this class
-        static $pathInfoFactory= null;
+        static $pathInfoFactory = null;
 
         if ($pathInfoFactory === null) {
             $pathInfoFactory = GeneralUtility::makeInstance(PathInfoFactory::class);

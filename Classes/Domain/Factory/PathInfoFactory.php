@@ -29,7 +29,7 @@ class PathInfoFactory
             return $filePathInfo;
         }
 
-        if ($metaData['.tag'] === 'folder')  {
+        if ($metaData['.tag'] === 'folder') {
             return new FolderPathInfo($metaData['name'], $metaData['path_display']);
         }
 

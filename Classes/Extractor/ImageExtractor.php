@@ -91,7 +91,7 @@ class ImageExtractor implements ExtractorInterface
         } catch (\RuntimeException | MissingArrayPathException) {
             return [
                 'width' => 0,
-                'height' => 0
+                'height' => 0,
             ];
         }
     }
