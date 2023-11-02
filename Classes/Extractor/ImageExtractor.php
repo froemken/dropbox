@@ -11,9 +11,13 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Extractor;
 
+use StefanFroemken\Dropbox\Client\DropboxClient;
+use StefanFroemken\Dropbox\Client\DropboxClientFactory;
 use TYPO3\CMS\Core\Resource\AbstractFile;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Index\ExtractorInterface;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\Exception\MissingArrayPathException;
 
 /**
  * Special Image Extractor to extract width and height from Dropbox
@@ -21,6 +25,13 @@ use TYPO3\CMS\Core\Resource\Index\ExtractorInterface;
  */
 class ImageExtractor implements ExtractorInterface
 {
+    private DropboxClientFactory $dropboxClientFactory;
+
+    public function __construct(DropboxClientFactory $dropboxClientFactory)
+    {
+        $this->dropboxClientFactory = $dropboxClientFactory;
+    }
+
     /**
      * Returns an array of supported file types
      */
@@ -68,20 +79,27 @@ class ImageExtractor implements ExtractorInterface
      */
     public function extractMetaData(File $file, array $previousExtractedData = []): array
     {
-        // Currently, Dropbox does not transfer width/height
-        $localPath = $file->getForLocalProcessing();
-        if ($localPath === '') {
-            return [];
+        return $this->getDimensions(
+            $this->getDropboxClient($file)->getImageMetadata($file->getIdentifier())
+        );
+    }
+
+    private function getDimensions(array $metaData): array
+    {
+        try {
+            return ArrayUtility::getValueByPath($metaData, 'media_info/metadata/dimensions');
+        } catch (\RuntimeException | MissingArrayPathException) {
+            return [
+                'width' => 0,
+                'height' => 0
+            ];
         }
+    }
 
-        [$width, $height] = @getimagesize($localPath);
-
-        // Remove file to prevent exceeding hdd quota
-        unlink($localPath);
-
-        return [
-            'width' => $width,
-            'height' => $height,
-        ];
+    private function getDropboxClient(File $file): DropboxClient
+    {
+        return $this->dropboxClientFactory->createByResourceStorage(
+            $file->getStorage()
+        );
     }
 }
