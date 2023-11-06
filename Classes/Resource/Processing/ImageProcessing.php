@@ -14,6 +14,7 @@ namespace StefanFroemken\Dropbox\Resource\Processing;
 use Psr\Http\Message\ServerRequestInterface;
 use StefanFroemken\Dropbox\Client\DropboxClient;
 use StefanFroemken\Dropbox\Client\DropboxClientFactory;
+use StefanFroemken\Dropbox\Client\DropboxThumbnailSizes;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\Resource\File;
@@ -29,14 +30,19 @@ class ImageProcessing implements ProcessorInterface
 {
     private DropboxClientFactory $dropboxClientFactory;
 
+    private DropboxThumbnailSizes $dropboxThumbnailSizes;
+
     private array $defaultConfiguration = [
         'width' => 64,
         'height' => 64,
     ];
 
-    public function __construct(DropboxClientFactory $dropboxClientFactory)
-    {
+    public function __construct(
+        DropboxClientFactory $dropboxClientFactory,
+        DropboxThumbnailSizes $dropboxThumbnailSizes
+    ) {
         $this->dropboxClientFactory = $dropboxClientFactory;
+        $this->dropboxThumbnailSizes = $dropboxThumbnailSizes;
     }
 
     public function canProcessTask(TaskInterface $task): bool
@@ -56,7 +62,10 @@ class ImageProcessing implements ProcessorInterface
         $content = $dropboClient->getClient()->getThumbnail(
             $task->getSourceFile()->getIdentifier(),
             'jpeg',
-            'w' . $configuration['width'] . 'h' . $configuration['height']
+            $this->dropboxThumbnailSizes->getThumbnailSize(
+                (int)$configuration['width'],
+                (int)$configuration['height']
+            )
         );
 
         $temporaryFilePath = $this->getTemporaryFilePath($task);

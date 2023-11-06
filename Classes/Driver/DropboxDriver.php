@@ -115,21 +115,12 @@ class DropboxDriver extends AbstractDriver
 
     public function renameFolder($folderIdentifier, $newName): array
     {
-        $folderIdentifier = $this->canonicalizeAndCheckFolderIdentifier($folderIdentifier);
-        $newName = $this->sanitizeFileName($newName);
-
-        $targetIdentifier = PathUtility::dirname($folderIdentifier) . '/' . $newName;
-        $targetIdentifier = $this->canonicalizeAndCheckFolderIdentifier($targetIdentifier);
-
-        // dropbox don't like slashes at the end of identifier
-        $this->dropboxClient->getClient()->move(
-            rtrim($folderIdentifier, '/'),
-            rtrim($targetIdentifier, '/')
+        throw new \Exception(
+            'Renaming is not implemented in EXT:dropbox as every file and folder has to be retrieved ' .
+            'recursively, checked for existance, updated in sys_file and requests new thumbnails. That operation ' .
+            'would need more time than configured in your PHP settings. Sorry.',
+            1699301573
         );
-
-        $this->cache->flush();
-
-        return [];
     }
 
     public function deleteFolder($folderIdentifier, $deleteRecursively = false): bool

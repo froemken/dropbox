@@ -11,7 +11,7 @@ call_user_func(static function (): void {
         'label' => 'Dropbox',
     ];
 
-    // create a temporary cache
+    // Create a temporary cache
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['dropbox']['backend']
         = \TYPO3\CMS\Core\Cache\Backend\TransientMemoryBackend::class;
 
@@ -28,6 +28,7 @@ call_user_func(static function (): void {
         'class' => \StefanFroemken\Dropbox\Form\Element\DropboxStatusElement::class,
     ];
 
+    // Image Extractor is used to get image dimension from Dropbox API
     \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
         \TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::class
     )->registerExtractionService(\StefanFroemken\Dropbox\Extractor\ImageExtractor::class);

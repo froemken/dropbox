@@ -8,6 +8,25 @@ Updating
 If you update `dropbox` to a newer version, please read this section carefully!
 
 
+Update to Version 5.0.0
+=======================
+
+Please execute the token wizard in driver record again to retrieve a fresh
+refresh token. With that refresh token EXT:dropbox is available to generate
+a new access token which is available for 4 hours. Remaining time of
+current access token you can see in dropbox info section of dropbos driver
+record.
+
+Im future files get bigger and bigger. Downloading these files just to access
+the image dimension (width/height) can be very slow, costs traffic and of
+cause CPU time. With version 5.0.0 I use the dropbox API to retrieve this
+information. This is faster if you have a lot of huge files in your selected
+folder, but it's slower, if you have a lot of tiny small files in your folder.
+
+Dropbox API can only retrieve image dimension (width/height) for images up to
+20 MB.
+
+
 Update to Version 4.3.0
 =======================
 

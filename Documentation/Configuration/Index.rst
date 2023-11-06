@@ -7,28 +7,7 @@
 Configuration
 =============
 
-Create File Storage
-===================
-
-*   Go to list module and choose PID 0 (Rootpage with TYPO3 logo in front).
-*   Create a new record of type ``File Storage``
-*   On tab ``General`` choose a name like ``Dropbox``
-*   On tab ``Configuration`` you have to choose the ``Dropbox`` driver
-
-
-Driver Configuration
-====================
-
-To communicate over the Dropbox-API you need an Access Token.
-
-#.  Create an App API at Dropbox.com
-#.  Copy ``App Key`` and ``App Secret``
-#.  Get Access Token from developer area of www.dropbox.com
-    or you can create an access token with help of the wizard you can reach over ``GetAccessToken``
-#.  Save the record
-
-
-Create API at dropbox.com
+Create APP at dropbox.com
 -------------------------
 
 ..  rst-class:: bignums
@@ -81,11 +60,20 @@ Create API at dropbox.com
     an access token which you can copy&paste directly into the FAL storage record.
 
 
+Create File Storage
+===================
+
+*   Go to list module and choose PID 0 (Rootpage with TYPO3 logo in front).
+*   Create a new record of type ``File Storage``
+*   On tab ``General`` choose a name like ``Dropbox``
+*   On tab ``Configuration`` you have to choose the ``Dropbox`` driver
+
+
 Start Driver Wizard
 -------------------
 
-While editing the ``File storage`` click on ``GetAccessToken`` to start the wizard.
-Paste in the ``App Key`` and ``App Secret`` from Dropbox App explained above.
+While editing the ``File storage`` click on the + icon to start the wizard.
+Paste in the ``App Key`` from Dropbox App explained above.
 Click on ``Get AuthCode Link``
 
 ..  figure:: ../Images/AdministratorManual/dropbox_insert_app_secret.jpg
@@ -93,8 +81,8 @@ Click on ``Get AuthCode Link``
     :align: left
     :alt: Insert app key and app secret
 
-On the next page you have to click on the ``authorization link`` which will open a new tab
-where you have to give access to your Dropbox App.
+On the next page you have to click on the ``authorization link`` which will
+open a new tab where you have to give access to your Dropbox App.
 
 Copy the AuthCode from Dropbox page into the AuthCode field of the Wizard.
 
@@ -103,11 +91,11 @@ Copy the AuthCode from Dropbox page into the AuthCode field of the Wizard.
     :align: left
     :alt: Get Access Toekn from Dropbox
 
-With a click on ``Get AccessToken`` a further request to dropbox.com will start in the background.
-On success the Access Token will automatically inserted in ``File Storage`` record and
-the wizard will close.
+With a click on ``Get AccessToken`` a further request to dropbox.com will
+start in the background. On success the Refresh Token will automatically
+inserted in ``File Storage`` record and the wizard will close.
 
-Save the record. On success we show you some user data.
+Save the record. On success it will show you some user data.
 
 ..  figure:: ../Images/AdministratorManual/dropbox_connect_success.jpg
     :width: 500px

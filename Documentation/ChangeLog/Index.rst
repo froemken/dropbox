@@ -13,6 +13,13 @@ Version 5.0.0
 *   Add TYPO3 12 compatibility
 *   Remove TYPO3 10 compatibility
 *   BUGFIX: Auto refresh AccessToken
+*   Get image width/height by dropbox API
+*   Render image preview with thumbnail provided by dropbox API
+*   Show remaining time of current AccessToken in driver configuration
+*   New client factory to use dropbox API nearly everywhere
+*   New PathInfoFactory to create path objects for files and folders
+*   New FlashMessageHelper to reduce complexity of other classes
+*   Update documentation. New configuration section.
 
 Version 4.3.0
 =============
