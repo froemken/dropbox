@@ -4,9 +4,9 @@
 
 ## 1 What does it do?
 
-`dropbox` is an Extension for TYPO3 >= 10.4.0.
+`dropbox` is an Extension for TYPO3 >= 11.5.30.
 It extends TYPO3's FAL (File Abstraction Layer) to show files from your
-Dropbox Account in file list module of TYPO3.
+Dropbox Account in filelist module of TYPO3.
 
 ## 2 Installation
 
@@ -59,14 +59,9 @@ up to 5 devices can connect to this app:
 
 Have fun using your dropbox files in TYPO3.
 
-**ToDo:**
+**Features:**
 
-* rename folder
-* delete folder
-
-** Done:**
-
-* you can create folders
+* you can create and delete folders
 * you can navigate through the folders
 * move files
 * copy files
@@ -75,3 +70,7 @@ Have fun using your dropbox files in TYPO3.
 * rename file
 * creation of thumbs works
 * copy files to upload folder
+
+**Not implemented**
+
+* Renaming folders (will throw exception)

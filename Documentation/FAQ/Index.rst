@@ -49,3 +49,10 @@ How to solve that?
     (local storage/SSD). I have explained it
     in section :ref:`Configure dropbox <configuration>`
 *   Keep your files as small as possible in dropbox storage.
+
+Cut and Paste copies files
+==========================
+
+That happens if you have deactivated the clipboard. Please activate the
+clipboard. You will find a button to activate "moving" files instead of
+"copying". If you know paste the file, it will be moved instead.
