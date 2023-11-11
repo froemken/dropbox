@@ -16,31 +16,34 @@ Create APP at dropbox.com
 
     Simply visit: https://www.dropbox.com/developers
 
-    If this link is not valid anymore go to https://www.dropbox.com/, click the upper left menu icon with the 9 dots.
-    Choose the App Center. In the left menu of the `App Center` you will find a link to `Develop Apps`. Now
+    If this link is not valid anymore go to https://www.dropbox.com/, click the
+    upper left menu icon with the 9 dots. Choose the App Center. In the left
+    menu of the `App Center` you will find a link to `Develop Apps`. Now
     you should be in the developer corner of Dropbox.
 
 2.  Create new Dropbox App
 
-    Click the `App Console` button in the upper right corner. Now you see all your apps (if you have created some).
-    Click the `Create app` button.
+    Click the `App Console` button in the upper right corner. Now you see all
+    your apps (if you have created some). Click the `Create app` button.
 
 3.  Choose API
 
-    With a free or simple Dropbox account you only have the possibility to choose the API with `Scoped access`.
-    The TYPO3 Dropbox extension can only work with this API. Do not choose any other API.
+    With a free or simple Dropbox account you only have the possibility to
+    choose the API with `Scoped access`. The TYPO3 Dropbox extension can only
+    work with this API. Do not choose any other API.
 
 4.  Choose App type
 
-    For security reasons I prefer to choose `App folder`. But if you`re sure, you also can give your app
-    full access to all of your Dropbox files.
+    For security reasons I prefer to choose `App folder`. But if you`re sure,
+    you also can give your app full access to all of your Dropbox files.
 
 5.  Give it a name
 
-    Assign a Dropbox global unique name to your new app. Please consider, that words like `dropbox` are not allowed
-    as part of the name.
+    Assign a Dropbox global unique name to your new app. Please consider, that
+    words like `dropbox` are not allowed as part of the name.
 
-    Confirm your settings with button `Create App`. You will be redirected to detail view of your app.
+    Confirm your settings with button `Create App`. You will be redirected to
+    detail view of your app.
 
 6.  Configure your new app
 
@@ -50,14 +53,9 @@ Create APP at dropbox.com
     *   `files.content.write`
     *   `files.content.read`
 
-7.  Locate `App key` and `App secret`
+7.  Locate `App key`
 
-    For next section you will need to copy `App key` and `App secret`. from tab `Settings`.
-
-8.  Optional: Generate Access Token
-
-    If you don`t want to use the Wizard, you can click the `Generate` button on tab `Settings`. This will generate
-    an access token which you can copy&paste directly into the FAL storage record.
+    For next section you will need to copy `App key` from tab `Settings`.
 
 
 Create File Storage

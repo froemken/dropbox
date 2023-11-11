@@ -37,7 +37,7 @@ up to 5 devices can connect to this app:
 6. Give it a name
 7. Save app with "Create App"
 8. Open your newly created app
-9. On tab "settings" you will find app key and app secret
+9. On tab "settings" you will find app key
 10. Open new tab and start configuring TYPO3
 
 ## Configure TYPO3
@@ -45,7 +45,7 @@ up to 5 devices can connect to this app:
 1. Create a new file storage record on pid 0 and give it a name like "Dropbox"
 2. On Tab "Configuration" choose "Dropbox" (FlexForm reloads)
 3. Click the + icon right of the access token field to start the wizard
-4. Enter app key and app secret from your new Dropbox app
+4. Enter app key from your new Dropbox app
 5. Click the link to retrieve a Dropbox auth code
    1. It will open a new browser tab, where you have to allow TYPO3 to access your app
    2. After confirmation, you will see the auth code
