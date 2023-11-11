@@ -7,6 +7,16 @@
 FAQ
 ===
 
+Bad Request
+===========
+
+In most cases you get that error, if your Dropbox App does not have the
+required permissions. PLease visit App Console at Dropbox again and make
+sure you have activated `files.metadata.read`, `files.content.read` and
+`files.content.write`. Save your App. After each change at the Dropbox App you
+have to restart the AccessToken Wizard in your Dropbox TYPO3 FAL Storage and
+save the record again.
+
 Upload of file XY failed
 ========================
 
