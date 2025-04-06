@@ -18,11 +18,11 @@ $EM_CONF[$_EXTKEY] = [
         'suggests' => [
         ],
     ],
-    "autoload" => [
-        "psr-4" => [
-            "StefanFroemken\\Dropbox\\" => "Classes",
-            "Spatie\\Dropbox\\" => "Resources/Private/PHP/spatie/dropbox-api/src",
-            "GrahamCampbell\\GuzzleFactory\\" => "Resources/Private/PHP/graham-campbell/guzzle-factory/src",
+    'autoload' => [
+        'psr-4' => [
+            'StefanFroemken\\Dropbox\\' => 'Classes',
+            'Spatie\\Dropbox\\' => 'Resources/Private/PHP/spatie/dropbox-api/src',
+            'GrahamCampbell\\GuzzleFactory\\' => 'Resources/Private/PHP/graham-campbell/guzzle-factory/src',
         ],
     ],
 ];

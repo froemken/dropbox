@@ -2,7 +2,6 @@
 
 namespace Spatie\Dropbox;
 
-use Exception;
 use GrahamCampbell\GuzzleFactory\GuzzleFactory;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
@@ -17,19 +16,19 @@ use Spatie\Dropbox\Exceptions\BadRequest;
 
 class Client
 {
-    const THUMBNAIL_FORMAT_JPEG = 'jpeg';
-    const THUMBNAIL_FORMAT_PNG = 'png';
+    public const THUMBNAIL_FORMAT_JPEG = 'jpeg';
+    public const THUMBNAIL_FORMAT_PNG = 'png';
 
-    const THUMBNAIL_SIZE_XS = 'w32h32';
-    const THUMBNAIL_SIZE_S = 'w64h64';
-    const THUMBNAIL_SIZE_M = 'w128h128';
-    const THUMBNAIL_SIZE_L = 'w640h480';
-    const THUMBNAIL_SIZE_XL = 'w1024h768';
+    public const THUMBNAIL_SIZE_XS = 'w32h32';
+    public const THUMBNAIL_SIZE_S = 'w64h64';
+    public const THUMBNAIL_SIZE_M = 'w128h128';
+    public const THUMBNAIL_SIZE_L = 'w640h480';
+    public const THUMBNAIL_SIZE_XL = 'w1024h768';
 
-    const MAX_CHUNK_SIZE = 1024 * 1024 * 150;
+    public const MAX_CHUNK_SIZE = 1024 * 1024 * 150;
 
-    const UPLOAD_SESSION_START = 0;
-    const UPLOAD_SESSION_APPEND = 1;
+    public const UPLOAD_SESSION_START = 0;
+    public const UPLOAD_SESSION_APPEND = 1;
 
     /**
      * @var TokenProvider
@@ -64,7 +63,7 @@ class Client
      * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
      * @param string $teamMemberID The team member ID to be specified for Dropbox business accounts
      */
-    public function __construct($accessTokenOrAppCredentials = null, ClientInterface $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberId = null)
+    public function __construct($accessTokenOrAppCredentials = null, ?ClientInterface $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, ?string $teamMemberId = null)
     {
         if (is_array($accessTokenOrAppCredentials)) {
             [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
@@ -169,7 +168,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
      */
-    public function listSharedLinks(string $path = null, bool $direct_only = false, string $cursor = null): array
+    public function listSharedLinks(?string $path = null, bool $direct_only = false, ?string $cursor = null): array
     {
         $parameters = [
             'path' => $path ? $this->normalizePath($path) : null,
@@ -296,7 +295,7 @@ class Client
 
         $response = $this->contentEndpointRequest('files/get_thumbnail', $arguments);
 
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     /**
@@ -457,7 +456,7 @@ class Client
      * @param int $chunkSize
      * @param \Spatie\Dropbox\UploadSessionCursor|null $cursor
      * @return \Spatie\Dropbox\UploadSessionCursor
-     * @throws Exception
+     * @throws \Exception
      */
     protected function uploadChunk($type, &$stream, $chunkSize, $cursor = null): UploadSessionCursor
     {
@@ -480,7 +479,7 @@ class Client
                 return $this->uploadSessionAppend($chunkStream, $cursor);
             }
 
-            throw new Exception('Invalid type');
+            throw new \Exception('Invalid type');
         } catch (RequestException $exception) {
             if ($tries < $maximumTries) {
                 // rewind
@@ -604,7 +603,7 @@ class Client
 
         $path = trim($path, '/');
 
-        return ($path === '') ? '' : '/'.$path;
+        return ($path === '') ? '' : '/' . $path;
     }
 
     protected function getEndpointUrl(string $subdomain, string $endpoint): string
@@ -652,7 +651,7 @@ class Client
         return $response;
     }
 
-    public function rpcEndpointRequest(string $endpoint, array $parameters = null, bool $isRefreshed = false): array
+    public function rpcEndpointRequest(string $endpoint, ?array $parameters = null, bool $isRefreshed = false): array
     {
         try {
             $options = ['headers' => $this->getHeaders()];
@@ -677,7 +676,7 @@ class Client
         return json_decode($response->getBody(), true) ?? [];
     }
 
-    protected function determineException(ClientException $exception): Exception
+    protected function determineException(ClientException $exception): \Exception
     {
         if (in_array($exception->getResponse()->getStatusCode(), [400, 409])) {
             return new BadRequest($exception->getResponse());
@@ -788,7 +787,7 @@ class Client
     protected function getHeadersForCredentials()
     {
         return [
-            'Authorization' => 'Basic '.base64_encode("{$this->appKey}:{$this->appSecret}"),
+            'Authorization' => 'Basic ' . base64_encode("{$this->appKey}:{$this->appSecret}"),
         ];
     }
 }
