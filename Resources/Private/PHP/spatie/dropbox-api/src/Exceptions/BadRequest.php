@@ -2,10 +2,9 @@
 
 namespace Spatie\Dropbox\Exceptions;
 
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 
-class BadRequest extends Exception
+class BadRequest extends \Exception
 {
     /**
      * @var \Psr\Http\Message\ResponseInterface

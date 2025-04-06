@@ -1,46 +1,15 @@
-..  include:: /Includes.rst.txt
-
-
 ..  _start:
 
 ==================
 Dropbox FAL Driver
 ==================
 
-:Extension key:
-    dropbox
-
-:Package name:
-    stefanfroemken/dropbox
-
-:Version:
-    |release|
-
-:Language:
-    en
-
-:Author:
-    Stefan Froemken
-
-:License:
-    This document is published under the
-    `Creative Commons BY 4.0 <https://creativecommons.org/licenses/by/4.0/>`__
-    license.
-
-:Rendered:
-    |today|
-
-----
-
 Provides a Dropbox driver for TYPO3 File Abstraction Layer.
 
-----
-
-**Table of Contents:**
-
 ..  toctree::
-    :maxdepth: 2
+    :glob:
     :titlesonly:
+    :hidden:
 
     Introduction/Index
     Installation/Index
@@ -49,10 +18,26 @@ Provides a Dropbox driver for TYPO3 File Abstraction Layer.
     FAQ/Index
     ChangeLog/Index
 
-..  Meta Menu
+..  card-grid::
+    :columns: 1
+    :columns-md: 2
+    :gap: 4
+    :class: pb-4
+    :card-height: 100
 
-..  toctree::
-    :hidden:
+    ..  card:: :ref:`Introduction <introduction>`
 
-    Sitemap
-    genindex
+        See how :t3ext:`dropbox` looks like in action.
+
+    ..  card:: :ref:`Installation <installation>`
+
+        Explains how to install this extension in Composer-based and Classic
+        TYPO3 installations.
+
+    ..  card:: :ref:`Configuration <configuration>`
+
+        Learn how to configure this extension.
+
+    ..  card:: :ref:`FAQ <faq>`
+
+        These questions have been frequently asked.
