@@ -1,7 +1,4 @@
-﻿..  include:: /Includes.rst.txt
-
-
-..  _introduction:
+﻿..  _introduction:
 
 ================
 What does it do?

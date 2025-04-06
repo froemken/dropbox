@@ -1,7 +1,4 @@
-﻿..  include:: /Includes.rst.txt
-
-
-..  _configuration:
+﻿..  _configuration:
 
 =============
 Configuration
@@ -58,6 +55,8 @@ Create APP at dropbox.com
     For next section you will need to copy `App key` from tab `Settings`.
 
 
+..  _create-file-storage:
+
 Create File Storage
 ===================
 
@@ -76,7 +75,6 @@ Click on ``Get AuthCode Link``
 
 ..  figure:: ../Images/AdministratorManual/dropbox_insert_app_secret.jpg
     :width: 500px
-    :align: left
     :alt: Insert app key and app secret
 
 On the next page you have to click on the ``authorization link`` which will
@@ -86,7 +84,6 @@ Copy the AuthCode from Dropbox page into the AuthCode field of the Wizard.
 
 ..  figure:: ../Images/AdministratorManual/dropbox_wizard_access_token.jpg
     :width: 500px
-    :align: left
     :alt: Get Access Toekn from Dropbox
 
 With a click on ``Get AccessToken`` a further request to dropbox.com will
@@ -97,10 +94,12 @@ Save the record. On success it will show you some user data.
 
 ..  figure:: ../Images/AdministratorManual/dropbox_connect_success.jpg
     :width: 500px
-    :align: left
     :alt: Connection successfully
 
-**Performance**
+..  _performance:
+
+Performance
+===========
 
 ..  note::
 
