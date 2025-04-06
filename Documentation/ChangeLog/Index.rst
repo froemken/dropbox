@@ -7,6 +7,16 @@
 ChangeLog
 =========
 
+Version 5.0.2
+=============
+
+*   Use new doctrine query methods calls
+
+Version 5.0.1
+=============
+
+*   Add TYPO3 12 compatibility
+
 Version 5.0.0
 =============
 

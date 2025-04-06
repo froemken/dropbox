@@ -24,19 +24,12 @@
 		"source": "https://github.com/froemken/dropbox"
 	},
 	"require": {
-		"typo3/cms-core": "^12.4.25 || ^13.4.3",
+		"typo3/cms-core": "^12.4.25",
 		"spatie/dropbox-api": "^1.21.1"
 	},
 	"require-dev": {
 		"friendsofphp/php-cs-fixer": "^3.14",
 		"typo3/coding-standards": "^0.6"
-	},
-	"autoload": {
-		"psr-4": {
-			"StefanFroemken\\Dropbox\\": "Classes",
-			"Spatie\\Dropbox\\": "Resources/Private/PHP/spatie/dropbox-api/src",
-			"GrahamCampbell\\GuzzleFactory\\": "Resources/Private/PHP/graham-campbell/guzzle-factory/src"
-		}
 	},
 	"config": {
 		"vendor-dir": ".Build/vendor",
