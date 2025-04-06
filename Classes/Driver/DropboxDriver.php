@@ -22,10 +22,12 @@ use StefanFroemken\Dropbox\Domain\Model\PathInfoInterface;
 use StefanFroemken\Dropbox\Helper\FlashMessageHelper;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Charset\CharsetConverter;
+use TYPO3\CMS\Core\Resource\Capabilities;
 use TYPO3\CMS\Core\Resource\Driver\AbstractDriver;
+use TYPO3\CMS\Core\Resource\Exception\InvalidFileNameException;
 use TYPO3\CMS\Core\Resource\Exception\InvalidPathException;
-use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
@@ -34,20 +36,32 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 class DropboxDriver extends AbstractDriver
 {
+    /**
+     * @var string
+     */
+    private const UNSAFE_FILENAME_CHARACTER_EXPRESSION = '\\x00-\\x2C\\/\\x3A-\\x3F\\x5B-\\x60\\x7B-\\xBF';
+
     protected FrontendInterface $cache;
 
     protected DropboxClient $dropboxClient;
 
     /**
      * A list of all supported hash algorithms, written all lower case.
-     *
-     * @var array
      */
-    protected $supportedHashAlgorithms = ['sha1', 'md5'];
+    protected array $supportedHashAlgorithms = ['sha1', 'md5'];
+
+    public function __construct(array $configuration = [])
+    {
+        parent::__construct($configuration);
+
+        // Do not allow PUBLIC here, as each file will initiate a request to Dropbox-Api to retrieve a public share
+        // link which is extremely slow.
+        $this->capabilities = new Capabilities(Capabilities::CAPABILITY_BROWSABLE | Capabilities::CAPABILITY_WRITABLE);
+    }
 
     public function processConfiguration(): void
     {
-        // no need to configure something.
+        // No need to configure something.
     }
 
     public function initialize(): void
@@ -56,17 +70,9 @@ class DropboxDriver extends AbstractDriver
         $this->dropboxClient = $this->getDropboxClientFactory()->createByConfiguration($this->configuration);
     }
 
-    public function getCapabilities(): int
+    public function mergeConfigurationCapabilities($capabilities): Capabilities
     {
-        // Do not allow PUBLIC here, as each file will initiate a request to Dropbox-Api to retrieve a public share
-        // link which is extremely slow.
-
-        return ResourceStorageInterface::CAPABILITY_BROWSABLE + ResourceStorageInterface::CAPABILITY_WRITABLE;
-    }
-
-    public function mergeConfigurationCapabilities($capabilities): int
-    {
-        $this->capabilities &= $capabilities;
+        $this->capabilities->and($capabilities);
 
         return $this->capabilities;
     }
@@ -741,7 +747,7 @@ class DropboxDriver extends AbstractDriver
             $this->getFlashMessageHelper()->addFlashMessage(
                 'The file meta extraction has been interrupted, because file has been removed in the meanwhile.',
                 'File Meta Extraction aborted',
-                AbstractMessage::INFO
+                ContextualFeedbackSeverity::INFO
             );
 
             return '';
@@ -783,7 +789,7 @@ class DropboxDriver extends AbstractDriver
      */
     private function getPathInfoFactory(): PathInfoFactory
     {
-        // Prevent calling GU::makeINstance multiple times
+        // Prevent calling GU::makeInstance multiple times
         // Change, if DI can be used for this class
         static $pathInfoFactory = null;
 
@@ -792,5 +798,37 @@ class DropboxDriver extends AbstractDriver
         }
 
         return $pathInfoFactory;
+    }
+
+    /**
+     * Returns a string where any character not matching [.a-zA-Z0-9_-] is
+     * substituted by '_'
+     * Trailing dots are removed
+     */
+    public function sanitizeFileName(string $fileName, string $charset = 'utf-8'): string
+    {
+        if ($charset === 'utf-8') {
+            $fileName = \Normalizer::normalize($fileName) ?: $fileName;
+        }
+
+        // Handle UTF-8 characters
+        if ($GLOBALS['TYPO3_CONF_VARS']['SYS']['UTF8filesystem']) {
+            // Allow ".", "-", 0-9, a-z, A-Z and everything beyond U+C0 (latin capital letter a with grave)
+            $cleanFileName = (string)preg_replace('/[' . self::UNSAFE_FILENAME_CHARACTER_EXPRESSION . ']/u', '_', trim($fileName));
+        } else {
+            $fileName = GeneralUtility::makeInstance(CharsetConverter::class)->specCharsToASCII($charset, $fileName);
+            // Replace unwanted characters with underscores
+            $cleanFileName = (string)preg_replace('/[' . self::UNSAFE_FILENAME_CHARACTER_EXPRESSION . '\\xC0-\\xFF]/', '_', trim($fileName));
+        }
+
+        // Strip trailing dots and return
+        $cleanFileName = rtrim($cleanFileName, '.');
+        if ($cleanFileName === '') {
+            throw new InvalidFileNameException(
+                'File name ' . $fileName . ' is invalid.',
+                1320288991
+            );
+        }
+        return $cleanFileName;
     }
 }

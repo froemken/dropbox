@@ -45,13 +45,18 @@ class RefreshTokenElement extends AbstractFormElement
     {
         $fieldId = StringUtility::getUniqueId('tceforms-trigger-access-token-wizard-');
         $resultArray = $this->initializeResultArray();
-        $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS(
-            'TYPO3/CMS/Dropbox/AccessTokenModule'
+
+        $resultArray['javaScriptModules'][] = JavaScriptModuleInstruction::create(
+            '@stefanfroemken/dropbox/AccessTokenModule.js'
         )->instance($fieldId);
 
         $parameterArray = $this->data['parameterArray'];
         $itemName = $parameterArray['itemFormElName'];
-        $appKeyFieldName = str_replace($this->data['flexFormFieldName'], $parameterArray['fieldConf']['config']['fieldControl']['accessToken']['appKeyFieldName'], $parameterArray['itemFormElName']);
+        $appKeyFieldName = str_replace(
+            $this->data['flexFormFieldName'],
+            $parameterArray['fieldConf']['config']['fieldControl']['accessToken']['appKeyFieldName'],
+            $parameterArray['itemFormElName']
+        );
 
         $fieldWizardResult = $this->renderFieldWizard();
         $fieldWizardHtml = $fieldWizardResult['html'];
