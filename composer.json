@@ -31,6 +31,11 @@
 		"friendsofphp/php-cs-fixer": "^3.14",
 		"typo3/coding-standards": "^0.6"
 	},
+	"autoload": {
+		"psr-4": {
+			"StefanFroemken\\Dropbox\\": "Classes"
+		}
+	},
 	"config": {
 		"vendor-dir": ".Build/vendor",
 		"allow-plugins": {
