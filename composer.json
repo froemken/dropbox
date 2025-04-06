@@ -28,31 +28,33 @@
 		"spatie/dropbox-api": "^1.21.1"
 	},
 	"require-dev": {
-		"friendsofphp/php-cs-fixer": "^3.14",
-		"typo3/coding-standards": "^0.6"
+		"ergebnis/composer-normalize": "^2.44",
+		"typo3/coding-standards": "^0.8",
+		"typo3/testing-framework": "^8.2"
 	},
 	"autoload": {
 		"psr-4": {
 			"StefanFroemken\\Dropbox\\": "Classes"
 		}
 	},
+	"replace": {
+		"typo3-ter/dropbox": "self.version"
+	},
 	"config": {
-		"vendor-dir": ".Build/vendor",
 		"allow-plugins": {
+			"ergebnis/composer-normalize": true,
 			"typo3/class-alias-loader": true,
 			"typo3/cms-composer-installers": true
-		}
+		},
+		"bin-dir": ".Build/bin",
+		"sort-packages": true,
+		"vendor-dir": ".Build/vendor"
 	},
 	"extra": {
 		"typo3/cms": {
-			"extension-key": "dropbox",
 			"app-dir": ".Build",
+			"extension-key": "dropbox",
 			"web-dir": ".Build/public"
 		}
-	},
-	"scripts": {
-		"php:fix": ".Build/vendor/bin/php-cs-fixer --config=Build/php-cs-fixer/php-cs-fixer.php fix Classes",
-		"ci:php:lint": "find *.php Classes Configuration Tests -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l",
-		"ci:php:fixer": ".Build/vendor/bin/php-cs-fixer --config=Build/php-cs-fixer/php-cs-fixer.php fix --dry-run -v --show-progress=dots --diff Classes"
 	}
 }

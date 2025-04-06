@@ -1,56 +1,35 @@
-# Adapted from https://github.com/TYPO3GmbH/blog/blob/master/.github/workflows/ci.yml
-name: CI
+name: Tests
 
 on: [pull_request]
 
 jobs:
-  build:
+  testing:
+    name: Testing
+
     runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: false
+      fail-fast: true
+
       matrix:
-        typo3: ['^11.5', '^12.4']
-        php: ['8.1']
-        include:
-          - typo3: ^11.5
-            php: '7.4'
-          - typo3: ^11.5
-            php: '8.0'
-          - typo3: ^12.4
-            php: '8.2'
+        php:
+          - '8.2'
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: 'Checkout'
+        uses: actions/checkout@v4
 
-      - name: Setup PHP ${{ matrix.php }}, with composer and extensions
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: mbstring, dom, zip
+      - name: 'Lint PHP'
+        run: Build/Scripts/runTests.sh -p ${{ matrix.php }} -s lint
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate
+      - name: 'Install testing system'
+        run: Build/Scripts/runTests.sh -p ${{ matrix.php }} -s composerUpdate
 
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: 'Composer validate'
+        run: Build/Scripts/runTests.sh -p ${{ matrix.php }} -s composerValidate
 
-      - name: Cache composer dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-
+      - name: 'Composer normalize'
+        run: Build/Scripts/runTests.sh -p ${{ matrix.php }} -s composerNormalize -n
 
-      - name: Install dependencies with typo3/cms-core:${{ matrix.typo3 }}
-        run: |
-          composer require typo3/cms-core:${{ matrix.typo3 }} --no-progress
-          git checkout composer.json
-
-      - name: Lint PHP
-        run: composer ci:php:lint
-
-      - name: php-cs-fixer
-        run: composer ci:php:fixer
+      - name: 'CGL'
+        run: Build/Scripts/runTests.sh -n -p ${{ matrix.php }} -s cgl

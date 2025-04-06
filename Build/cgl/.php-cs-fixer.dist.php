@@ -1,29 +1,32 @@
 <?php
 
-$config = \TYPO3\CodingStandards\CsFixerConfig::create();
-$config->setHeader(
-    'This file is part of the package stefanfroemken/dropbox.
+declare(strict_types=1);
 
-For the full copyright and license information, please read the
-LICENSE file that was distributed with this source code.',
-    true
-);
-$config->setFinder(
-    (new PhpCsFixer\Finder())
-        ->in(realpath(__DIR__ . '/../../'))
-        ->ignoreVCSIgnored(true)
-        ->notPath('/^.Build\//')
-        ->notPath('/^Build\/php-cs-fixer\/php-cs-fixer.php/')
-        ->notPath('/^Build\/phpunit\/(UnitTestsBootstrap|FunctionalTestsBootstrap).php/')
-        ->notPath('/^Configuration\//')
-        ->notPath('/^Documentation\//')
-        ->notName('/^ext_(emconf|localconf|tables).php/')
-)
+/*
+ * This file is part of the package stefanfroemken/dropbox.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
+if (PHP_SAPI !== 'cli') {
+    die('This script supports command line usage only. Please check your command.');
+}
+
+return (new \PhpCsFixer\Config())
+    ->setParallelConfig(\PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
+    ->setFinder(
+        (new PhpCsFixer\Finder())
+            ->ignoreVCSIgnored(true)
+            ->in(__DIR__)
+            ->exclude('.Build')
+    )
     ->setRiskyAllowed(true)
     ->setRules([
         '@DoctrineAnnotation' => true,
         // @todo: Switch to @PER-CS2.0 once php-cs-fixer's todo list is done: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues/7247
         '@PER-CS1.0' => true,
+        'array_indentation' => true,
         'array_syntax' => ['syntax' => 'short'],
         'cast_spaces' => ['space' => 'none'],
         // @todo: Can be dropped once we enable @PER-CS2.0
@@ -59,6 +62,10 @@ $config->setFinder(
         'no_unused_imports' => true,
         'no_useless_else' => true,
         'no_useless_nullsafe_operator' => true,
+        'nullable_type_declaration' => [
+            'syntax' => 'question_mark',
+        ],
+        'nullable_type_declaration_for_default_null_value' => true,
         'ordered_imports' => ['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'alpha'],
         'php_unit_construct' => ['assertions' => ['assertEquals', 'assertSame', 'assertNotEquals', 'assertNotSame']],
         'php_unit_mock_short_will_return' => true,
@@ -80,4 +87,3 @@ $config->setFinder(
         'whitespace_after_comma_in_array' => ['ensure_single_space' => true],
         'yoda_style' => ['equal' => false, 'identical' => false, 'less_and_greater' => false],
     ]);
-return $config;
