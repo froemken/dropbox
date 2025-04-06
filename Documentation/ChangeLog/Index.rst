@@ -15,7 +15,7 @@ Version 5.0.2
 Version 5.0.1
 =============
 
-*   Add TYPO3 12 compatibility
+*   Update documentation
 
 Version 5.0.0
 =============
