@@ -51,7 +51,7 @@ class RenameExtensionKeyUpgrade implements UpgradeWizardInterface
         $amountOfMigratedRecords = (int)$queryBuilder
             ->count('*')
             ->execute()
-            ->fetchColumn();
+            ->fetchOne();
 
         return $amountOfMigratedRecords !== 0;
     }
@@ -68,7 +68,7 @@ class RenameExtensionKeyUpgrade implements UpgradeWizardInterface
             ->execute();
 
         $connection = $this->getConnectionPool()->getConnectionForTable('sys_file_storage');
-        while ($sysFileStorageRecord = $statement->fetch()) {
+        while ($sysFileStorageRecord = $statement->fetchAssociative()) {
             $connection->update(
                 'sys_file_storage',
                 [
