@@ -22,8 +22,16 @@ services:
   StefanFroemken\Dropbox\Client\DropboxClientFactory:
     public: true
 
+  # Will be called by GeneralUtility::makeInstance in DropboxDriver
+  StefanFroemken\Dropbox\Configuration\ExtConf:
+    public: true
+
   # Will be called by GeneralUtility::makeInstance in ExtractorRegistry
   StefanFroemken\Dropbox\Extractor\ImageExtractor:
+    public: true
+
+  # Will be called by GeneralUtility::makeInstance in DropboxDriver
+  StefanFroemken\Dropbox\Helper\FlashMessageHelper:
     public: true
 
   # Will be called by GeneralUtility::makeInstance in ProcessorRegistry

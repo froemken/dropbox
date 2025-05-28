@@ -14,6 +14,7 @@ namespace StefanFroemken\Dropbox\Driver;
 use Spatie\Dropbox\Exceptions\BadRequest;
 use StefanFroemken\Dropbox\Client\DropboxClient;
 use StefanFroemken\Dropbox\Client\DropboxClientFactory;
+use StefanFroemken\Dropbox\Configuration\ExtConf;
 use StefanFroemken\Dropbox\Domain\Factory\PathInfoFactory;
 use StefanFroemken\Dropbox\Domain\Model\FilePathInfo;
 use StefanFroemken\Dropbox\Domain\Model\FolderPathInfo;
@@ -42,6 +43,8 @@ class DropboxDriver extends AbstractDriver
     private const UNSAFE_FILENAME_CHARACTER_EXPRESSION = '\\x00-\\x2C\\/\\x3A-\\x3F\\x5B-\\x60\\x7B-\\xBF';
 
     protected DropboxClient $dropboxClient;
+
+    protected ExtConf $extConf;
 
     protected FlashMessageHelper $flashMessageHelper;
 
@@ -75,6 +78,7 @@ class DropboxDriver extends AbstractDriver
 
         $this->cache = $cacheManager->getCache('dropbox');
         $this->dropboxClient = $dropboxClientFactory->createByConfiguration($this->configuration);
+        $this->extConf = GeneralUtility::makeInstance(ExtConf::class);
         $this->flashMessageHelper = GeneralUtility::makeInstance(FlashMessageHelper::class);
         $this->pathInfoFactory = GeneralUtility::makeInstance(PathInfoFactory::class);
     }
@@ -583,6 +587,12 @@ class DropboxDriver extends AbstractDriver
 
     public function countFilesInFolder($folderIdentifier, $recursive = false, array $filenameFilterCallbacks = []): int
     {
+        // Skip the directory scan if file counting is disabled in configuration.
+        // Note: Enabling this feature may significantly impact performance (several seconds per parent folder request).
+        if ($this->extConf->getCountFilesInFolder() === false) {
+            return 0;
+        }
+
         $pathInfo = $this->getPathInfo($folderIdentifier);
         if (!$pathInfo instanceof FolderPathInfo) {
             return 0;

@@ -1,0 +1,2 @@
+# cat=basic; type=boolean; label=Enables counting of files within each Dropbox folder: When enabled, requires an additional Dropbox API call per folder, which impacts directory listing performance. Disable to improve performance - folders will show 0 containing files in the file-list module when disabled.
+countFilesInFolder = 1

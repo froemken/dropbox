@@ -101,19 +101,51 @@ Save the record. On success it will show you some user data.
 Performance
 ===========
 
-..  note::
+Deactivate countFilesInFolder
+-----------------------------
 
-    At the bottom of the ``Configuration`` tab you will find the
-    option: ``Folder for manipulated and temporary images etc.``
-    If you keep the default, all temporary images will be transferred over
-    the Dropbox-API which is very slow.
-    So it would be good to move that special folder to a folder on a
-    fast ``file storage``. Set this to ``1:/_processed_/dropbox`` if your
-    fileadmin file storage has the UID 1.
+The extension provides an extension setting named `countFilesInFolder`, which
+is enabled by default. When activated, the extension performs an individual
+API request to Dropbox API for each listed folder in order to determine the
+number of contained files.
+
+Each API call introduces a latency of approximately 300–400 milliseconds. For
+example, if a parent folder contains 10 subfolders, the total time required to
+render the file list may reach up to 4 seconds.
+
+Since the file count is primarily a visual indicator, this feature can be
+disabled to optimize performance. When `countFilesInFolder` is set to `0`, the
+file list will render significantly faster, but will display `"0 files"` for
+each subfolder.
+
+Folder for manipulated and temporary images
+-------------------------------------------
+
+Within the `Configuration` tab, at the bottom of the settings list, you will
+find the option **Folder for manipulated and temporary images etc.**.
+
+By default, this folder is located within the Dropbox file storage. As a result,
+all processed or temporary images are transferred via the Dropbox API, which
+significantly impacts performance due to the slow transfer rates.
+
+To improve rendering speed and overall performance, it is recommended to
+relocate this folder to a fast local file storage. For example, if your
+`fileadmin` storage has the storage UID `1`, you can set the value to:
+`1:/_processed_/dropbox`. This ensures that temporary files are handled locally
+rather than being transferred through the Dropbox API.
 
 ..  attention::
 
-    After changing the processed folder field to a local storage (f.e. 1
-    for fileadmin) you have to delete all ``sys_file_processedfile`` records
-    where column "storage" is the UID of your dropbox storage (f.e. UID: 2).
-    See: https://forge.typo3.org/issues/84069
+    **Cleanup required after changing the processed folder storage**
+
+    After changing the *Folder for manipulated and temporary images* to a local
+    file storage (e.g., UID `1` for `fileadmin`), it is necessary to clean up
+    existing processed files.
+
+    Specifically, all records in the `sys_file_processedfile` table that
+    reference the previous Dropbox storage (e.g., UID `2`) must be deleted.
+    Otherwise, TYPO3 may continue to reference outdated processed files stored
+    in the remote storage.
+
+    For further details, refer to the related TYPO3 issue:
+    https://forge.typo3.org/issues/84069

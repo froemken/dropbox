@@ -32,7 +32,7 @@ class FlashMessageHelper
 
     public function addFlashMessage(string $message, string $title = '', ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::OK): void
     {
-        // We activate storeInSession, so that messages can be displayed when click on Save&Close button.
+        // We activate storeInSession so that messages can be displayed when click on the Save&Close button.
         $flashMessage = GeneralUtility::makeInstance(
             FlashMessage::class,
             $message,
