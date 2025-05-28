@@ -43,6 +43,8 @@ class DropboxDriver extends AbstractDriver
 
     protected DropboxClient $dropboxClient;
 
+    protected FlashMessageHelper $flashMessageHelper;
+
     protected FrontendInterface $cache;
 
     protected PathInfoFactory $pathInfoFactory;
@@ -68,8 +70,12 @@ class DropboxDriver extends AbstractDriver
 
     public function initialize(): void
     {
-        $this->cache = $this->getCacheManager()->getCache('dropbox');
-        $this->dropboxClient = $this->getDropboxClientFactory()->createByConfiguration($this->configuration);
+        $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
+        $dropboxClientFactory = GeneralUtility::makeInstance(DropboxClientFactory::class);
+
+        $this->cache = $cacheManager->getCache('dropbox');
+        $this->dropboxClient = $dropboxClientFactory->createByConfiguration($this->configuration);
+        $this->flashMessageHelper = GeneralUtility::makeInstance(FlashMessageHelper::class);
         $this->pathInfoFactory = GeneralUtility::makeInstance(PathInfoFactory::class);
     }
 
@@ -746,7 +752,7 @@ class DropboxDriver extends AbstractDriver
                 )
             );
         } catch (BadRequest $badRequest) {
-            $this->getFlashMessageHelper()->addFlashMessage(
+            $this->flashMessageHelper->addFlashMessage(
                 'The file meta extraction has been interrupted, because file has been removed in the meanwhile.',
                 'File Meta Extraction aborted',
                 ContextualFeedbackSeverity::INFO
@@ -756,33 +762,6 @@ class DropboxDriver extends AbstractDriver
         }
 
         return $temporaryPath;
-    }
-
-    /**
-     * DropboxDriver was called with constructor arguments. So, no DI possible.
-     * We have to instantiate the CacheManager on our own.
-     */
-    private function getCacheManager(): CacheManager
-    {
-        return GeneralUtility::makeInstance(CacheManager::class);
-    }
-
-    /**
-     * DropboxDriver was called with constructor arguments. So, no DI possible.
-     * We have to instantiate the FlashMessageHelper on our own.
-     */
-    private function getFlashMessageHelper(): FlashMessageHelper
-    {
-        return GeneralUtility::makeInstance(FlashMessageHelper::class);
-    }
-
-    /**
-     * DropboxDriver was called with constructor arguments. So, no DI possible.
-     * We have to instantiate the DropboxClientFactory on our own.
-     */
-    private function getDropboxClientFactory(): DropboxClientFactory
-    {
-        return GeneralUtility::makeInstance(DropboxClientFactory::class);
     }
 
     /**
