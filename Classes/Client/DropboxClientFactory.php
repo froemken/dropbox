@@ -11,34 +11,47 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Client;
 
+use Spatie\Dropbox\Client;
 use StefanFroemken\Dropbox\Configuration\DropboxConfiguration;
+use StefanFroemken\Dropbox\TokenProvider\TokenProviderFactory;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class DropboxClientFactory
+readonly class DropboxClientFactory
 {
+    public function __construct(
+        private TokenProviderFactory $tokenProviderFactory,
+    ) {}
+
     public function createByResourceStorage(ResourceStorage $resourceStorage): DropboxClient
     {
-        return GeneralUtility::makeInstance(
-            DropboxClient::class,
-            $this->buildDropboxConfiguration($resourceStorage->getConfiguration())
+        $dropboxConfiguration = $this->buildDropboxConfiguration($resourceStorage->getConfiguration());
+
+        $tokenProvider = $this->tokenProviderFactory->getTokenProvider(
+            $dropboxConfiguration->getRefreshToken(),
+            $dropboxConfiguration->getAppKey(),
         );
+
+        return GeneralUtility::makeInstance(DropboxClient::class, new Client($tokenProvider));
     }
 
     public function createByConfiguration(array $configuration): DropboxClient
     {
-        return GeneralUtility::makeInstance(
-            DropboxClient::class,
-            $this->buildDropboxConfiguration($configuration)
+        $dropboxConfiguration = $this->buildDropboxConfiguration($configuration);
+
+        $tokenProvider = $this->tokenProviderFactory->getTokenProvider(
+            $dropboxConfiguration->getRefreshToken(),
+            $dropboxConfiguration->getAppKey(),
         );
+
+        return GeneralUtility::makeInstance(DropboxClient::class, new Client($tokenProvider));
     }
 
     private function buildDropboxConfiguration(array $configuration): DropboxConfiguration
     {
-        return GeneralUtility::makeInstance(
-            DropboxConfiguration::class,
+        return new DropboxConfiguration(
             (string)($configuration['appKey'] ?? ''),
-            (string)($configuration['refreshToken'] ?? '')
+            (string)($configuration['refreshToken'] ?? ''),
         );
     }
 }

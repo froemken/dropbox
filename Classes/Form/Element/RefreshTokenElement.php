@@ -16,7 +16,7 @@ use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Utility\StringUtility;
 
 /**
- * Wizard/Control next to field refresh_token in Dropbox XML configuration
+ * Wizard/Control next to the field refresh_token in Dropbox XML configuration
  */
 class RefreshTokenElement extends AbstractFormElement
 {
@@ -65,7 +65,7 @@ class RefreshTokenElement extends AbstractFormElement
         $mainFieldHtml[] = '<div class="form-control-wrap">';
         $mainFieldHtml[] =  '<div class="form-wizards-wrap">';
         $mainFieldHtml[] =      '<div class="form-wizards-element">';
-        // Main HTML of element done here ...
+        // Main HTML of an element done here ...
         $mainFieldHtml[] =      '</div>';
         $mainFieldHtml[] =      '<div class="form-wizards-items-bottom">';
         $mainFieldHtml[] =          $fieldWizardHtml;

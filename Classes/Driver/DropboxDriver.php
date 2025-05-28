@@ -41,9 +41,11 @@ class DropboxDriver extends AbstractDriver
      */
     private const UNSAFE_FILENAME_CHARACTER_EXPRESSION = '\\x00-\\x2C\\/\\x3A-\\x3F\\x5B-\\x60\\x7B-\\xBF';
 
+    protected DropboxClient $dropboxClient;
+
     protected FrontendInterface $cache;
 
-    protected DropboxClient $dropboxClient;
+    protected PathInfoFactory $pathInfoFactory;
 
     /**
      * A list of all supported hash algorithms, written all lower case.
@@ -55,7 +57,7 @@ class DropboxDriver extends AbstractDriver
         parent::__construct($configuration);
 
         // Do not allow PUBLIC here, as each file will initiate a request to Dropbox-Api to retrieve a public share
-        // link which is extremely slow.
+        // link, which is extremely slow.
         $this->capabilities = new Capabilities(Capabilities::CAPABILITY_BROWSABLE | Capabilities::CAPABILITY_WRITABLE);
     }
 
@@ -68,6 +70,7 @@ class DropboxDriver extends AbstractDriver
     {
         $this->cache = $this->getCacheManager()->getCache('dropbox');
         $this->dropboxClient = $this->getDropboxClientFactory()->createByConfiguration($this->configuration);
+        $this->pathInfoFactory = GeneralUtility::makeInstance(PathInfoFactory::class);
     }
 
     public function mergeConfigurationCapabilities($capabilities): Capabilities
@@ -636,10 +639,9 @@ class DropboxDriver extends AbstractDriver
 
     public function getPathInfo(string $path): PathInfoInterface
     {
-        $pathInfoFactory = $this->getPathInfoFactory();
         $path = $path === '/' ? '/' : rtrim($path, '/');
 
-        // Early return, if pathIfo was found in cache
+        // Early return, if pathIfo was found in the cache
         $cacheKey = $this->getCacheIdentifierForPath($path);
         if ($this->cache->has($cacheKey)) {
             return $this->cache->get($cacheKey);
@@ -647,15 +649,15 @@ class DropboxDriver extends AbstractDriver
 
         try {
             // getMetadata on root (/) will return in BadRequest.
-            // We have to build up root folder on our own
+            // We have to build up the root folder on our own
             if ($path === '/') {
-                $pathInfo = $pathInfoFactory->createPathInfoForRootFolder();
+                $pathInfo = $this->pathInfoFactory->createPathInfoForRootFolder();
             } else {
                 $parameters = [
                     'path' => $path,
                     'include_media_info' => true,
                 ];
-                $pathInfo = $pathInfoFactory->createPathInfo(
+                $pathInfo = $this->pathInfoFactory->createPathInfo(
                     $this->dropboxClient->getClient()->rpcEndpointRequest('files/get_metadata', $parameters)
                 );
             }
@@ -679,9 +681,9 @@ class DropboxDriver extends AbstractDriver
         );
 
         foreach ($listFolderResponse['entries'] ?? [] as $metaData) {
-            $entry = $this->getPathInfoFactory()->createPathInfo($metaData);
+            $entry = $this->pathInfoFactory->createPathInfo($metaData);
             $folderPathInfo->addEntry($entry);
-            // Add cache entry for each contained file or uninitialized folder (without containing files/folders).
+            // Add a cache entry for each contained file or uninitialized folder (without containing files/folders).
             // This cache will speed up simple ifExists calls.
             $this->cachePathInfo($entry);
         }
@@ -781,23 +783,6 @@ class DropboxDriver extends AbstractDriver
     private function getDropboxClientFactory(): DropboxClientFactory
     {
         return GeneralUtility::makeInstance(DropboxClientFactory::class);
-    }
-
-    /**
-     * DropboxDriver was called with constructor arguments. So, no DI possible.
-     * We have to instantiate the PathInfoFactory on our own.
-     */
-    private function getPathInfoFactory(): PathInfoFactory
-    {
-        // Prevent calling GU::makeInstance multiple times
-        // Change, if DI can be used for this class
-        static $pathInfoFactory = null;
-
-        if ($pathInfoFactory === null) {
-            $pathInfoFactory = GeneralUtility::makeInstance(PathInfoFactory::class);
-        }
-
-        return $pathInfoFactory;
     }
 
     /**

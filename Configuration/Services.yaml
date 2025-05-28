@@ -6,6 +6,21 @@ services:
 
   StefanFroemken\Dropbox\:
     resource: '../Classes/*'
+    exclude:
+      - '../Classes/Configuration/DropboxConfiguration'
+      - '../Classes/Response/AccessTokenResponse'
+      - '../Classes/TokenProvider/RefreshingTokenProvider'
+
+  # Will be called by GeneralUtility::makeInstance in DropboxClientFactory
+  # Do not autowire, as the "Client" class is not part of this dropbox extension.
+  StefanFroemken\Dropbox\Client\DropboxClient:
+    public: true
+    shared: false
+    autowire: false
+
+  # Will be called by GeneralUtility::makeInstance in DropboxDriver
+  StefanFroemken\Dropbox\Client\DropboxClientFactory:
+    public: true
 
   # Will be called by GeneralUtility::makeInstance in ExtractorRegistry
   StefanFroemken\Dropbox\Extractor\ImageExtractor:
@@ -14,16 +29,3 @@ services:
   # Will be called by GeneralUtility::makeInstance in ProcessorRegistry
   StefanFroemken\Dropbox\Resource\Processing\ImageProcessing:
     public: true
-
-  # Will be called by GeneralUtility::makeInstance in AutoRefreshingDropboxTokenService
-  StefanFroemken\Dropbox\Response\AccessTokenResponse:
-    autowire: false
-    autoconfigure: false
-    public: true
-
-  # Will be called by GeneralUtility::makeInstance in DropboxDriver and DropboxStatusElement
-  StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService:
-    autowire: false
-    autoconfigure: false
-    public: true
-

@@ -14,22 +14,16 @@ namespace StefanFroemken\Dropbox\Response;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
- * Contains the access token and lifetime of the access token refresh request
+ * Represents the OAuth2 access token data obtained from a refresh token request.
+ * Contains both the token string and its expiration timestamp.
  */
-class AccessTokenResponse
+readonly class AccessTokenResponse
 {
-    private string $accessToken = '';
-
-    private int $expiresIn = 0;
-
-    private int $timeOfResponse = 0;
-
-    public function __construct(array $response)
-    {
-        $this->accessToken = $response['access_token'] ?? '';
-        $this->expiresIn = $response['expires_in'] ?? 0;
-        $this->timeOfResponse = time();
-    }
+    public function __construct(
+        private string $accessToken,
+        private int $expiresIn,
+        private int $timeOfResponse,
+    ) {}
 
     public function getAccessToken(): string
     {
@@ -38,6 +32,8 @@ class AccessTokenResponse
 
     public function getLifetimeRemaining(): int
     {
-        return MathUtility::convertToPositiveInteger($this->timeOfResponse - time() + $this->expiresIn);
+        $remainingLifetime = $this->timeOfResponse - time() + $this->expiresIn;
+
+        return MathUtility::forceIntegerInRange($remainingLifetime, 0, PHP_INT_MAX);
     }
 }

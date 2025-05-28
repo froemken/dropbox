@@ -12,24 +12,12 @@ declare(strict_types=1);
 namespace StefanFroemken\Dropbox\Client;
 
 use Spatie\Dropbox\Client;
-use StefanFroemken\Dropbox\Configuration\DropboxConfiguration;
-use StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class DropboxClient
+readonly class DropboxClient
 {
-    private Client $client;
-
-    public function __construct(DropboxConfiguration $dropboxConfiguration)
-    {
-        $this->client = new Client(
-            GeneralUtility::makeInstance(
-                AutoRefreshingDropboxTokenService::class,
-                $dropboxConfiguration->getRefreshToken(),
-                $dropboxConfiguration->getAppKey()
-            )
-        );
-    }
+    public function __construct(
+        private Client $client,
+    ) {}
 
     /**
      * Returns the metadata for an image incl. width/height
@@ -48,7 +36,7 @@ class DropboxClient
         return $this->client->rpcEndpointRequest('files/get_metadata', $parameters);
     }
 
-    public function normalizePath(string $path): string
+    private function normalizePath(string $path): string
     {
         if (preg_match("/^id:.*|^rev:.*|^(ns:[0-9]+(\/.*)?)/", $path) === 1) {
             return $path;
@@ -60,7 +48,7 @@ class DropboxClient
     }
 
     /**
-     * Useful, if you want to fire your own requests to Dropbox API
+     * Useful if you want to fire your own requests to Dropbox API
      */
     public function getClient(): Client
     {

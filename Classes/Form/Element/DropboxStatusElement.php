@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace StefanFroemken\Dropbox\Form\Element;
 
 use GuzzleHttp\Exception\ClientException;
-use Spatie\Dropbox\Client;
 use Spatie\Dropbox\Exceptions\BadRequest;
+use StefanFroemken\Dropbox\Client\DropboxClientFactory;
 use StefanFroemken\Dropbox\Response\AccessTokenResponse;
-use StefanFroemken\Dropbox\Service\AutoRefreshingDropboxTokenService;
+use StefanFroemken\Dropbox\Traits\GetRegistryKeyTrait;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Service\FlexFormService;
@@ -27,6 +27,15 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class DropboxStatusElement extends AbstractFormElement
 {
+    use GetRegistryKeyTrait;
+
+    private const ACCOUNT_INFO_TEMPLATE = 'EXT:dropbox/Resources/Private/Templates/ShowAccountInfo.html';
+
+    public function __construct(
+        private readonly DropboxClientFactory $dropboxClientFactory,
+        private readonly Registry $registry,
+    ) {}
+
     /**
      * Default field information enabled for this element.
      *
@@ -45,10 +54,10 @@ class DropboxStatusElement extends AbstractFormElement
             $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
             $config = $flexFormService->convertFlexFormContentToArray($this->data['databaseRow']['configuration']);
         } else {
-            $config = [];
-            foreach ($this->data['databaseRow']['configuration']['data']['sDEF']['lDEF'] as $key => $value) {
-                $config[$key] = $value['vDEF'];
-            }
+            $config = array_map(static function (array $value): string|array {
+                // Returns an array of options for TCA select-type form fields. Else string.
+                return $value['vDEF'];
+            }, $this->data['databaseRow']['configuration']['data']['sDEF']['lDEF']);
         }
 
         $fieldInformationResult = $this->renderFieldInformation();
@@ -66,7 +75,7 @@ class DropboxStatusElement extends AbstractFormElement
     }
 
     /**
-     * Get HTML to show the user, that he is connected with his dropbox account
+     * Get HTML to show the user that he is connected with his dropbox account
      */
     public function getHtmlForConnected(string $appKey, string $refreshToken): string
     {
@@ -79,12 +88,17 @@ class DropboxStatusElement extends AbstractFormElement
         $view = $this->getView();
 
         try {
-            $refreshingService = $this->getRefreshingService($refreshToken, $appKey);
-            $dropboxClient = GeneralUtility::makeInstance(Client::class, $refreshingService);
+            $dropboxClient = $this->dropboxClientFactory->createByConfiguration([
+                'appKey' => $appKey,
+                'refreshToken' => $refreshToken,
+            ]);
 
-            $view->assign('account', $dropboxClient->getAccountInfo());
-            $view->assign('quota', $dropboxClient->rpcEndpointRequest('users/get_space_usage'));
-            $view->assign('lifetimeRemaining', $this->getLifetimeRemaining($refreshingService->getRegistryKey()));
+            $view->assignMultiple([
+                'account' => $dropboxClient->getClient()->getAccountInfo(),
+                'quota' => $dropboxClient->getClient()->rpcEndpointRequest('users/get_space_usage'),
+                'lifetimeRemaining' => $this->getLifetimeRemaining($this->getRegistryKey($appKey)),
+            ]);
+
             $content = $view->render();
         } catch (ClientException $clientException) {
             $content = $clientException->getMessage();
@@ -97,7 +111,7 @@ class DropboxStatusElement extends AbstractFormElement
 
     private function getLifetimeRemaining(string $registryKey): int
     {
-        $accessTokenResponse = $this->getRegistry()->get('ext_dropbox', $registryKey, []);
+        $accessTokenResponse = $this->registry->get('ext_dropbox', $registryKey, []);
 
         return $accessTokenResponse instanceof AccessTokenResponse ? $accessTokenResponse->getLifetimeRemaining() : 0;
     }
@@ -105,26 +119,8 @@ class DropboxStatusElement extends AbstractFormElement
     private function getView(): StandaloneView
     {
         $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplatePathAndFilename(
-            GeneralUtility::getFileAbsFileName(
-                'EXT:dropbox/Resources/Private/Templates/ShowAccountInfo.html'
-            )
-        );
+        $view->setTemplatePathAndFilename(self::ACCOUNT_INFO_TEMPLATE);
 
         return $view;
-    }
-
-    private function getRefreshingService(string $refreshToken, string $appKey): AutoRefreshingDropboxTokenService
-    {
-        return GeneralUtility::makeInstance(
-            AutoRefreshingDropboxTokenService::class,
-            $refreshToken,
-            $appKey
-        );
-    }
-
-    private function getRegistry(): Registry
-    {
-        return GeneralUtility::makeInstance(Registry::class);
     }
 }

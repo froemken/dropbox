@@ -12,23 +12,19 @@ declare(strict_types=1);
 namespace StefanFroemken\Dropbox\Configuration;
 
 /**
- * This configuration will be filled by the values of the FlexForm of Dropbox FAL Driver record (sys_file_storage)
+ * Configuration container for Dropbox FAL driver settings.
+ * Properties are populated from FlexForm values stored in sys_file_storage records.
  */
-class DropboxConfiguration
+readonly class DropboxConfiguration
 {
-    private string $appKey = '';
-
-    private string $refreshToken = '';
-
     /**
-     * @param string $appKey Lookup your AppKey from Dropbox Developer App corner
-     * @param string $refreshToken Token to create new AccessTokens which are max. valid for 4 hours
+     * @param string $appKey The application key obtained from the Dropbox Developer Console
+     * @param string $refreshToken OAuth2 refresh token used to generate short-lived (4-hour) access tokens
      */
-    public function __construct(string $appKey, string $refreshToken)
-    {
-        $this->appKey = $appKey;
-        $this->refreshToken = $refreshToken;
-    }
+    public function __construct(
+        private string $appKey,
+        private string $refreshToken,
+    ) {}
 
     public function getAppKey(): string
     {
