@@ -15,6 +15,7 @@ use StefanFroemken\Dropbox\Client\DropboxClient;
 use StefanFroemken\Dropbox\Client\DropboxClientFactory;
 use TYPO3\CMS\Core\Resource\AbstractFile;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\FileType;
 use TYPO3\CMS\Core\Resource\Index\ExtractorInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\Exception\MissingArrayPathException;
@@ -37,7 +38,7 @@ class ImageExtractor implements ExtractorInterface
      */
     public function getFileTypeRestrictions(): array
     {
-        return [AbstractFile::FILETYPE_IMAGE];
+        return [FileType::IMAGE];
     }
 
     /**
