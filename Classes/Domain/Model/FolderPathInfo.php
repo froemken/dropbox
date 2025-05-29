@@ -11,18 +11,27 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Domain\Model;
 
-class FolderPathInfo extends AbstractPathInfo
+class FolderPathInfo implements PathInfoInterface
 {
     private ?\ArrayObject $entries = null;
 
-    public function __construct(string $name, string $path)
+    public function __construct(
+        private readonly string $name,
+        private readonly string $path,
+    ) {}
+
+    public function getName(): string
     {
-        $this->name = $name;
-        $this->path = $path;
+        return $this->name;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
     }
 
     /**
-     * While creating this object just path and name are given, but entries is still null (uninitialized).
+     * While creating this object, just a path and name are given, but entries are still null (uninitialized).
      * If files or folders of this object are requested, this object will be set to "initialized".
      */
     public function isInitialized(): bool

@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace StefanFroemken\Dropbox\Domain\Model;
 
 /**
- * In case of an exception in DropboxDriver we will this class
- * which is neither a file nor a folder
+ * In case of an exception in DropboxDriver we will use this class
+ * that is neither a file nor a folder
  */
 class InvalidPathInfo implements PathInfoInterface
 {

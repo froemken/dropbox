@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Domain\Model;
 
-class FilePathInfo extends AbstractPathInfo
+class FilePathInfo implements PathInfoInterface
 {
     private int $size = 0;
 
@@ -19,10 +19,19 @@ class FilePathInfo extends AbstractPathInfo
 
     private string $clientModified = '';
 
-    public function __construct(string $name, string $path)
+    public function __construct(
+        private readonly string $name,
+        private readonly string $path
+    ) {}
+
+    public function getName(): string
     {
-        $this->name = $name;
-        $this->path = $path;
+        return $this->name;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
     }
 
     public function getSize(): string

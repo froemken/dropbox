@@ -8,6 +8,7 @@ services:
     resource: '../Classes/*'
     exclude:
       - '../Classes/Configuration/DropboxConfiguration'
+      - '../Classes/Domain/Model/*'
       - '../Classes/Response/AccessTokenResponse'
       - '../Classes/TokenProvider/RefreshingTokenProvider'
 
