@@ -4,6 +4,21 @@
 ChangeLog
 =========
 
+Version 6.1.0
+=============
+
+*   Add feature to prevent counting files of sub-folders
+*   Repair creating new file
+*   Prevent class properties where possible (stateless)
+*   Use "new" if class has state
+*   Prevent additional API calls where possible
+
+Version 6.0.0
+=============
+
+*   Add TYPO3 compatibility
+*   Remove support for older TYPO3 versions
+
 Version 5.0.2
 =============
 
