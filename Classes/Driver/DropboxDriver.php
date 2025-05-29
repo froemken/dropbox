@@ -666,7 +666,7 @@ class DropboxDriver extends AbstractDriver
         return rtrim($this->canonicalizeAndCheckFileIdentifier($folderIdentifier), '/') . '/';
     }
 
-    public function getPathInfo(string $folderIdentifier, string $fileIdentifier = null): PathInfoInterface
+    public function getPathInfo(string $folderIdentifier, ?string $fileIdentifier = null): PathInfoInterface
     {
         if ($fileIdentifier !== null) {
             $fileIdentifier = $fileIdentifier === '/' ? '/' : rtrim($fileIdentifier, '/');

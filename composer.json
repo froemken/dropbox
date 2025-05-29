@@ -24,7 +24,7 @@
 		"source": "https://github.com/froemken/dropbox"
 	},
 	"require": {
-		"typo3/cms-core": "^13.4.3",
+		"typo3/cms-core": "^13.4.12",
 		"spatie/dropbox-api": "1.23.0"
 	},
 	"require-dev": {
