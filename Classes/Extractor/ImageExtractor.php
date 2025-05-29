@@ -13,7 +13,6 @@ namespace StefanFroemken\Dropbox\Extractor;
 
 use StefanFroemken\Dropbox\Client\DropboxClient;
 use StefanFroemken\Dropbox\Client\DropboxClientFactory;
-use TYPO3\CMS\Core\Resource\AbstractFile;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileType;
 use TYPO3\CMS\Core\Resource\Index\ExtractorInterface;

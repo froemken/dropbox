@@ -2,7 +2,6 @@
 
 namespace Spatie\Dropbox;
 
-use Exception;
 use GrahamCampbell\GuzzleFactory\GuzzleFactory;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
@@ -300,7 +299,7 @@ class Client
 
         $response = $this->contentEndpointRequest('files/get_thumbnail', $arguments);
 
-        return (string) $response->getBody();
+        return (string)$response->getBody();
     }
 
     /**
@@ -446,7 +445,7 @@ class Client
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     protected function uploadChunk(int $type, StreamInterface &$stream, int $chunkSize, ?UploadSessionCursor $cursor = null): UploadSessionCursor
     {
@@ -469,7 +468,7 @@ class Client
                 return $this->uploadSessionAppend($chunkStream, $cursor);
             }
 
-            throw new Exception('Invalid type');
+            throw new \Exception('Invalid type');
         } catch (RequestException $exception) {
             if ($tries < $maximumTries) {
                 // rewind
@@ -578,7 +577,7 @@ class Client
 
         $path = trim($path, '/');
 
-        return ($path === '') ? '' : '/'.$path;
+        return ($path === '') ? '' : '/' . $path;
     }
 
     protected function getEndpointUrl(string $subdomain, string $endpoint): string
@@ -652,7 +651,7 @@ class Client
         return json_decode($response->getBody(), true) ?? [];
     }
 
-    protected function determineException(ClientException $exception): Exception
+    protected function determineException(ClientException $exception): \Exception
     {
         if (in_array($exception->getResponse()->getStatusCode(), [400, 409])) {
             return new BadRequest($exception->getResponse());
@@ -764,7 +763,7 @@ class Client
     protected function getHeadersForCredentials(): array
     {
         return [
-            'Authorization' => 'Basic '.base64_encode("{$this->appKey}:{$this->appSecret}"),
+            'Authorization' => 'Basic ' . base64_encode("{$this->appKey}:{$this->appSecret}"),
         ];
     }
 }
