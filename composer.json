@@ -25,7 +25,7 @@
 	},
 	"require": {
 		"typo3/cms-core": "^13.4.3",
-		"spatie/dropbox-api": "^1.21.1"
+		"spatie/dropbox-api": "1.23.0"
 	},
 	"require-dev": {
 		"ergebnis/composer-normalize": "^2.44",

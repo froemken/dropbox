@@ -1,11 +1,8 @@
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/support-ukraine.svg?t=1" />](https://supportukrainenow.org)
-
 # A minimal implementation of Dropbox API v2
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/dropbox-api.svg?style=flat-square)](https://packagist.org/packages/spatie/dropbox-api)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/spatie/dropbox-api/run-tests?label=tests)](https://github.com/spatie/dropbox-api/actions?query=workflow%3ATests+branch%3Amaster)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/spatie/dropbox-api/Check%20&%20fix%20styling?label=code%20style)](https://github.com/spatie/dropbox-api/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amaster)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/spatie/dropbox-api/run-tests.yml?label=tests&style=flat-square)](https://github.com/spatie/dropbox-api/actions?query=workflow%3ATests+branch%3Amaster)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/spatie/dropbox-api/code-style.yml?label=code%20style&style=flat-square)](https://github.com/spatie/dropbox-api/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/dropbox-api.svg?style=flat-square)](https://packagist.org/packages/spatie/dropbox-api)
 
 
@@ -149,6 +146,8 @@ composer test
 ## Contributing
 
 Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTING.md) for details.
+
+You can run `composer pint` to run the code style fixer, and `composer phpstan` to run the static analysis.
 
 ## Security
 
