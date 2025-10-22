@@ -719,12 +719,29 @@ class DropboxDriver extends AbstractDriver
             $folderPathInfo->getPath()
         );
 
+        // Process initial entries
         foreach ($listFolderResponse['entries'] ?? [] as $metaData) {
             $entry = $this->pathInfoFactory->createPathInfo($metaData);
             $folderPathInfo->addEntry($entry);
             // Add a cache entry for each contained file or uninitialized folder (without containing files/folders).
             // This cache will speed up simple ifExists calls.
             $this->cachePathInfo($entry);
+        }
+
+        // Handle pagination if there are more entries
+        while (isset($listFolderResponse['has_more']) && $listFolderResponse['has_more'] === true) {
+            $cursor = $listFolderResponse['cursor'] ?? '';
+            if (empty($cursor)) {
+                break;
+            }
+
+            $listFolderResponse = $this->dropboxClient->getClient()->listFolderContinue($cursor);
+
+            foreach ($listFolderResponse['entries'] ?? [] as $metaData) {
+                $entry = $this->pathInfoFactory->createPathInfo($metaData);
+                $folderPathInfo->addEntry($entry);
+                $this->cachePathInfo($entry);
+            }
         }
 
         // Update cache entry for folder with all its files and folders
