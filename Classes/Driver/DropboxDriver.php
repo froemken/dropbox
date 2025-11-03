@@ -729,7 +729,7 @@ class DropboxDriver extends AbstractDriver
         }
 
         // Handle pagination if there are more entries
-        while (isset($listFolderResponse['has_more']) && $listFolderResponse['has_more'] === true) {
+        while ($listFolderResponse['has_more'] ?? false) {
             $cursor = $listFolderResponse['cursor'] ?? '';
             if (empty($cursor)) {
                 break;
