@@ -22,7 +22,6 @@ indent_style = tab
 
 # ReST-Files
 [*.{rst,rst.txt}]
-indent_size = 4
 max_line_length = 80
 
 # Markdown-Files
@@ -51,8 +50,8 @@ indent_size = 2
 indent_size = 2
 
 # XLF-Files
-[*.xlf]
-indent_style = tab
+[*.{xlf,xliff}]
+indent_size = 2
 
 # SQL-Files
 [*.sql]
