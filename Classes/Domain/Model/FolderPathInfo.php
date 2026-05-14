@@ -11,14 +11,16 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Domain\Model;
 
-class FolderPathInfo implements PathInfoInterface
+readonly class FolderPathInfo implements PathInfoInterface
 {
-    private ?\ArrayObject $entries = null;
+    private \ArrayObject $entries;
 
     public function __construct(
-        private readonly string $name,
-        private readonly string $path,
-    ) {}
+        private string $name,
+        private string $path,
+    ) {
+        $this->entries = new \ArrayObject();
+    }
 
     public function getName(): string
     {
@@ -30,18 +32,9 @@ class FolderPathInfo implements PathInfoInterface
         return $this->path;
     }
 
-    /**
-     * While creating this object, just a path and name are given, but entries are still null (uninitialized).
-     * If files or folders of this object are requested, this object will be set to "initialized".
-     */
-    public function isInitialized(): bool
-    {
-        return $this->entries !== null;
-    }
-
     public function hasFolders(): bool
     {
-        return $this->isInitialized() && $this->getFolders()->count();
+        return (bool)$this->getFolders()->count();
     }
 
     /**
@@ -49,10 +42,6 @@ class FolderPathInfo implements PathInfoInterface
      */
     public function getFolders(): \ArrayObject
     {
-        if (!$this->isInitialized()) {
-            return new \ArrayObject([]);
-        }
-
         return new \ArrayObject(array_filter($this->entries->getArrayCopy(), static function (PathInfoInterface $pathInfo): bool {
             return $pathInfo instanceof FolderPathInfo;
         }));
@@ -60,7 +49,7 @@ class FolderPathInfo implements PathInfoInterface
 
     public function hasFiles(): bool
     {
-        return $this->isInitialized() && $this->getFiles()->count();
+        return (bool)$this->getFiles()->count();
     }
 
     /**
@@ -68,10 +57,6 @@ class FolderPathInfo implements PathInfoInterface
      */
     public function getFiles(): \ArrayObject
     {
-        if (!$this->isInitialized()) {
-            return new \ArrayObject([]);
-        }
-
         return new \ArrayObject(array_filter($this->entries->getArrayCopy(), static function (PathInfoInterface $pathInfo): bool {
             return $pathInfo instanceof FilePathInfo;
         }));
@@ -80,16 +65,12 @@ class FolderPathInfo implements PathInfoInterface
     public function addEntry(PathInfoInterface $pathInfo): void
     {
         if ($pathInfo instanceof FilePathInfo || $pathInfo instanceof FolderPathInfo) {
-            if ($this->entries === null) {
-                $this->entries = new \ArrayObject();
-            }
-
             $this->entries->append($pathInfo);
         }
     }
 
     public function isEmpty(): bool
     {
-        return $this->entries === null || $this->entries->count();
+        return $this->entries->count() === 0;
     }
 }

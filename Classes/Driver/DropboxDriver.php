@@ -711,10 +711,6 @@ class DropboxDriver extends AbstractDriver
 
     protected function initializeFolder(FolderPathInfo $folderPathInfo): void
     {
-        if ($folderPathInfo->isInitialized()) {
-            return;
-        }
-
         $listFolderResponse = $this->dropboxClient->getClient()->listFolder(
             $folderPathInfo->getPath()
         );
@@ -730,7 +726,7 @@ class DropboxDriver extends AbstractDriver
 
         // Handle pagination if there are more entries
         while ($listFolderResponse['has_more'] ?? false) {
-            $cursor = string($listFolderResponse['cursor'] ?? '');
+            $cursor = (string)($listFolderResponse['cursor'] ?? '');
             if ($cursor === '') {
                 break;
             }

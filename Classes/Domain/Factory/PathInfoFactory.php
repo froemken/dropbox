@@ -31,7 +31,10 @@ class PathInfoFactory
         }
 
         if ($metaData['.tag'] === 'folder') {
-            return new FolderPathInfo($metaData['name'], $metaData['path_display']);
+            return new FolderPathInfo(
+                name: $metaData['name'],
+                path: $metaData['path_display'],
+            );
         }
 
         return new InvalidPathInfo();
