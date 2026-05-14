@@ -2,24 +2,15 @@
 
 declare(strict_types=1);
 
-/*
- * This file is part of the package stefanfroemken/dropbox.
- *
- * For the full copyright and license information, please read the
- * LICENSE file that was distributed with this source code.
- */
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
 
-if (PHP_SAPI !== 'cli') {
-    die('This script supports command line usage only. Please check your command.');
-}
-
-return (new \PhpCsFixer\Config())
-    ->setParallelConfig(\PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
+return (new Config())
     ->setFinder(
-        (new PhpCsFixer\Finder())
-            ->ignoreVCSIgnored(true)
-            ->in(__DIR__)
-            ->exclude('.Build')
+        (new Finder())
+            ->in(__DIR__ . '/../../')
+            ->exclude(__DIR__ . '/../../.Build')
+            ->exclude(__DIR__ . '/../../var')
     )
     ->setRiskyAllowed(true)
     ->setRules([
@@ -60,12 +51,7 @@ return (new \PhpCsFixer\Config())
         'no_trailing_comma_in_singleline' => true,
         'no_unneeded_control_parentheses' => true,
         'no_unused_imports' => true,
-        'no_useless_else' => true,
         'no_useless_nullsafe_operator' => true,
-        'nullable_type_declaration' => [
-            'syntax' => 'question_mark',
-        ],
-        'nullable_type_declaration_for_default_null_value' => true,
         'ordered_imports' => ['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'alpha'],
         'php_unit_construct' => ['assertions' => ['assertEquals', 'assertSame', 'assertNotEquals', 'assertNotSame']],
         'php_unit_mock_short_will_return' => true,
@@ -83,7 +69,13 @@ return (new \PhpCsFixer\Config())
         'single_line_comment_style' => ['comment_types' => ['hash']],
         // @todo: Can be dropped once we enable @PER-CS2.0
         'single_line_empty_body' => true,
-        'trailing_comma_in_multiline' => ['elements' => ['arrays']],
+        'trailing_comma_in_multiline' => ['elements' => ['arguments', 'arrays', 'match', 'parameters']],
         'whitespace_after_comma_in_array' => ['ensure_single_space' => true],
         'yoda_style' => ['equal' => false, 'identical' => false, 'less_and_greater' => false],
+
+        // We need this for documentation!
+        'no_useless_else' => false, // We want to preserve else with comments only
+
+        // Add this rule to convert FQCN to use statements
+        'full_opening_tag' => true,
     ]);
