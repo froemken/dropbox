@@ -24,13 +24,14 @@
 		"source": "https://github.com/froemken/dropbox"
 	},
 	"require": {
-		"typo3/cms-core": "^13.4.12",
-		"spatie/dropbox-api": "1.23.0"
+		"php": "^8.2",
+		"typo3/cms-core": "^14.3.0",
+		"spatie/dropbox-api": "1.24.0"
 	},
 	"require-dev": {
-		"ergebnis/composer-normalize": "^2.44",
+		"ergebnis/composer-normalize": "^2.51",
 		"typo3/coding-standards": "^0.8",
-		"typo3/testing-framework": "^8.2"
+		"typo3/testing-framework": "^9.5"
 	},
 	"autoload": {
 		"psr-4": {
@@ -52,6 +53,11 @@
 	},
 	"extra": {
 		"typo3/cms": {
+			"Package": {
+				"providesPackages": {
+					"spatie/dropbox-api": "1.24.0"
+				}
+			},
 			"app-dir": ".Build",
 			"extension-key": "dropbox",
 			"web-dir": ".Build/public"
