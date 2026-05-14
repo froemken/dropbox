@@ -21,7 +21,7 @@ use TYPO3\CMS\Core\Utility\Exception\MissingArrayPathException;
 
 /**
  * Special Image Extractor to extract width and height from Dropbox
- * as this information was not delivered by Dropbox API
+ * as Dropbox API did not deliver this information
  */
 class ImageExtractor implements ExtractorInterface
 {
