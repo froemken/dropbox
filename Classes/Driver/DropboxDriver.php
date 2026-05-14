@@ -165,14 +165,12 @@ class DropboxDriver extends AbstractDriver
             PathUtility::dirname($fileIdentifier)
         );
 
-        $pathInfo = $this->getPathInfo($parentFolderIdentifier);
-        if (!$pathInfo instanceof FolderPathInfo) {
+        $pathInfoOfParentFolder = $this->getPathInfo($parentFolderIdentifier);
+        if (!$pathInfoOfParentFolder instanceof FolderPathInfo) {
             return false;
         }
 
-        $this->initializeFolder($pathInfo);
-
-        foreach ($pathInfo->getFiles() as $filePathInfo) {
+        foreach ($pathInfoOfParentFolder->getFiles() as $filePathInfo) {
             if ($filePathInfo->getPath() === '/' . trim($fileIdentifier, '/')) {
                 return true;
             }
@@ -197,8 +195,6 @@ class DropboxDriver extends AbstractDriver
             return false;
         }
 
-        $this->initializeFolder($pathInfo);
-
         foreach ($pathInfo->getFolders() as $folderPathInfo) {
             if ($folderPathInfo->getPath() === '/' . trim($folderIdentifier, '/')) {
                 return true;
@@ -214,8 +210,6 @@ class DropboxDriver extends AbstractDriver
         if (!$pathInfo instanceof FolderPathInfo) {
             return false;
         }
-
-        $this->initializeFolder($pathInfo);
 
         return $pathInfo->isEmpty();
     }
@@ -560,8 +554,6 @@ class DropboxDriver extends AbstractDriver
             return $files;
         }
 
-        $this->initializeFolder($pathInfo);
-
         foreach ($pathInfo->getFiles() as $filePathInfo) {
             $files[] = $filePathInfo->getPath();
         }
@@ -589,8 +581,6 @@ class DropboxDriver extends AbstractDriver
             return $folders;
         }
 
-        $this->initializeFolder($pathInfo);
-
         foreach ($pathInfo->getFolders() as $folderPathInfo) {
             $folders[] = $folderPathInfo->getPath() . '/';
         }
@@ -611,8 +601,6 @@ class DropboxDriver extends AbstractDriver
             return 0;
         }
 
-        $this->initializeFolder($pathInfo);
-
         return $pathInfo->getFiles()->count();
     }
 
@@ -622,8 +610,6 @@ class DropboxDriver extends AbstractDriver
         if (!$pathInfo instanceof FolderPathInfo) {
             return 0;
         }
-
-        $this->initializeFolder($pathInfo);
 
         return $pathInfo->getFolders()->count();
     }
@@ -675,7 +661,7 @@ class DropboxDriver extends AbstractDriver
             $cacheKey = $this->getCacheIdentifierForPath($folderIdentifier);
         }
 
-        // Early return, if pathIfo was found in the cache
+        // Early return, if pathInfo was found in the cache
         if ($this->cache->has($cacheKey)) {
             return $this->cache->get($cacheKey);
         }
@@ -693,12 +679,14 @@ class DropboxDriver extends AbstractDriver
                 // getMetadata on root (/) will return in BadRequest.
                 // We have to build up the root folder on our own
                 $pathInfo = $this->pathInfoFactory->createPathInfoForRootFolder();
+                $this->initializeFolder($pathInfo);
             } else {
                 $pathInfo = $this->pathInfoFactory->createPathInfo([
                     '.tag' => 'folder',
                     'name' => PathUtility::basename($folderIdentifier),
                     'path_display' => $folderIdentifier,
                 ]);
+                $this->initializeFolder($pathInfo);
             }
 
             $this->cache->set($cacheKey, $pathInfo);
@@ -709,19 +697,20 @@ class DropboxDriver extends AbstractDriver
         return $pathInfo;
     }
 
-    protected function initializeFolder(FolderPathInfo $folderPathInfo): void
+    protected function initializeFolder(PathInfoInterface $pathInfo): void
     {
+        if (!$pathInfo instanceof FolderPathInfo) {
+            return;
+        }
+
         $listFolderResponse = $this->dropboxClient->getClient()->listFolder(
-            $folderPathInfo->getPath()
+            $pathInfo->getPath(),
         );
 
         // Process initial entries
         foreach ($listFolderResponse['entries'] ?? [] as $metaData) {
             $entry = $this->pathInfoFactory->createPathInfo($metaData);
-            $folderPathInfo->addEntry($entry);
-            // Add a cache entry for each contained file or uninitialized folder (without containing files/folders).
-            // This cache will speed up simple ifExists calls.
-            $this->cachePathInfo($entry);
+            $pathInfo->addEntry($entry);
         }
 
         // Handle pagination if there are more entries
@@ -735,32 +724,9 @@ class DropboxDriver extends AbstractDriver
 
             foreach ($listFolderResponse['entries'] ?? [] as $metaData) {
                 $entry = $this->pathInfoFactory->createPathInfo($metaData);
-                $folderPathInfo->addEntry($entry);
-                $this->cachePathInfo($entry);
+                $pathInfo->addEntry($entry);
             }
         }
-
-        // Update cache entry for folder with all its files and folders
-        $this->cachePathInfo($folderPathInfo);
-    }
-
-    protected function cachePathInfo(PathInfoInterface $pathInfo): void
-    {
-        // Do not cache info for an invalid path
-        if ($pathInfo instanceof InvalidPathInfo) {
-            return;
-        }
-
-        // Do not cache info for an empty path
-        if ($pathInfo->getPath() === '') {
-            return;
-        }
-
-        // Update cache, regardless if already set or not.
-        $this->cache->set(
-            $this->getCacheIdentifierForPath($pathInfo->getPath()),
-            $pathInfo
-        );
     }
 
     protected function getCacheIdentifierForPath(string $path): string
