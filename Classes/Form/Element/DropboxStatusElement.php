@@ -20,7 +20,9 @@ use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Core\View\ViewFactoryData;
+use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\View\ViewInterface;
 
 /**
  * This class retrieves and shows Dropbox Account information
@@ -34,6 +36,7 @@ class DropboxStatusElement extends AbstractFormElement
     public function __construct(
         private readonly DropboxClientFactory $dropboxClientFactory,
         private readonly Registry $registry,
+        private readonly ViewFactoryInterface $viewFactory,
     ) {}
 
     /**
@@ -116,11 +119,12 @@ class DropboxStatusElement extends AbstractFormElement
         return $accessTokenResponse instanceof AccessTokenResponse ? $accessTokenResponse->getLifetimeRemaining() : 0;
     }
 
-    private function getView(): StandaloneView
+    private function getView(): ViewInterface
     {
-        $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplatePathAndFilename(self::ACCOUNT_INFO_TEMPLATE);
+        $viewData = new ViewFactoryData(
+            templatePathAndFilename: self::ACCOUNT_INFO_TEMPLATE,
+        );
 
-        return $view;
+        return $this->viewFactory->create($viewData);
     }
 }
