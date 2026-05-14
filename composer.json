@@ -1,7 +1,7 @@
 {
 	"name": "stefanfroemken/dropbox",
 	"type": "typo3-cms-extension",
-	"description": "Add a FAL driver for Dropbox to TYPO3",
+	"description": "Dropbox FAL Driver - Provides a Dropbox driver for TYPO3 File Abstraction Layer",
 	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"typo3",
