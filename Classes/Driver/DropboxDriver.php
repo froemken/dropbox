@@ -152,7 +152,7 @@ class DropboxDriver extends AbstractDriver
             $this->dropboxClient->getClient()->delete(
                 $folderIdentifier === '/' ?: rtrim($folderIdentifier, '/')
             );
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
 
@@ -300,7 +300,7 @@ class DropboxDriver extends AbstractDriver
             $this->cache->flush();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
 
         return false;
@@ -312,7 +312,7 @@ class DropboxDriver extends AbstractDriver
             $this->dropboxClient->getClient()->delete($fileIdentifier);
             $this->cache->flush();
             return true;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
 
         return false;
@@ -702,7 +702,7 @@ class DropboxDriver extends AbstractDriver
             }
 
             $this->cache->set($cacheKey, $pathInfo);
-        } catch (\Exception $exception) {
+        } catch (\Exception) {
             $pathInfo = new InvalidPathInfo();
         }
 
@@ -801,7 +801,7 @@ class DropboxDriver extends AbstractDriver
                     $this->dropboxClient->getClient()->download($fileIdentifier)
                 )
             );
-        } catch (BadRequest $badRequest) {
+        } catch (BadRequest) {
             $this->flashMessageHelper->addFlashMessage(
                 'The file meta extraction has been interrupted, because file has been removed in the meanwhile.',
                 'File Meta Extraction aborted',

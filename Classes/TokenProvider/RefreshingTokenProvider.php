@@ -81,7 +81,7 @@ readonly class RefreshingTokenProvider implements RefreshableTokenProvider
                     time(),
                 )
             );
-        } catch (ClientException $clientException) {
+        } catch (ClientException) {
             return false;
         }
 
