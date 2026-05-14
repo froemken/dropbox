@@ -11,17 +11,14 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Domain\Model;
 
-class FilePathInfo implements PathInfoInterface
+readonly class FilePathInfo implements PathInfoInterface
 {
-    private int $size = 0;
-
-    private string $serverModified = '';
-
-    private string $clientModified = '';
-
     public function __construct(
-        private readonly string $name,
-        private readonly string $path
+        private string $name,
+        private string $path,
+        private int $size,
+        private string $serverModified,
+        private string $clientModified,
     ) {}
 
     public function getName(): string
@@ -40,28 +37,13 @@ class FilePathInfo implements PathInfoInterface
         return (string)$this->size;
     }
 
-    public function setSize(int $size): void
-    {
-        $this->size = $size;
-    }
-
     public function getServerModified(): string
     {
         return $this->serverModified;
     }
 
-    public function setServerModified(string $serverModified): void
-    {
-        $this->serverModified = $serverModified;
-    }
-
     public function getClientModified(): string
     {
         return $this->clientModified;
-    }
-
-    public function setClientModified(string $clientModified): void
-    {
-        $this->clientModified = $clientModified;
     }
 }

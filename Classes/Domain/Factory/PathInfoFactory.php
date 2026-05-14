@@ -21,12 +21,13 @@ class PathInfoFactory
     public function createPathInfo(array $metaData): PathInfoInterface
     {
         if ($metaData['.tag'] === 'file') {
-            $filePathInfo = new FilePathInfo($metaData['name'], $metaData['path_display']);
-            $filePathInfo->setSize((int)($metaData['size'] ?? 0));
-            $filePathInfo->setServerModified($metaData['server_modified'] ?? '');
-            $filePathInfo->setClientModified($metaData['client_modified'] ?? '');
-
-            return $filePathInfo;
+            return new FilePathInfo(
+                name: $metaData['name'],
+                path: $metaData['path_display'],
+                size: (int)($metaData['size'] ?? 0),
+                serverModified: $metaData['server_modified'] ?? '',
+                clientModified: $metaData['client_modified'] ?? '',
+            );
         }
 
         if ($metaData['.tag'] === 'folder') {
