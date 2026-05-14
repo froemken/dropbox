@@ -17,6 +17,7 @@ use StefanFroemken\Dropbox\Client\DropboxClientFactory;
 use StefanFroemken\Dropbox\Response\AccessTokenResponse;
 use StefanFroemken\Dropbox\Traits\GetRegistryKeyTrait;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
+use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -36,6 +37,7 @@ class DropboxStatusElement extends AbstractFormElement
     public function __construct(
         private readonly DropboxClientFactory $dropboxClientFactory,
         private readonly Registry $registry,
+        private readonly FlexFormTools $flexFormTools,
         private readonly ViewFactoryInterface $viewFactory,
     ) {}
 
@@ -54,8 +56,7 @@ class DropboxStatusElement extends AbstractFormElement
     {
         $resultArray = $this->initializeResultArray();
         if (is_string($this->data['databaseRow']['configuration'])) {
-            $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
-            $config = $flexFormService->convertFlexFormContentToArray($this->data['databaseRow']['configuration']);
+            $config = $this->flexFormTools->convertFlexFormContentToArray($this->data['databaseRow']['configuration']);
         } else {
             $config = array_map(static function (array $value): string|array {
                 // Returns an array of options for TCA select-type form fields. Else string.
