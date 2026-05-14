@@ -111,19 +111,21 @@ function getFormForAppKeyAndSecret() {
 }
 
 function getPanelWithAuthCodeLink() {
-  return `<div class="panel panel-info">
-    <div class="panel-heading">Authorize your Dropbox App</div>
-    <div class="panel-body">
-      <a href="#" id="authCodeLink" target="_blank">Authorization Link (opens in new tab)</a>
+  return $(`
+    <div class="panel panel-info">
+      <div class="panel-heading">Authorize your Dropbox App</div>
+      <div class="panel-body">
+        <a href="#" id="authCodeLink" target="_blank">Authorization Link (opens in new tab)</a>
+      </div>
     </div>
-  </div>`;
+  `);
 }
 
 function getFormForAuthCode() {
-  return `<div class="form-group">
+  return $(`<div class="form-group">
     <label for="authCode">AuthCode</label>
     <input type="text" class="form-control" id="authCode" autocomplete="off" placeholder="Type in the AuthCode from the link above" />
-  </div>`;
+  </div>`);
 }
 
 function generateCodeVerifier(len) {
