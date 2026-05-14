@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Dropbox\Upgrade;
 
+use TYPO3\CMS\Core\Attribute\UpgradeWizard;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -21,19 +22,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /*
  * Upgrade Wizard to rename Dropbox identifier "fal_dropbox" to "dropbox" in sys_file_storage
  */
+#[UpgradeWizard(
+    identifier: 'dropboxRenameExtensionKey',
+)]
 class RenameExtensionKeyUpgrade implements UpgradeWizardInterface
 {
-    /**
-     * Return the identifier for this wizard
-     * This should be the same string as used in the ext_localconf.php class registration
-     *
-     * @return string
-     */
-    public function getIdentifier(): string
-    {
-        return 'dropboxRenameExtensionKey';
-    }
-
     public function getTitle(): string
     {
         return '[dropbox] Rename FAL storage identifier to "dropbox"';
